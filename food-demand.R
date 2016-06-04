@@ -1,0 +1,112 @@
+library('nleqslv')
+
+food.dmnd <- function(Ps, Pn, Y, params) {
+## Function for calculating food demand using the new model
+## Arguments: Ps, Pn, and Y (staple price, normal price, and pcGDP), params structure.  Ps, Pn, Y may be vectors but must all be
+##            the same length
+##
+##     params structure:
+##        params$xi    : 2x2 array of the xi elasticities
+##        params$A     : Leading coefficients in the quantity calculations
+##        params$yfunc : length-2 vector of functions giving Y^eta(Y)
+##
+## Output: list with the following elements:
+##        Qs:  vector of quantity for S
+##        Qn:  vector of quantity for N
+##   alpha.s:  vector of budget fraction for S
+##   alpha.n:  vector of budget fraction for N
+  
+  # get eta values
+  eta.s <- params$yfunc[[1]](Y,FALSE)
+  eta.n <- params$yfunc[[2]](Y,FALSE)
+  
+  # Get Y^eta values.  We have to let the eta object calculate them because it may 
+  # need to do something special near Y=0 or Y=1
+  yterm.s <- params$yfunc[[1]](Y,TRUE)
+  yterm.n <- params$yfunc[[2]](Y,TRUE)
+  
+  ## create the equation that we are going to solve for alpha.  Here alpha is 
+  ## a 2xN vector, where N is the number of Y values.  alpha[1,] == alpha.s
+  ## and alpha[2,] == alpha.n
+  falpha <- function(alpha) {
+    ## Calculate constant-price elasticities, leave in a list for calc1q below
+    eps <- mapply(calc1eps, alpha[1,], alpha[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi), 
+                  SIMPLIFY=FALSE)
+    ## Calculate quantities Q[1,] is Qs and Q[2,] is Qn
+    Q <- mapply(calc1q, Ps, Pn, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
+    ## alpha.out = P*Q/Y
+    alpha.out <- alpha
+    alpha.out[1,] <- Ps*Q[1,]/Y
+    alpha.out[2,] <- Pn*Q[2,]/Y
+    
+    ## output of this function is alpha - alpha.out.  Solving for the roots of this
+    ## equation will give us a self-consistent alpha
+    alpha - alpha.out
+  }
+  ## Now, use a nonlinear equation solver to find a consistent set of alpha values.
+  alphatest <- matrix(0.5, nrow=2, ncol=length(Y))
+  alphatest[2,] <- 0.05
+  ## Solve for alpha
+  rslt <- nleqslv(alphatest, falpha, method='Broyden')
+  ## calculate resulting Q values
+  alpharslt <- matrix(rslt$x, nrow=2)
+  eps <- mapply(calc1eps, alpharslt[1,], alpharslt[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi), 
+                SIMPLIFY=FALSE)
+  qvals <- mapply(calc1q, Ps, Pn, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
+  list(Qs=qvals[1,], Qn=qvals[2,], alpha.s=alpharslt[1,], alpha.n=alpharslt[2,])
+}
+
+calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
+  alpha <- c(alpha.s, alpha.n)
+  eta <- c(eta.s,eta.n)
+  xi - outer(eta, alpha)
+}
+
+calc1q <- function(Ps, Pn, eps, Ysterm, Ynterm, Acoef) {
+  ## not vectorized:  use mapply
+  c(Qs= Acoef[1] * Ps^eps[1,1] * Pn^eps[1,2] * Ysterm,
+    Qn= Acoef[2] * Ps^eps[2,1] * Pn^eps[2,2] * Ynterm)
+}
+
+eta.constant <- function(eta0) {
+  ## Return an eta function where eta is constant with a specified value.  This still 
+  ## uses the calcQ interface described below
+  function(Y, calcQ=FALSE) {
+    if(calcQ) {
+      Y^eta0
+    }
+    else {
+      eta0
+    }
+  }
+}
+
+eta.s <- function(k) {
+  ## Return a function for calculating eta_s and Y^eta_s.  Which one 
+  ## gets calculated is controlled by the parameter 'calcQ'
+  function(Y,calcQ=FALSE) {
+    if(calcQ) {
+      ifelse(Y>1.0e-2/k, Y^(k/Y), 0)
+    }
+    else {
+      k/Y
+    }
+  }
+}
+
+eta.n <- function(A,k) {
+  ## Return a function for calculating eta_n and Y^eta_n.  Which one
+  ## gets calculated is controlled by the parameter 'calcQ'
+  function(Y, calcQ=FALSE) {
+    e.k <- exp(-k)
+    delta <- 1-Y
+    if (calcQ) {
+      ifelse(abs(delta)>1.0e-2/k, 
+             Y^(k/(delta)),
+             e.k + 0.5*k*e.k*delta - 1.0/24.0*e.k * k*(3*k-8)*delta*delta)
+    }
+    else {
+      k/delta
+    }
+  }
+}
