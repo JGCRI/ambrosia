@@ -118,3 +118,8 @@ eta.n <- function(A,k) {
 
 ## logarithmically-spaced pcGDP values
 y.vals <- 10^c(seq(-1, 0, length.out=10), seq(0.1,log10(20),length.out=10))
+
+## evenly spaced P values
+Ps.vals <- seq(0.5,2.5,by=0.1)
+Pn.vals <- Ps.vals
+

@@ -1,0 +1,7 @@
+# R files
+.Rproj.user
+.Rhistory
+.RData
+
+#Emacs autosave files
+*~

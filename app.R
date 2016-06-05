@@ -6,7 +6,8 @@ Adefault <- c(0.5, 0.05)
 
 elasmin <- -2
 elasmax <- 2
-elasstep <- 0.1
+elasstep <- 0.01
+etastep <- 0.05
 
 ui <- fluidPage(
   headerPanel("Food Demand Model"),
@@ -31,9 +32,9 @@ ui <- fluidPage(
     fluidRow(
       column(width=4,
         numericInput(inputId="etas", value=etadefault[1],label="", 
-                     min=elasmin, max=elasmax, step=elasstep),
+                     min=elasmin, max=elasmax, step=etastep),
         numericInput(inputId="etan", value=etadefault[2],label="",
-                     min=elasmin, max=elasmax, step=elasstep)
+                     min=elasmin, max=elasmax, step=etastep)
       )
     ),
     h3('A values'),
@@ -44,22 +45,41 @@ ui <- fluidPage(
       )
     )    
   ),
+  
+  ## Main Panel
   mainPanel(
-  h2('Model Output'),
-  tableOutput(outputId='output.values')
+    h2('Model Output'),
+    tabsetPanel(
+      tabPanel(title="By pcGDP",
+               tableOutput(outputId='output.Y')),
+      tabPanel(title="By \\(P_s\\)",
+               tableOutput(outputId='output.Ps'))
+    )
   )
 )
 
 source('food-demand.R')
 
+set.model.params <-function(input)
+{
+  list(
+    xi=matrix(c(input$xiss, input$xins, input$xisn, input$xinn), nrow=2),
+    yfunc=c(eta.constant(input$etas), eta.constant(input$etan)),
+    A=c(input$As, input$An))
+}
+
 server <- function(input, output) {
-  output$output.values <- renderTable({
-    params <- list(
-      xi=matrix(c(input$xiss, input$xins, input$xisn, input$xinn), nrow=2),
-      yfunc=c(eta.constant(input$etas), eta.constant(input$etan)),
-      A=c(input$As, input$An))
+  output$output.Y <- renderTable({
+    params <- set.model.params(input)
     rslt <- food.dmnd(1,1,y.vals,params)
     data.frame(Ps=1, Pn=1, Y=y.vals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
+               Qs=rslt$Qs, Qn=rslt$Qn)
+  })
+  output$output.Ps <- renderTable({
+    params <- set.model.params(input)
+    yvals <- rep(1,length(Ps.vals))
+    rslt <- food.dmnd(Ps.vals, 1, yvals, params)
+    data.frame(Ps=Ps.vals, Pn=1, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                Qs=rslt$Qs, Qn=rslt$Qn)
   })
 }
