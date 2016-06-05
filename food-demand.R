@@ -110,3 +110,8 @@ eta.n <- function(A,k) {
     }
   }
 }
+
+## Set up some vectors of test values
+
+## logarithmically-spaced pcGDP values
+y.vals <- 10^c(seq(-1, 0, length.out=10), seq(0.1,log10(20),length.out=10))
