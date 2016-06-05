@@ -1,4 +1,5 @@
 library(shiny)
+library(ggplot2)
 
 xidefault <- c(-0.1, 0.05, 0.03, -0.2)
 etadefault <- c(-0.2,0.5)
@@ -53,7 +54,9 @@ ui <- fluidPage(
       tabPanel(title="By pcGDP",
                tableOutput(outputId='output.Y')),
       tabPanel(title="By \\(P_s\\)",
-               tableOutput(outputId='output.Ps')),
+               tableOutput(outputId='output.Ps'),
+               h3('Staple Demand by Price'),
+               plotOutput(outputId='plot.Qs.Ps')),
       tabPanel(title="By \\(P_n\\)",
                tableOutput(outputId='output.Pn'))
     )
@@ -102,6 +105,13 @@ server <- function(input, output) {
                `alpha.s*eta.s`=cond.1,
                `alpha.n*eta.n`=cond.2,
                `sum(alpha.i*eta.i)`=cond.3)
+  })
+  output$plot.Qs.Ps <- renderPlot({
+    params <- set.model.params(input)
+    yvals <- rep(1,length(Ps.vals))
+    rslt <- food.dmnd(Ps.vals, 1, yvals, params)
+    dat <- data.frame(Qs=rslt$Qs, Ps=Ps.vals)
+    qplot(data=dat, x=Ps, y=Qs, geom=c('line','point'))
   })
 }
 
