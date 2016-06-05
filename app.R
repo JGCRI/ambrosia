@@ -53,7 +53,9 @@ ui <- fluidPage(
       tabPanel(title="By pcGDP",
                tableOutput(outputId='output.Y')),
       tabPanel(title="By \\(P_s\\)",
-               tableOutput(outputId='output.Ps'))
+               tableOutput(outputId='output.Ps')),
+      tabPanel(title="By \\(P_n\\)",
+               tableOutput(outputId='output.Pn'))
     )
   )
 )
@@ -80,6 +82,13 @@ server <- function(input, output) {
     yvals <- rep(1,length(Ps.vals))
     rslt <- food.dmnd(Ps.vals, 1, yvals, params)
     data.frame(Ps=Ps.vals, Pn=1, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
+               Qs=rslt$Qs, Qn=rslt$Qn)
+  })
+  output$output.Pn <- renderTable({
+    params <- set.model.params(input)
+    yvals <- rep(1,length(Pn.vals))
+    rslt <- food.dmnd(1, Pn.vals, yvals, params)
+    data.frame(Ps=1, Pn=Pn.vals, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                Qs=rslt$Qs, Qn=rslt$Qn)
   })
 }
