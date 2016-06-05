@@ -81,15 +81,27 @@ server <- function(input, output) {
     params <- set.model.params(input)
     yvals <- rep(1,length(Ps.vals))
     rslt <- food.dmnd(Ps.vals, 1, yvals, params)
+    cond.1 <- rslt$alpha.s*params$yfunc[[1]](yvals)
+    cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
+    cond.3 <- cond.1+cond.2
     data.frame(Ps=Ps.vals, Pn=1, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
-               Qs=rslt$Qs, Qn=rslt$Qn)
+               Qs=rslt$Qs, Qn=rslt$Qn,
+               `alpha.s*eta.s`=cond.1,
+               `alpha.n*eta.n`=cond.2,
+               `sum(alpha.i*eta.i)`=cond.3)
   })
   output$output.Pn <- renderTable({
     params <- set.model.params(input)
     yvals <- rep(1,length(Pn.vals))
     rslt <- food.dmnd(1, Pn.vals, yvals, params)
+    cond.1 <- rslt$alpha.s*params$yfunc[[1]](yvals)
+    cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
+    cond.3 <- cond.1+cond.2
     data.frame(Ps=1, Pn=Pn.vals, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
-               Qs=rslt$Qs, Qn=rslt$Qn)
+               Qs=rslt$Qs, Qn=rslt$Qn, 
+               `alpha.s*eta.s`=cond.1,
+               `alpha.n*eta.n`=cond.2,
+               `sum(alpha.i*eta.i)`=cond.3)
   })
 }
 
