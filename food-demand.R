@@ -8,13 +8,20 @@ food.dmnd <- function(Ps, Pn, Y, params) {
 ##     params structure:
 ##        params$xi    : 2x2 array of the xi elasticities
 ##        params$A     : Leading coefficients in the quantity calculations
-##        params$yfunc : length-2 vector of functions giving Y^eta(Y)
+##        params$yfunc : length-2 vector of functions giving Y^eta(Y) (see note below)
 ##
 ## Output: list with the following elements:
 ##        Qs:  vector of quantity for S
 ##        Qn:  vector of quantity for N
 ##   alpha.s:  vector of budget fraction for S
 ##   alpha.n:  vector of budget fraction for N
+  
+## Note on eta functions:  For one of the functional forms I was considering for 
+## eta(Y), eta blows up, but Y^(eta(Y)) is well behaved.  Therefore, the eta functions
+## need to be able to calculate not just eta(Y), but Y^(eta(Y)), so they can handle the
+## limiting cases.  In pracice we probably won't be able to use these eta functions because
+## the eta values they produce will likely cause the price elasticities to blow up, but I 
+## wanted to be able to test them anyhow.
   
   # get eta values
   eta.s <- params$yfunc[[1]](Y,FALSE)
@@ -84,8 +91,11 @@ eta.constant <- function(eta0) {
   }
 }
 
+
+## eta.s and eta.n are alternative models for eta that vary as a function
+## of Y, with eta_s and eta_n having two different models.
 eta.s <- function(k) {
-  ## Return a function for calculating eta_s and Y^eta_s.  Which one 
+  ## Return a function for calculating eta_s or Y^eta_s.  Which one 
   ## gets calculated is controlled by the parameter 'calcQ'
   function(Y,calcQ=FALSE) {
     if(calcQ) {
@@ -98,7 +108,7 @@ eta.s <- function(k) {
 }
 
 eta.n <- function(A,k) {
-  ## Return a function for calculating eta_n and Y^eta_n.  Which one
+  ## Return a function for calculating eta_n or Y^eta_n.  Which one
   ## gets calculated is controlled by the parameter 'calcQ'
   function(Y, calcQ=FALSE) {
     e.k <- exp(-k)
@@ -114,7 +124,8 @@ eta.n <- function(A,k) {
   }
 }
 
-## Set up some vectors of test values
+## Set up some vectors of test values.  These can be used for exercising the
+## demand function.
 
 ## logarithmically-spaced pcGDP values
 y.vals <- 10^c(seq(-1, 0, length.out=10), seq(0.1,log10(20),length.out=10))

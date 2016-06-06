@@ -11,7 +11,7 @@ elasstep <- 0.01
 etastep <- 0.05
 
 ui <- fluidPage(
-  headerPanel("Food Demand Model"),
+  headerPanel(h1("Food Demand Model",align='center'),windowTitle='Food Demand Model'),
   sidebarPanel( width=3,
     h2("Model Parameters"),
     fluidRow(
@@ -52,18 +52,24 @@ ui <- fluidPage(
     h2('Model Output'),
     tabsetPanel(
       tabPanel(title="By pcGDP",
-               tableOutput(outputId='output.Y')),
+               tableOutput(outputId='output.Y'),
+               h3('Demand by Income',align='center'),
+               plotOutput(outputId='plot.Q.Y')),
       tabPanel(title="By \\(P_s\\)",
                tableOutput(outputId='output.Ps'),
-               h3('Staple Demand by Price'),
-               plotOutput(outputId='plot.Qs.Ps')),
+               h3('Demand by Staple Price',align='center'),
+               plotOutput(outputId='plot.Q.Ps')),
       tabPanel(title="By \\(P_n\\)",
-               tableOutput(outputId='output.Pn'))
+               tableOutput(outputId='output.Pn'),
+               h3('Demand by Nonstaple Price', align='center'),
+               plotOutput(outputId='plot.Q.Pn'))
     )
   )
 )
 
+
 source('food-demand.R')
+source('food-demand-plots.R')
 
 set.model.params <-function(input)
 {
@@ -106,12 +112,22 @@ server <- function(input, output) {
                `alpha.n*eta.n`=cond.2,
                `sum(alpha.i*eta.i)`=cond.3)
   })
-  output$plot.Qs.Ps <- renderPlot({
+  output$plot.Q.Ps <- renderPlot({
     params <- set.model.params(input)
     yvals <- rep(1,length(Ps.vals))
     rslt <- food.dmnd(Ps.vals, 1, yvals, params)
-    dat <- data.frame(Qs=rslt$Qs, Ps=Ps.vals)
-    qplot(data=dat, x=Ps, y=Qs, geom=c('line','point'))
+    make.demand.plot(rslt,Ps.vals,'Price (staples)')
+  })
+  output$plot.Q.Pn <- renderPlot({
+    params <- set.model.params(input)
+    yvals <- rep(1,length(Pn.vals))
+    rslt <- food.dmnd(1, Pn.vals, yvals, params)
+    make.demand.plot(rslt,Pn.vals,'Price (nonstaples)')
+  })
+  output$plot.Q.Y <- renderPlot({
+    params <- set.model.params(input)
+    rslt <- food.dmnd(1, 1, y.vals, params)
+    make.demand.plot(rslt,y.vals,'per-capita Income')
   })
 }
 
