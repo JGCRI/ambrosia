@@ -80,54 +80,58 @@ set.model.params <-function(input)
 }
 
 server <- function(input, output) {
-  output$output.Y <- renderTable({
+  model.data <- reactive({
+    ## Compute results for income change
     params <- set.model.params(input)
     rslt <- food.dmnd(1,1,y.vals,params)
-    data.frame(Ps=1, Pn=1, Y=y.vals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
-               Qs=rslt$Qs, Qn=rslt$Qn)
+    ydata <- data.frame(Ps=1, Pn=1, Y=y.vals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
+                        Qs=rslt$Qs, Qn=rslt$Qn)
+    
+    ## compute results for staple price change
+    yvals <- rep(1,length(Ps.vals))
+    rslt <- food.dmnd(Ps.vals, 1, yvals, params)
+    cond.1 <- rslt$alpha.s*params$yfunc[[1]](yvals)
+    cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
+    cond.3 <- cond.1+cond.2
+    psdata <- data.frame(Ps=Ps.vals, Pn=1, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
+                         Qs=rslt$Qs, Qn=rslt$Qn,
+                         `alpha.s*eta.s`=cond.1,
+                         `alpha.n*eta.n`=cond.2,
+                         `sum(alpha.i*eta.i)`=cond.3)
+    
+    ## compute results for nonstaple price change
+    yvals <- rep(1,length(Pn.vals))
+    rslt <- food.dmnd(1, Pn.vals, yvals, params)
+    cond.1 <- rslt$alpha.s*params$yfunc[[1]](yvals)
+    cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
+    cond.3 <- cond.1+cond.2
+    pndata <- data.frame(Ps=1, Pn=Pn.vals, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
+                         Qs=rslt$Qs, Qn=rslt$Qn, 
+                         `alpha.s*eta.s`=cond.1,
+                         `alpha.n*eta.n`=cond.2,
+                         `sum(alpha.i*eta.i)`=cond.3)
+    
+    ## return all of the above
+    list(ydata=ydata, psdata=psdata, pndata=pndata)
+  })
+  
+  output$output.Y <- renderTable({
+    model.data()$ydata
   })
   output$output.Ps <- renderTable({
-    params <- set.model.params(input)
-    yvals <- rep(1,length(Ps.vals))
-    rslt <- food.dmnd(Ps.vals, 1, yvals, params)
-    cond.1 <- rslt$alpha.s*params$yfunc[[1]](yvals)
-    cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
-    cond.3 <- cond.1+cond.2
-    data.frame(Ps=Ps.vals, Pn=1, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
-               Qs=rslt$Qs, Qn=rslt$Qn,
-               `alpha.s*eta.s`=cond.1,
-               `alpha.n*eta.n`=cond.2,
-               `sum(alpha.i*eta.i)`=cond.3)
+    model.data()$psdata
   })
   output$output.Pn <- renderTable({
-    params <- set.model.params(input)
-    yvals <- rep(1,length(Pn.vals))
-    rslt <- food.dmnd(1, Pn.vals, yvals, params)
-    cond.1 <- rslt$alpha.s*params$yfunc[[1]](yvals)
-    cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
-    cond.3 <- cond.1+cond.2
-    data.frame(Ps=1, Pn=Pn.vals, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
-               Qs=rslt$Qs, Qn=rslt$Qn, 
-               `alpha.s*eta.s`=cond.1,
-               `alpha.n*eta.n`=cond.2,
-               `sum(alpha.i*eta.i)`=cond.3)
+    model.data()$pndata
   })
   output$plot.Q.Ps <- renderPlot({
-    params <- set.model.params(input)
-    yvals <- rep(1,length(Ps.vals))
-    rslt <- food.dmnd(Ps.vals, 1, yvals, params)
-    make.demand.plot(rslt,Ps.vals,'Price (staples)')
+    make.demand.plot(model.data()$psdata,Ps.vals,'Price (staples)')
   })
   output$plot.Q.Pn <- renderPlot({
-    params <- set.model.params(input)
-    yvals <- rep(1,length(Pn.vals))
-    rslt <- food.dmnd(1, Pn.vals, yvals, params)
-    make.demand.plot(rslt,Pn.vals,'Price (nonstaples)')
+    make.demand.plot(model.data()$pndata,Pn.vals,'Price (nonstaples)')
   })
   output$plot.Q.Y <- renderPlot({
-    params <- set.model.params(input)
-    rslt <- food.dmnd(1, 1, y.vals, params)
-    make.demand.plot(rslt,y.vals,'per-capita Income')
+    make.demand.plot(model.data()$ydata,y.vals,'per-capita Income')
   })
 }
 
