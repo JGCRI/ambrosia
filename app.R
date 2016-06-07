@@ -1,51 +1,30 @@
 library(shiny)
 library(ggplot2)
 
-xidefault <- c(-0.1, 0.05, 0.03, -0.2)
 etadefault <- c(-0.2,0.5)
 Adefault <- c(0.5, 0.05)
 
-elasmin <- -2
-elasmax <- 2
-elasstep <- 0.01
-etastep <- 0.05
+source('ui-fcns.R')
 
 ui <- fluidPage(
   headerPanel(h1("Food Demand Model",align='center'),windowTitle='Food Demand Model'),
   sidebarLayout(
-  sidebarPanel( width=3,
+  sidebarPanel(
     h2("Model Parameters"),
     fluidRow(
       column(width=8, withMathJax(h3("\\(\\xi\\) values")))
     ),
     fluidRow(
-      column(width=4, numericInput(inputId="xiss", value=xidefault[1],label="",
-                                   min=elasmin, max=elasmax, step=elasstep)),
-      column(width=4, numericInput(inputId="xisn", value=xidefault[2], label="",
-                                   min=elasmin, max=elasmax, step=elasstep))
-      ),
-    fluidRow(
-      column(width=4, numericInput(inputId="xins", value=xidefault[3], label="",
-                                   min=elasmin, max=elasmax, step=elasstep)),
-      column(width=4, numericInput(inputId="xinn", value=xidefault[4], label="",
-                                   min=elasmin, max=elasmax, step=elasstep))
+      xi.matrix.input()
     ),
     h3("\\(\\eta\\) values"),
     fluidRow(
-      column(width=4,
-        numericInput(inputId="etas", value=etadefault[1],label="", 
-                     min=elasmin, max=elasmax, step=etastep),
-        numericInput(inputId="etan", value=etadefault[2],label="", 
-                     min=elasmin, max=elasmax, step=etastep)
-      )
+      column.input.table(c('etas','etan'), etadefault, elasmin, elasmax, etastep)
     ),
     h3('A values'),
     fluidRow(
-      column(width=4,
-        numericInput(inputId="As", value=Adefault[1],label="", min=0, max=1, step=0.05),
-        numericInput(inputId="An", value=Adefault[2],label="", min=0, max=1, step=0.05)
+      column.input.table(c('As','An'), Adefault, 0, 1, 0.05)
       )
-    )    
   ),
   
   ## Main Panel
