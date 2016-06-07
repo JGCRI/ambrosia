@@ -12,21 +12,22 @@ etastep <- 0.05
 
 ui <- fluidPage(
   headerPanel(h1("Food Demand Model",align='center'),windowTitle='Food Demand Model'),
+  sidebarLayout(
   sidebarPanel( width=3,
     h2("Model Parameters"),
     fluidRow(
-      column(width=4, withMathJax(h3("\\(\\xi\\) values")))
+      column(width=8, withMathJax(h3("\\(\\xi\\) values")))
     ),
     fluidRow(
-      column(width=4, numericInput(inputId="xiss", value=xidefault[1],label="", 
+      column(width=4, numericInput(inputId="xiss", value=xidefault[1],label="",
                                    min=elasmin, max=elasmax, step=elasstep)),
-      column(width=4, numericInput(inputId="xisn", value=xidefault[2], label="", 
+      column(width=4, numericInput(inputId="xisn", value=xidefault[2], label="",
                                    min=elasmin, max=elasmax, step=elasstep))
       ),
     fluidRow(
-      column(width=4, numericInput(inputId="xins", value=xidefault[3], label="", 
+      column(width=4, numericInput(inputId="xins", value=xidefault[3], label="",
                                    min=elasmin, max=elasmax, step=elasstep)),
-      column(width=4, numericInput(inputId="xinn", value=xidefault[4], label="", 
+      column(width=4, numericInput(inputId="xinn", value=xidefault[4], label="",
                                    min=elasmin, max=elasmax, step=elasstep))
     ),
     h3("\\(\\eta\\) values"),
@@ -34,7 +35,7 @@ ui <- fluidPage(
       column(width=4,
         numericInput(inputId="etas", value=etadefault[1],label="", 
                      min=elasmin, max=elasmax, step=etastep),
-        numericInput(inputId="etan", value=etadefault[2],label="",
+        numericInput(inputId="etan", value=etadefault[2],label="", 
                      min=elasmin, max=elasmax, step=etastep)
       )
     ),
@@ -65,6 +66,7 @@ ui <- fluidPage(
                plotOutput(outputId='plot.Q.Pn'))
     )
   )
+  )  # end of sidebar layout
 )
 
 
