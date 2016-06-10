@@ -30,16 +30,16 @@ ui <- fluidPage(
   ## Main Panel
   mainPanel(
     h2('Model Output'),
-    tabsetPanel(
-      tabPanel(title="By pcGDP",
+    tabsetPanel(id="tab",
+      tabPanel(title="By pcGDP", value=1,
                tableOutput(outputId='output.Y'),
                h3('Demand by Income',align='center'),
                plotOutput(outputId='plot.Q.Y')),
-      tabPanel(title="By \\(P_s\\)",
+      tabPanel(title="By \\(P_s\\)", value=2,
                tableOutput(outputId='output.Ps'),
                h3('Demand by Staple Price',align='center'),
                plotOutput(outputId='plot.Q.Ps')),
-      tabPanel(title="By \\(P_n\\)",
+      tabPanel(title="By \\(P_n\\)", value=3,
                tableOutput(outputId='output.Pn'),
                h3('Demand by Nonstaple Price', align='center'),
                plotOutput(outputId='plot.Q.Pn'))
@@ -60,60 +60,72 @@ set.model.params <-function(input)
     A=c(input$As, input$An))
 }
 
+## data frames to hold persistent results.
+ydata  <- data.frame(Ps=1, Pn=1, Y=1, alpha.s=0, alpha.n=0,Qs=0,Qn=0)
+psdata <- data.frame(Ps=1, Pn=1, Y=1, alpha.s=0, alpha.n=0,Qs=0,Qn=0)
+pndata <- data.frame(Ps=1, Pn=1, Y=1, alpha.s=0, alpha.n=0,Qs=0,Qn=0)
+
 server <- function(input, output) {
   model.data <- reactive({
     ## Compute results for income change
     params <- set.model.params(input)
-    rslt <- food.dmnd(1,1,y.vals,params)
-    ydata <- data.frame(Ps=1, Pn=1, Y=y.vals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
-                        Qs=rslt$Qs, Qn=rslt$Qn)
+    if(input$tab == 1) {
+      rslt <- food.dmnd(1,1,y.vals,params)
+      ydata <<- data.frame(Ps=1, Pn=1, Y=y.vals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
+                          Qs=rslt$Qs, Qn=rslt$Qn)
+    }
     
     ## compute results for staple price change
-    yvals <- rep(1,length(Ps.vals))
-    rslt <- food.dmnd(Ps.vals, 1, yvals, params)
-    cond.1 <- rslt$alpha.s*params$yfunc[[1]](yvals)
-    cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
-    cond.3 <- cond.1+cond.2
-    psdata <- data.frame(Ps=Ps.vals, Pn=1, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
-                         Qs=rslt$Qs, Qn=rslt$Qn,
-                         `alpha.s*eta.s`=cond.1,
-                         `alpha.n*eta.n`=cond.2,
-                         `sum(alpha.i*eta.i)`=cond.3)
+    if(input$tab == 2) {
+      yvals <- rep(1,length(Ps.vals))
+      rslt <- food.dmnd(Ps.vals, 1, yvals, params)
+      cond.1 <- rslt$alpha.s*params$yfunc[[1]](yvals)
+      cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
+      cond.3 <- cond.1+cond.2
+      psdata <<- data.frame(Ps=Ps.vals, Pn=1, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
+                           Qs=rslt$Qs, Qn=rslt$Qn,
+                           `alpha.s*eta.s`=cond.1,
+                           `alpha.n*eta.n`=cond.2,
+                           `sum(alpha.i*eta.i)`=cond.3)
+    }
     
     ## compute results for nonstaple price change
-    yvals <- rep(1,length(Pn.vals))
-    rslt <- food.dmnd(1, Pn.vals, yvals, params)
-    cond.1 <- rslt$alpha.s*params$yfunc[[1]](yvals)
-    cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
-    cond.3 <- cond.1+cond.2
-    pndata <- data.frame(Ps=1, Pn=Pn.vals, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
-                         Qs=rslt$Qs, Qn=rslt$Qn, 
-                         `alpha.s*eta.s`=cond.1,
-                         `alpha.n*eta.n`=cond.2,
-                         `sum(alpha.i*eta.i)`=cond.3)
-    
+    if(input$tab == 3) {
+      yvals <- rep(1,length(Pn.vals))
+      rslt <- food.dmnd(1, Pn.vals, yvals, params)
+      cond.1 <- rslt$alpha.s*params$yfunc[[1]](yvals)
+      cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
+      cond.3 <- cond.1+cond.2
+      pndata <<- data.frame(Ps=1, Pn=Pn.vals, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
+                           Qs=rslt$Qs, Qn=rslt$Qn, 
+                           `alpha.s*eta.s`=cond.1,
+                           `alpha.n*eta.n`=cond.2,
+                           `sum(alpha.i*eta.i)`=cond.3)
+    }
     ## return all of the above
     list(ydata=ydata, psdata=psdata, pndata=pndata)
   })
   
-  output$output.Y <- renderTable({
-    model.data()$ydata
-  })
-  output$output.Ps <- renderTable({
-    model.data()$psdata
-  })
-  output$output.Pn <- renderTable({
-    model.data()$pndata
-  })
-  output$plot.Q.Ps <- renderPlot({
-    make.demand.plot(model.data()$psdata,Ps.vals,'Price (staples)')
-  })
-  output$plot.Q.Pn <- renderPlot({
-    make.demand.plot(model.data()$pndata,Pn.vals,'Price (nonstaples)')
-  })
-  output$plot.Q.Y <- renderPlot({
-    make.demand.plot(model.data()$ydata,y.vals,'per-capita Income')
-  })
+    output$output.Y <- renderTable({
+      model.data()$ydata
+    })
+    output$plot.Q.Y <- renderPlot({
+      make.demand.plot(model.data()$ydata,y.vals,'per-capita Income')
+    })
+
+    output$output.Ps <- renderTable({
+      model.data()$psdata
+    })
+    output$plot.Q.Ps <- renderPlot({
+      make.demand.plot(model.data()$psdata,Ps.vals,'Price (staples)')
+    })
+
+    output$output.Pn <- renderTable({
+      model.data()$pndata
+    })
+    output$plot.Q.Pn <- renderPlot({
+      make.demand.plot(model.data()$pndata,Pn.vals,'Price (nonstaples)')
+    })
 }
 
 shinyApp(ui = ui, server = server)
