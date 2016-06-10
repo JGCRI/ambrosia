@@ -24,7 +24,17 @@ ui <- fluidPage(
     h3('A values'),
     fluidRow(
       column.input.table(c('As','An'), Adefault, 0, 1, 0.05)
-      )
+      ),
+    h3('Other Price and Income Variables'),
+    conditionalPanel(condition='input.tab != 1',
+        sliderInput(inputId='y.val.slider', min=0, max=50.0, step=0.5, label='\\(Y\\)',
+                    value=1)),
+    conditionalPanel(condition='input.tab != 2',
+        sliderInput(inputId='ps.val.slider', min=0.1, max=20.0, step=0.1, label='\\(P_s\\)',
+                    value=1)),
+    conditionalPanel(condition='input.tab != 3',
+        sliderInput(inputId='pn.val.slider', min=0.1, max=20.0, step=0.1, label='\\(P_n\\)',
+                    value=1))
   ),
   
   ## Main Panel
@@ -70,19 +80,22 @@ server <- function(input, output) {
     ## Compute results for income change
     params <- set.model.params(input)
     if(input$tab == 1) {
-      rslt <- food.dmnd(1,1,y.vals,params)
-      ydata <<- data.frame(Ps=1, Pn=1, Y=y.vals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
+      ps <- rep(input$ps.val.slider, length(y.vals))
+      pn <- rep(input$pn.val.slider, length(y.vals))
+      rslt <- food.dmnd(ps,pn,y.vals,params)
+      ydata <<- data.frame(Ps=ps, Pn=pn, Y=y.vals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                           Qs=rslt$Qs, Qn=rslt$Qn)
     }
     
     ## compute results for staple price change
     if(input$tab == 2) {
-      yvals <- rep(1,length(Ps.vals))
-      rslt <- food.dmnd(Ps.vals, 1, yvals, params)
+      yvals <- rep(input$y.val.slider,length(Ps.vals))
+      pn <- rep(input$pn.val.slider, length(Ps.vals))
+      rslt <- food.dmnd(Ps.vals, pn, yvals, params)
       cond.1 <- rslt$alpha.s*params$yfunc[[1]](yvals)
       cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
       cond.3 <- cond.1+cond.2
-      psdata <<- data.frame(Ps=Ps.vals, Pn=1, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
+      psdata <<- data.frame(Ps=Ps.vals, Pn=pn, Y=yvals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                            Qs=rslt$Qs, Qn=rslt$Qn,
                            `alpha.s*eta.s`=cond.1,
                            `alpha.n*eta.n`=cond.2,
@@ -91,12 +104,13 @@ server <- function(input, output) {
     
     ## compute results for nonstaple price change
     if(input$tab == 3) {
-      yvals <- rep(1,length(Pn.vals))
-      rslt <- food.dmnd(1, Pn.vals, yvals, params)
+      yvals <- rep(input$y.val.slider,length(Pn.vals))
+      ps <- rep(input$ps.val.slider, length(Pn.vals))
+      rslt <- food.dmnd(ps, Pn.vals, yvals, params)
       cond.1 <- rslt$alpha.s*params$yfunc[[1]](yvals)
       cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
       cond.3 <- cond.1+cond.2
-      pndata <<- data.frame(Ps=1, Pn=Pn.vals, Y=1, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
+      pndata <<- data.frame(Ps=ps, Pn=Pn.vals, Y=yvals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                            Qs=rslt$Qs, Qn=rslt$Qn, 
                            `alpha.s*eta.s`=cond.1,
                            `alpha.n*eta.n`=cond.2,
