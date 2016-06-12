@@ -49,3 +49,12 @@ column.input.table <- function(inputids, defvals, min, max, step)
     )
   )
 }
+
+eta.selector <- function()
+{
+  eta.choices <- c(1,2)
+  names(eta.choices) <- c('constant \\(\\eta\\)', '\\(\\eta=f(Y)\\)')
+  radioButtons(inputId='eta.select',label='',
+               choices= eta.choices,
+               inline=TRUE)
+}

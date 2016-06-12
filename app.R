@@ -17,11 +17,12 @@ ui <- fluidPage(
     fluidRow(
       xi.matrix.input()
     ),
-    h3("\\(\\eta\\) values"),
+    eta.selector(),
+    h3("\\(\\eta\\) coefficients"),
     fluidRow(
       column.input.table(c('etas','etan'), etadefault, elasmin, elasmax, etastep)
     ),
-    h3('A values'),
+    h3('Q values (\\(Y=1\\))'),
     fluidRow(
       column.input.table(c('As','An'), Adefault, 0, 1, 0.05)
       ),
@@ -64,9 +65,15 @@ source('food-demand-plots.R')
 
 set.model.params <-function(input)
 {
+  if(input$eta.select == 1) {
+    eta.fns <- c(eta.constant(input$etas), eta.constant(input$etan))
+  }
+  else {
+    eta.fns <- c(eta.s(input$etas), eta.n(input$etan))
+  }
   list(
     xi=matrix(c(input$xiss, input$xins, input$xisn, input$xinn), nrow=2),
-    yfunc=c(eta.constant(input$etas), eta.constant(input$etan)),
+    yfunc=eta.fns,
     A=c(input$As, input$An))
 }
 
