@@ -97,31 +97,62 @@ eta.constant <- function(eta0) {
 eta.s <- function(k) {
   ## Return a function for calculating eta_s or Y^eta_s.  Which one 
   ## gets calculated is controlled by the parameter 'calcQ'
+  if(k>0) {
+    warning('eta.s:  k>0 will give unstable results. (found k=', k, ').')
+  }
+  ## We actually want to work in terms of -k, with k<0. Taking k<-abs(k) allows
+  ## us to drop the - signs and protects against k>0.
+  k <- abs(k)
+  ## y0 is the point where we switch to constant elasticity.  
+  y0 <- calc.etas.y0(k)
+  Qy0 <- y0^(k/y0-1)       # qty at y=y0
   function(Y,calcQ=FALSE) {
     if(calcQ) {
-      ifelse(Y>1.0e-2/k, Y^(k/Y), 0)
+      ifelse(Y>y0, Y^(k/Y),
+             Qy0*Y)
     }
     else {
-      k/Y
+      ifelse(Y>y0,
+            k*(1-log(Y))/Y,   # y0 is just the value of Y for which this expression = 1  
+            1)
     }
   }
 }
 
-eta.n <- function(A,k) {
+eta.n <- function(k) {
   ## Return a function for calculating eta_n or Y^eta_n.  Which one
   ## gets calculated is controlled by the parameter 'calcQ'
   function(Y, calcQ=FALSE) {
     e.k <- exp(-k)
     delta <- 1-Y
     if (calcQ) {
-      ifelse(abs(delta)>1.0e-2/k, 
+      ifelse(abs(delta)>1.0e-3/k, 
              Y^(k/(delta)),
              e.k + 0.5*k*e.k*delta - 1.0/24.0*e.k * k*(3*k-8)*delta*delta)
     }
     else {
-      k/delta
+      k * ifelse(Y<1e-4, 1,
+                 ifelse(abs(delta) > 1.0e-3/k,
+                        1/delta + Y*log(Y)/(delta*delta),
+                        0.5 - 1/6*delta + 1/12*delta*delta - 1/20 * delta^3))
     }
   }
+}
+
+calc.etas.y0 <- function(k)
+{
+  ## Given k, find the value of Y for which the elasticity in eta.s is 1.
+  ## This is expressible in terms of the Lambert W-function, but the R package
+  ## for calculating that function won't install properly.  It's easier just to
+  ## solve for it.
+  ##
+  ## We'll probably only use this function with single values, but it's vectorized
+  ## just in case. Using nleqslv is kind of overkill, but it does keep this function
+  ## simple
+  ffunc <- function(y) {1-log(y)-y/k}
+  jfunc <- function(y) {diag(-1/y-1/k, nrow=length(k))}
+  rslt <- nleqslv(x=rep(1,length(k)), fn=ffunc, jac=jfunc)
+  rslt$x
 }
 
 ## Set up some vectors of test values.  These can be used for exercising the
