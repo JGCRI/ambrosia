@@ -13,6 +13,11 @@ spacer <- HTML(paste0(rep('&nbsp;',5),collapse=''))
 ## y0 <- 0.5
 ## Q <- c(0.4,0.2)
 
+## Possibly interisting parameter set for the constant exponent model:
+## xi <- c(-0.15, 0.1, 0.1, -0.6)
+## eta <- c(-0.3, 0.3)
+## Q <- c(0.55, 0.05)
+
 xi.matrix.input <- function()
 {
   ## Draw the xi input table

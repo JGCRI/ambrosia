@@ -40,7 +40,7 @@ food.dmnd <- function(Ps, Pn, Y, params) {
     eps <- mapply(calc1eps, alpha[1,], alpha[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi), 
                   SIMPLIFY=FALSE)
     ## Calculate quantities Q[1,] is Qs and Q[2,] is Qn
-    Q <- mapply(calc1q, Ps, Pn, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
+    Q <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
     ## alpha.out = P*Q/Y
     alpha.out <- alpha
     alpha.out[1,] <- Ps*Q[1,]/Y
@@ -55,11 +55,14 @@ food.dmnd <- function(Ps, Pn, Y, params) {
   alphatest[2,] <- 0.05
   ## Solve for alpha
   rslt <- nleqslv(alphatest, falpha, method='Broyden')
+
   ## calculate resulting Q values
   alpharslt <- matrix(rslt$x, nrow=2)
   eps <- mapply(calc1eps, alpharslt[1,], alpharslt[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi), 
                 SIMPLIFY=FALSE)
-  qvals <- mapply(calc1q, Ps, Pn, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
+  qvals <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
+  
+  
   list(Qs=qvals[1,], Qn=qvals[2,], alpha.s=alpharslt[1,], alpha.n=alpharslt[2,])
 }
 
@@ -69,10 +72,20 @@ calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
   xi - outer(eta, alpha)
 }
 
-calc1q <- function(Ps, Pn, eps, Ysterm, Ynterm, Acoef) {
+calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef) {
   ## not vectorized:  use mapply
-  c(Qs= Acoef[1] * Ps^eps[1,1] * Pn^eps[1,2] * Ysterm,
-    Qn= Acoef[2] * Ps^eps[2,1] * Pn^eps[2,2] * Ynterm)
+  Qs <- Acoef[1] * Ps^eps[1,1] * Pn^eps[1,2] * Ysterm
+  Qn <- Acoef[2] * Ps^eps[2,1] * Pn^eps[2,2] * Ynterm
+  
+  ## Check the budget constraint
+  alpha.s <- Ps*Qs/Y
+  alpha.n <- Pn*Qn/Y
+  alpha.t <- alpha.s + alpha.n
+  if(alpha.t > 1) {
+    Qs <- Qs/alpha.t
+    Qn <- Qn/alpha.t
+  }
+  c(Qs=Qs, Qn=Qn)
 }
 
 eta.constant <- function(eta0) {
