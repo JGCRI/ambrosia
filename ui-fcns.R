@@ -1,6 +1,6 @@
 ## Layout functions for the UI.
 
-xidefault <- c(-0.1, 0.05, 0.03, -0.2)
+xidefault <- c(-0.1, 0.05, 0.01, -0.5)
 elasmin <- -2
 elasmax <- 2
 elasstep <- 0.01
@@ -8,7 +8,7 @@ etastep <- 0.05
 spacer <- HTML(paste0(rep('&nbsp;',5),collapse=''))
 
 ## A possibly-interesting parameter set (for the variable exponent model):
-## xi <- c(-0.1, 0.01, 0.05, -0.5)
+## xi <- c(-0.1, 0.05, 0.01, -0.5)
 ## eta <- c(-0.1, 1.5)
 ## y0 <- 0.5
 ## Q <- c(0.4,0.2)
@@ -68,6 +68,6 @@ eta.selector <- function()
   eta.choices <- c(1,2)
   names(eta.choices) <- c('constant \\(\\eta\\)', '\\(\\eta=f(Y)\\)')
   radioButtons(inputId='eta.select',label='',
-               choices= eta.choices,
+               choices= eta.choices, selected=2,
                inline=TRUE)
 }
