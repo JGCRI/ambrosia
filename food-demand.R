@@ -94,26 +94,52 @@ eta.constant <- function(eta0) {
 
 ## eta.s and eta.n are alternative models for eta that vary as a function
 ## of Y, with eta_s and eta_n having two different models.
-eta.s <- function(k) {
+eta.s <- function(nu1, y0) {
   ## Return a function for calculating eta_s or Y^eta_s.  Which one 
   ## gets calculated is controlled by the parameter 'calcQ'
-  if(k>0) {
-    warning('eta.s:  k>0 will give unstable results. (found k=', k, ').')
+  ## nu1: elasticity at Y=1.
+  ## y0:  value of Y for which elasticity = 0
+
+  ## validate inputs.  Elasticity goes from + to -, so if y0<1, nu1<0.  If y0>1, nu1>0.
+  ## If these conditions are violated, then the model doesn't make sense.  To protect against
+  ## this, we interpret only the magnitude of nu1 as meaningful, and we set the sign 
+  ## automatically
+  if(y0<=1) {
+    ## see below for special handling when y0 = 1
+    nu1 <- -abs(nu1)
   }
-  ## We actually want to work in terms of -k, with k<0. Taking k<-abs(k) allows
-  ## us to drop the - signs and protects against k>0.
-  k <- abs(k)
-  ## y0 is the point where we switch to constant elasticity.  
-  y0 <- calc.etas.y0(k)
-  Qy0 <- y0^(k/y0-1)       # qty at y=y0
+  else {
+    nu1 <- abs(nu1)
+  }
+
+  ## We need to caclulate the coefficients k and lambda.  Q = (kY)^(lambda/Y)
+  e <- exp(1.0)
+  k <- e/y0
+  if(abs(1-y0) > 1e-4) {
+    lam <- nu1/(1-log(k))
+  }
+  else {
+    ## This case is problematic.  Any value of lambda will give the requisite value at Y=1,
+    ## but the shape parameter is completely undefined.  This is the price we pay for letting
+    ## the user specify the shape in more natural terms.  In this case we reinterpret the nu1
+    ## input as the elasticity at Y=e so as to give a well-defined result.  It's not ideal, but
+    ## short of forcing users to calculate k and lambda, it's the best we can do.  In a MCMC
+    ## calculation, we'll work with k and lambda directly.
+    lam <- -abs(nu1)*e
+  }
+  
+  ## Calculate y1, the value of y where the elasticity is 1.  1-ln(k*y1) = y1/lam
+  y1 <- calc.etas.y1(k,lam)
+  Qy1 <- (k*y1)^(lam/y1) / y1       # match-up condition:  qty at y=y1, divided by y
+  scl <- k^(-lam)                   # scale factor gives Y(1) = 1.
   function(Y,calcQ=FALSE) {
     if(calcQ) {
-      ifelse(Y>y0, Y^(k/Y),
-             Qy0*Y)
+      scl * ifelse(Y>y1, (k*Y)^(lam/Y),
+                  Qy1*Y)
     }
     else {
-      ifelse(Y>y0,
-            k*(1-log(Y))/Y,   # y0 is just the value of Y for which this expression = 1  
+      ifelse(Y>y1,
+            lam*(1-log(k*Y))/Y,   # y1 is the value of Y for which this expression = 1  
             1)
     }
   }
@@ -139,9 +165,9 @@ eta.n <- function(k) {
   }
 }
 
-calc.etas.y0 <- function(k)
+calc.etas.y1 <- function(k, lam)
 {
-  ## Given k, find the value of Y for which the elasticity in eta.s is 1.
+  ## Given k and lambda, find the value of Y for which the elasticity in eta.s is 1.
   ## This is expressible in terms of the Lambert W-function, but the R package
   ## for calculating that function won't install properly.  It's easier just to
   ## solve for it.
@@ -149,8 +175,8 @@ calc.etas.y0 <- function(k)
   ## We'll probably only use this function with single values, but it's vectorized
   ## just in case. Using nleqslv is kind of overkill, but it does keep this function
   ## simple
-  ffunc <- function(y) {1-log(y)-y/k}
-  jfunc <- function(y) {diag(-1/y-1/k, nrow=length(k))}
+  ffunc <- function(y) {1-log(k*y)-y/lam}
+  jfunc <- function(y) {diag(-k/y-1/lam, nrow=length(k))}
   rslt <- nleqslv(x=rep(1,length(k)), fn=ffunc, jac=jfunc)
   rslt$x
 }
@@ -164,4 +190,3 @@ y.vals <- 10^c(seq(-1, 0, length.out=10), seq(0.1,log10(20),length.out=10))
 ## evenly spaced P values
 Ps.vals <- seq(0.5,2.5,by=0.1)
 Pn.vals <- Ps.vals
-

@@ -12,19 +12,23 @@ ui <- fluidPage(
   sidebarPanel(
     h2("Model Parameters"),
     fluidRow(
-      column(width=8, withMathJax(h3("\\(\\xi\\) values")))
+      column(width=8, withMathJax(h3("Price elasticity model")))
     ),
     fluidRow(
       xi.matrix.input()
     ),
+    h3("Income elasticity model"),
     eta.selector(),
-    h3("\\(\\eta\\) coefficients"),
     fluidRow(
-      column.input.table(c('etas','etan'), etadefault, elasmin, elasmax, etastep)
+      column(1,
+          column.input.table(c('etas','etan'), etadefault, elasmin, elasmax, etastep)),
+          conditionalPanel('input["eta.select"] == 2',
+                           column(width=2, offset=2, y0.input.box()))
     ),
     h3('Q values (\\(Y=1\\))'),
     fluidRow(
-      column.input.table(c('As','An'), Adefault, 0, 1, 0.05)
+      column(1,
+        column.input.table(c('As','An'), Adefault, 0, 1, 0.05))
       ),
     h3('Other Price and Income Variables'),
     conditionalPanel(condition='input.tab != 1',
@@ -69,7 +73,7 @@ set.model.params <-function(input)
     eta.fns <- c(eta.constant(input$etas), eta.constant(input$etan))
   }
   else {
-    eta.fns <- c(eta.s(input$etas), eta.n(input$etan))
+    eta.fns <- c(eta.s(input$etas, input$y0val), eta.n(input$etan))
   }
   list(
     xi=matrix(c(input$xiss, input$xins, input$xisn, input$xinn), nrow=2),
