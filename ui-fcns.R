@@ -1,6 +1,6 @@
 ## Layout functions for the UI.
 
-xidefault <- c(-0.1, 0.05, 0.01, -0.5)
+xidefault <- c(-0.03, 0.05, 0.01, -0.4)
 elasmin <- -2
 elasmax <- 2
 elasstep <- 0.01
@@ -68,11 +68,11 @@ column.input.table <- function(inputids, defvals, min, max, step, labels=c('Stap
   )
 }
 
-eta.selector <- function()
+eta.selector <- function(id,label2='\\(\\eta=f(Y)\\)',sel=1)
 {
   eta.choices <- c(1,2)
-  names(eta.choices) <- c('constant \\(\\eta\\)', '\\(\\eta=f(Y)\\)')
-  radioButtons(inputId='eta.select',label='',
-               choices= eta.choices, selected=2,
+  names(eta.choices) <- c('constant \\(\\eta\\)', label2)
+  radioButtons(inputId=id,label='',
+               choices= eta.choices, selected=sel,
                inline=TRUE)
 }

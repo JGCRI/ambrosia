@@ -1,46 +1,55 @@
 library(shiny)
 library(ggplot2)
 
-etadefault <- c(-0.1,1.5)
-Adefault <- c(0.4, 0.2)
+etadefault <- c(-0.1,0.8)
+Adefault <- c(0.5, 0.2)
 
 source('ui-fcns.R')
 
 ui <- fluidPage(
   headerPanel(h1("Food Demand Model",align='center'),windowTitle='Food Demand Model'),
-  sidebarLayout(
-  sidebarPanel(
-    h2("Model Parameters"),
-    fluidRow(
-      column(width=8, withMathJax(h3("Price elasticity model")))
-    ),
-    fluidRow(
-      xi.matrix.input()
-    ),
-    h3("Income elasticity model"),
-    eta.selector(),
-    fluidRow(
-      column(1,
-          column.input.table(c('etas','etan'), etadefault, elasmin, elasmax, etastep)),
-          conditionalPanel('input["eta.select"] == 2',
-                           column(width=2, offset=2, y0.input.box()))
-    ),
-    h3('Q values (\\(Y=1\\))'),
-    fluidRow(
-      column(1,
-        column.input.table(c('As','An'), Adefault, 0, 1, 0.05))
-      ),
-    h3('Other Price and Income Variables'),
-    conditionalPanel(condition='input.tab != 1',
-        sliderInput(inputId='y.val.slider', min=0, max=50.0, step=0.5, label='\\(Y\\)',
-                    value=1)),
-    conditionalPanel(condition='input.tab != 2',
-        sliderInput(inputId='ps.val.slider', min=0.1, max=20.0, step=0.1, label='\\(P_s\\)',
-                    value=1)),
-    conditionalPanel(condition='input.tab != 3',
-        sliderInput(inputId='pn.val.slider', min=0.1, max=20.0, step=0.1, label='\\(P_n\\)',
-                    value=1))
-  ),
+    sidebarLayout(
+        sidebarPanel(
+            fluidRow(h2("Model Parameters")),
+            fluidRow(
+                column(width=8, withMathJax(h3("Price elasticity model")))
+                ),
+            fluidRow(
+                xi.matrix.input()
+                ),
+            fluidRow(h3("Income elasticity model")),
+            fluidRow(column(8,h4("Staple demand"))),
+            fluidRow(column(8,eta.selector('eta.s.select','\\(\\eta = f_s(Y)\\)',1))),
+            fluidRow(
+                column(4,
+                       numericInput(inputId='etas', value=etadefault[1], label='elasticity (Y=1)',
+                                    min=elasmin, max=elasmax, step=etastep)),
+                column(4, 
+                       conditionalPanel('input["eta.s.select"] == 2',
+                                        numericInput(inputId='y0val', label='Y\\(_0\\)',
+                                                     value=0.5, min=0.1, max=10, step=0.1)))),
+            fluidRow(column(8,h4('Non-staple demand'))),
+            fluidRow(column(8,eta.selector('eta.n.select', '\\(\\eta = f_n(Y)\\)' ,2))),
+            fluidRow(column(4,
+                            numericInput(inputId='etan', value=etadefault[2], label='elasticity (Y=1)',
+                                         min=elasmin, max=elasmax, step=etastep))),
+            
+            fluidRow(h3('Q values (\\(Y=1\\))')),
+            fluidRow(
+                column(1,
+                       column.input.table(c('As','An'), Adefault, 0, 1, 0.05))
+                ),
+            fluidRow(h3('Other Price and Income Variables')),
+            conditionalPanel(condition='input.tab != 1',
+                             sliderInput(inputId='y.val.slider', min=0, max=50.0, step=0.5, label='\\(Y\\)',
+                                         value=1)),
+            conditionalPanel(condition='input.tab != 2',
+                             sliderInput(inputId='ps.val.slider', min=0.1, max=20.0, step=0.1, label='\\(P_s\\)',
+                                         value=1)),
+            conditionalPanel(condition='input.tab != 3',
+                             sliderInput(inputId='pn.val.slider', min=0.1, max=20.0, step=0.1, label='\\(P_n\\)',
+                                         value=1))
+            ),
   
   ## Main Panel
   mainPanel(
@@ -69,12 +78,23 @@ source('food-demand-plots.R')
 
 set.model.params <-function(input)
 {
-  if(input$eta.select == 1) {
-    eta.fns <- c(eta.constant(input$etas), eta.constant(input$etan))
+  if(input$eta.s.select == 1) {
+      eta.s.fn <- eta.constant(input$etas)
+          ##c(eta.constant(input$etas), eta.constant(input$etan))
   }
   else {
-    eta.fns <- c(eta.s(input$etas, input$y0val), eta.n(input$etan))
+      eta.s.fn <- eta.s(input$etas, input$y0val)
+          ##c(eta.s(input$etas, input$y0val), eta.n(input$etan))
   }
+
+  if(input$eta.n.select == 1) {
+      eta.n.fn <- eta.constant(input$etan)
+  }
+  else {
+      eta.n.fn <- eta.n(input$etan)
+  }
+  eta.fns <- c(eta.s.fn, eta.n.fn)
+  
   list(
     xi=matrix(c(input$xiss, input$xins, input$xisn, input$xinn), nrow=2),
     yfunc=eta.fns,
