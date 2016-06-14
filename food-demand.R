@@ -198,7 +198,8 @@ calc.etas.y1 <- function(k, lam)
 ## demand function.
 
 ## logarithmically-spaced pcGDP values
-y.vals <- 10^c(seq(-1, 0, length.out=10), seq(0.1,log10(20),length.out=10))
+##y.vals <- 10^c(seq(-1, 0, length.out=5), seq(0.1,log10(50),length.out=15))
+y.vals <- 10^c(seq(-1,log10(50), length.out=20))
 
 ## evenly spaced P values
 Ps.vals <- seq(0.5,2.5,by=0.1)
