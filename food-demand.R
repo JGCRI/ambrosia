@@ -92,14 +92,11 @@ eta.constant <- function(eta0) {
   ## Return an eta function where eta is constant with a specified value.  This still 
   ## uses the calcQ interface described below
   function(Y, calcQ=FALSE) {
-    ## When eta0 < 0, force a positive elasticity for Y<0.
-    eta <- ifelse(Y>=1, eta0,
-                  max(1-Y+eta0, eta0))
     if(calcQ) {
-      Y^eta
+      Y^eta0
     }
     else {
-      eta
+      eta0
     }
   }
 }
