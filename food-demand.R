@@ -195,6 +195,53 @@ calc.etas.y1 <- function(k, lam)
   rslt$x
 }
 
+calc.elas.actual <- function(Ps,Pn,Y, params, basedata=NULL)
+{
+    ## Given a set of prices and incomes, and model
+    ## parameters,calculate the elasticities using numerical
+    ## derivatives.  Optionally, you can pass the model results for
+    ## the base values, if you've already calculated them.
+    if(is.null(basedata)) {
+        basedata <- food.dmnd(Ps, Pn, Y, params)
+    }
+
+    ## size of finite difference step
+    h <- 0.001
+    
+    ## Calculate Ps elasticities
+    psdelta <- Ps + h
+    psh <- 1.0/(psdelta - Ps)           # Using psdelta-ps instead of h helps with roundoff error.
+    psdata <- food.dmnd(psdelta, Pn, Y, params)
+    eps.ss <- (psdata$Qs - basedata$Qs) * psh * Ps/basedata$Qs
+    eps.ns <- (psdata$Qn - basedata$Qn) * psh * Ps/basedata$Qn
+    eps.ms <- (psdata$Qm - basedata$Qm) * psh * Ps/basedata$Qm
+
+    ## Calculate Pn elasticities
+    pndelta <- Pn + h
+    pnh <- 1.0/(pndelta - Pn)
+    pndata <- food.dmnd(Ps, pndelta, Y, params)
+    eps.sn <- (pndata$Qs - basedata$Qs) * pnh * Pn/basedata$Qs
+    eps.nn <- (pndata$Qn - basedata$Qn) * pnh * Pn/basedata$Qn
+    eps.mn <- (pndata$Qm - basedata$Qm) * pnh * Pn/basedata$Qm
+
+    ## Calculate income elasticities
+    ydelta <- Y + h
+    yh <- 1.0/(ydelta - Y)
+    ydata <- food.dmnd(Ps, Pn, ydelta, params)
+    eta.s <- (ydata$Qs - basedata$Qs) * yh * Y/basedata$Qs
+    eta.n <- (ydata$Qn - basedata$Qn) * yh * Y/basedata$Qn
+    eta.m <- (ydata$Qm - basedata$Qm) * yh * Y/basedata$Qm
+
+    rtn <- data.frame(ess=eps.ss, ens=eps.ns, ems=eps.ms, esn=eps.sn, enn=eps.nn, emn=eps.mn,
+                      etas=eta.s, etan=eta.n, etam=eta.m)
+
+    ## See if these names will work in the UI (but we don't really want them here).
+    ## names(rtn) <- c('\\(\\epsilon_{ss}\\)', '\\(\\epsilon_{ns}\\)', '\\(\\epsilon_{ms}\\)',
+    ##                 '\\(\\epsilon_{sn}\\)', '\\(\\epsilon_{nn}\\)', '\\(\\epsilon_{mn}\\)',
+    ##                 '\\(\\eta_{s}\\)', '\\(\\eta_{n}\\)', '\\(\\eta_{m}\\)')
+    rtn
+}
+
 ## Set up some vectors of test values.  These can be used for exercising the
 ## demand function.
 
@@ -205,3 +252,10 @@ y.vals <- 10^c(seq(-1,log10(50), length.out=20))
 ## evenly spaced P values
 Ps.vals <- seq(0.5,2.5,by=0.1)
 Pn.vals <- Ps.vals
+
+
+## a sample parameter structure
+samp.params <- list(A=c(0.5, 0.35),
+                    yfunc=c(eta.constant(-0.1), eta.n(0.5)),
+                    xi=matrix(c(-0.03, 0.01, 0.05, -0.4), nrow=2)
+                    )
