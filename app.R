@@ -114,7 +114,7 @@ server <- function(input, output) {
       pn <- rep(input$pn.val.slider, length(y.vals))
       rslt <- food.dmnd(ps,pn,y.vals,params)
       ydata <<- data.frame(Ps=ps, Pn=pn, Y=y.vals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
-                          Qs=rslt$Qs, Qn=rslt$Qn)
+                          Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
     }
     
     ## compute results for staple price change
@@ -126,7 +126,7 @@ server <- function(input, output) {
       cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
       cond.3 <- cond.1+cond.2
       psdata <<- data.frame(Ps=Ps.vals, Pn=pn, Y=yvals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
-                           Qs=rslt$Qs, Qn=rslt$Qn)
+                           Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
     }
     
     ## compute results for nonstaple price change
@@ -138,7 +138,7 @@ server <- function(input, output) {
       cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
       cond.3 <- cond.1+cond.2
       pndata <<- data.frame(Ps=ps, Pn=Pn.vals, Y=yvals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
-                           Qs=rslt$Qs, Qn=rslt$Qn)
+                           Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
     }
     ## return all of the above
     list(ydata=ydata, psdata=psdata, pndata=pndata, maxplot=maxplot)

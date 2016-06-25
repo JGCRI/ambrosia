@@ -61,9 +61,12 @@ food.dmnd <- function(Ps, Pn, Y, params) {
   eps <- mapply(calc1eps, alpharslt[1,], alpharslt[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi), 
                 SIMPLIFY=FALSE)
   qvals <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
+  qs <- qvals[1,]
+  qn <- qvals[2,]
+  ## calculate Qm as the budget residual.  Assume Pm is the numeraire, so it is fixed at 1
+  qm <- Y - (Ps*qs + Pn*qn)
   
-  
-  list(Qs=qvals[1,], Qn=qvals[2,], alpha.s=alpharslt[1,], alpha.n=alpharslt[2,])
+  list(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,])
 }
 
 calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
