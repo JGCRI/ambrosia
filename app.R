@@ -1,7 +1,7 @@
 library(shiny)
 library(ggplot2)
 
-etadefault <- c(-0.1,0.65)
+etadefault <- c(-0.1,0.5)
 Adefault <- c(0.5, 0.35)
 
 source('ui-fcns.R')

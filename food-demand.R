@@ -155,9 +155,10 @@ eta.s <- function(nu1, y0) {
   }
 }
 
-eta.n <- function(k) {
+eta.n <- function(nu1) {
   ## Return a function for calculating eta_n or Y^eta_n.  Which one
   ## gets calculated is controlled by the parameter 'calcQ'
+  k <- 2*nu1
   function(Y, calcQ=FALSE) {
     e.k <- exp(-k)
     delta <- 1-Y
