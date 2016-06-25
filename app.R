@@ -80,11 +80,9 @@ set.model.params <-function(input)
 {
   if(input$eta.s.select == 1) {
       eta.s.fn <- eta.constant(input$etas)
-          ##c(eta.constant(input$etas), eta.constant(input$etan))
   }
   else {
       eta.s.fn <- eta.s(input$etas, input$y0val)
-          ##c(eta.s(input$etas, input$y0val), eta.n(input$etan))
   }
 
   if(input$eta.n.select == 1) {
