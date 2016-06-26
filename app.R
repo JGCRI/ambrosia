@@ -57,16 +57,22 @@ ui <- fluidPage(
             tabsetPanel(id="tab",
                         tabPanel(title="By pcGDP", value=1,
                                  h3('Demand by Income',align='center'),
+                                 tableOutput(outputId='elas.Y'),
                                  plotOutput(outputId='plot.Q.Y'),
-                                 tableOutput(outputId='output.Y')),
+                                 tableOutput(outputId='output.Y')
+                                 ),
                         tabPanel(title="By \\(P_s\\)", value=2,
                                  h3('Demand by Staple Price',align='center'),
+                                 tableOutput(outputId='elas.Ps'),
                                  plotOutput(outputId='plot.Q.Ps'),
-                                 tableOutput(outputId='output.Ps')),
+                                 tableOutput(outputId='output.Ps')
+                                 ),
                         tabPanel(title="By \\(P_n\\)", value=3,
                                  h3('Demand by Nonstaple Price', align='center'),
+                                 tableOutput(outputId='elas.Pn'),
                                  plotOutput(outputId='plot.Q.Pn'),
-                                 tableOutput(outputId='output.Pn'))
+                                 tableOutput(outputId='output.Pn')
+                                 )
                         )
             )
         )  # end of sidebar layout
@@ -104,6 +110,10 @@ ydata  <- data.frame(Ps=1, Pn=1, Y=1, alpha.s=0, alpha.n=0,Qs=0,Qn=0)
 psdata <- data.frame(Ps=1, Pn=1, Y=1, alpha.s=0, alpha.n=0,Qs=0,Qn=0)
 pndata <- data.frame(Ps=1, Pn=1, Y=1, alpha.s=0, alpha.n=0,Qs=0,Qn=0)
 
+yelas  <- data.frame(ess=1,esn=1,etas=1,deltas=1,ens=1,enn=1,etan=1,deltan=1)
+pselas <- data.frame(ess=1,esn=1,etas=1,deltas=1,ens=1,enn=1,etan=1,deltan=1)
+pnelas <- data.frame(ess=1,esn=1,etas=1,deltas=1,ens=1,enn=1,etan=1,deltan=1)
+
 server <- function(input, output) {
   model.data <- reactive({
     ## Compute results for income change
@@ -114,7 +124,10 @@ server <- function(input, output) {
       pn <- rep(input$pn.val.slider, length(y.vals))
       rslt <- food.dmnd(ps,pn,y.vals,params)
       ydata <<- data.frame(Ps=ps, Pn=pn, Y=y.vals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
-                          Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
+                           Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
+      erslt <- calc.elas.actual(ps, pn, y.vals, params, rslt)
+      yelas <<- data.frame(ess=erslt$ess, esn=erslt$esn, etas=erslt$etas, deltas=(erslt$ess+erslt$esn+erslt$etas),
+                           ens=erslt$ens, enn=erslt$enn, etan=erslt$etan, deltan=(erslt$ens+erslt$enn+erslt$etan))
     }
     
     ## compute results for staple price change
@@ -122,11 +135,11 @@ server <- function(input, output) {
       yvals <- rep(input$y.val.slider,length(Ps.vals))
       pn <- rep(input$pn.val.slider, length(Ps.vals))
       rslt <- food.dmnd(Ps.vals, pn, yvals, params)
-      cond.1 <- rslt$alpha.s*params$yfunc[[1]](yvals)
-      cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
-      cond.3 <- cond.1+cond.2
       psdata <<- data.frame(Ps=Ps.vals, Pn=pn, Y=yvals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
-                           Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
+                            Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
+      erslt <- calc.elas.actual(Ps.vals, pn, yvals, params, rslt)
+      pselas <<- data.frame(ess=erslt$ess, esn=erslt$esn, etas=erslt$etas, deltas=(erslt$ess+erslt$esn+erslt$etas),
+                            ens=erslt$ens, enn=erslt$enn, etan=erslt$etan, deltan=(erslt$ens+erslt$enn+erslt$etan)) 
     }
     
     ## compute results for nonstaple price change
@@ -134,15 +147,15 @@ server <- function(input, output) {
       yvals <- rep(input$y.val.slider,length(Pn.vals))
       ps <- rep(input$ps.val.slider, length(Pn.vals))
       rslt <- food.dmnd(ps, Pn.vals, yvals, params)
-      cond.1 <- rslt$alpha.s*params$yfunc[[1]](yvals)
-      cond.2 <- rslt$alpha.n*params$yfunc[[2]](yvals)
-      cond.3 <- cond.1+cond.2
       pndata <<- data.frame(Ps=ps, Pn=Pn.vals, Y=yvals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
-                           Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
+                            Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
+      erslt <- calc.elas.actual(ps, Pn.vals, yvals, params, rslt)
+      pnelas <<- data.frame(ess=erslt$ess, esn=erslt$esn, etas=erslt$etas, deltas=(erslt$ess+erslt$esn+erslt$etas),
+                            ens=erslt$ens, enn=erslt$enn, etan=erslt$etan, deltan=(erslt$ens+erslt$enn+erslt$etan)) 
     }
     ## return all of the above
-    list(ydata=ydata, psdata=psdata, pndata=pndata, maxplot=maxplot)
-  })
+    list(ydata=ydata, psdata=psdata, pndata=pndata, maxplot=maxplot, yelas=yelas, pselas=pselas, pnelas=pnelas)
+})
   
     output$output.Y <- renderTable({
       model.data()$ydata
@@ -150,6 +163,7 @@ server <- function(input, output) {
     output$plot.Q.Y <- renderPlot({
       make.demand.plot(model.data()$ydata,y.vals,'per-capita Income', model.data()$maxplot)
     })
+    output$elas.Y <- renderTable({model.data()$yelas})
 
     output$output.Ps <- renderTable({
       model.data()$psdata
@@ -157,6 +171,7 @@ server <- function(input, output) {
     output$plot.Q.Ps <- renderPlot({
       make.demand.plot(model.data()$psdata,Ps.vals,'Price (staples)', model.data()$maxplot)
     })
+    output$elas.Ps <- renderTable({model.data()$pselas})
 
     output$output.Pn <- renderTable({
       model.data()$pndata
@@ -164,6 +179,7 @@ server <- function(input, output) {
     output$plot.Q.Pn <- renderPlot({
       make.demand.plot(model.data()$pndata,Pn.vals,'Price (nonstaples)', model.data()$maxplot)
     })
+    output$elas.Pn <- renderTable({model.data()$pnelas})
 }
 
 shinyApp(ui = ui, server = server)
