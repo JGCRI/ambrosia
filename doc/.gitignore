@@ -1,0 +1,4 @@
+# tex cruft
+*.log
+*.aux
+*.pdf

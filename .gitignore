@@ -5,3 +5,7 @@
 
 #Emacs autosave files
 *~
+
+# Mac cruft
+.DS_Store
+
