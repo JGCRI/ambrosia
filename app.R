@@ -122,36 +122,45 @@ server <- function(input, output) {
     if(input$tab == 1) {
       ps <- rep(input$ps.val.slider, length(y.vals))
       pn <- rep(input$pn.val.slider, length(y.vals))
-      rslt <- food.dmnd(ps,pn,y.vals,params)
+      pm <- rep(1, length(y.vals))
+      rslt <- food.dmnd(ps,pn,pm,y.vals,params)
       ydata <<- data.frame(Ps=ps, Pn=pn, Y=y.vals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                            Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
-      erslt <- calc.elas.actual(ps, pn, y.vals, params, rslt)
-      yelas <<- data.frame(ess=erslt$ess, esn=erslt$esn, etas=erslt$etas, deltas=(erslt$ess+erslt$esn+erslt$etas),
-                           ens=erslt$ens, enn=erslt$enn, etan=erslt$etan, deltan=(erslt$ens+erslt$enn+erslt$etan))
+      erslt <- calc.elas.actual(ps, pn, pm, y.vals, params, rslt)
+      yelas <<- data.frame(ess=erslt$ess, esn=erslt$esn, esm=erslt$esm, etas=erslt$etas,
+                           deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
+                           ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,
+                           deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan))
     }
     
     ## compute results for staple price change
     if(input$tab == 2) {
       yvals <- rep(input$y.val.slider,length(Ps.vals))
       pn <- rep(input$pn.val.slider, length(Ps.vals))
-      rslt <- food.dmnd(Ps.vals, pn, yvals, params)
+      pm <- rep(1, length(Ps.vals))
+      rslt <- food.dmnd(Ps.vals, pn, pm, yvals, params)
       psdata <<- data.frame(Ps=Ps.vals, Pn=pn, Y=yvals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                             Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
-      erslt <- calc.elas.actual(Ps.vals, pn, yvals, params, rslt)
-      pselas <<- data.frame(ess=erslt$ess, esn=erslt$esn, etas=erslt$etas, deltas=(erslt$ess+erslt$esn+erslt$etas),
-                            ens=erslt$ens, enn=erslt$enn, etan=erslt$etan, deltan=(erslt$ens+erslt$enn+erslt$etan)) 
+      erslt <- calc.elas.actual(Ps.vals, pn, pm, yvals, params, rslt)
+      pselas <<- data.frame(ess=erslt$ess, esn=erslt$esn, esm=erslt$esm, etas=erslt$etas,
+                            deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
+                            ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,
+                            deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan)) 
     }
     
     ## compute results for nonstaple price change
     if(input$tab == 3) {
       yvals <- rep(input$y.val.slider,length(Pn.vals))
       ps <- rep(input$ps.val.slider, length(Pn.vals))
-      rslt <- food.dmnd(ps, Pn.vals, yvals, params)
+      pm <- rep(1, length(Pn.vals))
+      rslt <- food.dmnd(ps, Pn.vals, pm, yvals, params)
       pndata <<- data.frame(Ps=ps, Pn=Pn.vals, Y=yvals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                             Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
-      erslt <- calc.elas.actual(ps, Pn.vals, yvals, params, rslt)
-      pnelas <<- data.frame(ess=erslt$ess, esn=erslt$esn, etas=erslt$etas, deltas=(erslt$ess+erslt$esn+erslt$etas),
-                            ens=erslt$ens, enn=erslt$enn, etan=erslt$etan, deltan=(erslt$ens+erslt$enn+erslt$etan)) 
+      erslt <- calc.elas.actual(ps, Pn.vals, pm, yvals, params, rslt)
+      pnelas <<- data.frame(ess=erslt$ess, esn=erslt$esn, esm=erslt$esm, etas=erslt$etas,
+                            deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
+                            ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,
+                            deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan)) 
     }
     ## return all of the above
     list(ydata=ydata, psdata=psdata, pndata=pndata, maxplot=maxplot, yelas=yelas, pselas=pselas, pnelas=pnelas)

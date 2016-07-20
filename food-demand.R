@@ -1,6 +1,6 @@
 library('nleqslv')
 
-food.dmnd <- function(Ps, Pn, Y, params) {
+food.dmnd <- function(Ps, Pn, Pm, Y, params) {
 ## Function for calculating food demand using the new model
 ## Arguments: Ps, Pn, and Y (staple price, normal price, and pcGDP), params structure.  Ps, Pn, Y may be vectors but must all be
 ##            the same length
@@ -10,11 +10,16 @@ food.dmnd <- function(Ps, Pn, Y, params) {
 ##        params$A     : Leading coefficients in the quantity calculations
 ##        params$yfunc : length-2 vector of functions giving Y^eta(Y) (see note below)
 ##
+##     Note that we don't need elasticity parameters for the materials
+##     component because we calculate Qm as a residual
+##    
 ## Output: list with the following elements:
 ##        Qs:  vector of quantity for S
 ##        Qn:  vector of quantity for N
+##        Qm:  vector of quantity for M    
 ##   alpha.s:  vector of budget fraction for S
 ##   alpha.n:  vector of budget fraction for N
+##   alpha.m:  vector of budget fraction for M
   
 ## Note on eta functions:  For one of the functional forms I was considering for 
 ## eta(Y), eta blows up, but Y^(eta(Y)) is well behaved.  Therefore, the eta functions
@@ -22,7 +27,13 @@ food.dmnd <- function(Ps, Pn, Y, params) {
 ## limiting cases.  In pracice we probably won't be able to use these eta functions because
 ## the eta values they produce will likely cause the price elasticities to blow up, but I 
 ## wanted to be able to test them anyhow.
-  
+
+
+    ## Normalize income and prices to Pm
+    Ps <- Ps/Pm
+    Pn <- Pn/Pm
+    Y  <- Y/Pm
+    
   # get eta values
   eta.s <- params$yfunc[[1]](Y,FALSE)
   eta.n <- params$yfunc[[2]](Y,FALSE)
@@ -63,13 +74,19 @@ food.dmnd <- function(Ps, Pn, Y, params) {
   qvals <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
   qs <- qvals[1,]
   qn <- qvals[2,]
-  ## calculate Qm as the budget residual.  Assume Pm is the numeraire, so it is fixed at 1
-  qm <- Y - (Ps*qs + Pn*qn)
+  ## calculate Qm as the budget residual.  
+    resid <- Y - (Ps*qs + Pn*qn)
+    qm <-  resid / Pm
+    alpha.m <- resid / Y
   
-  list(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,])
+  list(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m)
 }
 
 calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
+    ## calculate the exponents in the demand equation.  This is an
+    ## approximation to the Slutsky equations, inasmuch as we use
+    ## these as the exponents directly, instead of solving for
+    ## exponents that produce these values as the elasticities.
   alpha <- c(alpha.s, alpha.n)
   eta <- c(eta.s,eta.n)
   xi - outer(eta, alpha)
@@ -195,14 +212,14 @@ calc.etas.y1 <- function(k, lam)
   rslt$x
 }
 
-calc.elas.actual <- function(Ps,Pn,Y, params, basedata=NULL)
+calc.elas.actual <- function(Ps,Pn,Pm,Y, params, basedata=NULL)
 {
     ## Given a set of prices and incomes, and model
     ## parameters,calculate the elasticities using numerical
     ## derivatives.  Optionally, you can pass the model results for
     ## the base values, if you've already calculated them.
     if(is.null(basedata)) {
-        basedata <- food.dmnd(Ps, Pn, Y, params)
+        basedata <- food.dmnd(Ps, Pn, Pm, Y, params)
     }
 
     ## size of finite difference step
@@ -211,7 +228,7 @@ calc.elas.actual <- function(Ps,Pn,Y, params, basedata=NULL)
     ## Calculate Ps elasticities
     psdelta <- Ps + h
     psh <- 1.0/(psdelta - Ps)           # Using psdelta-ps instead of h helps with roundoff error.
-    psdata <- food.dmnd(psdelta, Pn, Y, params)
+    psdata <- food.dmnd(psdelta, Pn, Pm, Y, params)
     eps.ss <- (psdata$Qs - basedata$Qs) * psh * Ps/basedata$Qs
     eps.ns <- (psdata$Qn - basedata$Qn) * psh * Ps/basedata$Qn
     eps.ms <- (psdata$Qm - basedata$Qm) * psh * Ps/basedata$Qm
@@ -219,21 +236,29 @@ calc.elas.actual <- function(Ps,Pn,Y, params, basedata=NULL)
     ## Calculate Pn elasticities
     pndelta <- Pn + h
     pnh <- 1.0/(pndelta - Pn)
-    pndata <- food.dmnd(Ps, pndelta, Y, params)
+    pndata <- food.dmnd(Ps, pndelta, Pm, Y, params)
     eps.sn <- (pndata$Qs - basedata$Qs) * pnh * Pn/basedata$Qs
     eps.nn <- (pndata$Qn - basedata$Qn) * pnh * Pn/basedata$Qn
     eps.mn <- (pndata$Qm - basedata$Qm) * pnh * Pn/basedata$Qm
 
+    ## Calculate Pm elasticities
+    pmdelta <- Pm + h
+    pmh <- 1.0/(pmdelta-Pm)
+    pmdata <- food.dmnd(Ps, Pn, pmdelta, Y, params)
+    eps.sm <- (pmdata$Qs - basedata$Qs) * pmh * Pm/basedata$Qs
+    eps.nm <- (pmdata$Qn - basedata$Qn) * pmh * Pm/basedata$Qn
+    eps.mm <- (pmdata$Qm - basedata$Qm) * pmh * Pm/basedata$Qm
+
     ## Calculate income elasticities
     ydelta <- Y + h
     yh <- 1.0/(ydelta - Y)
-    ydata <- food.dmnd(Ps, Pn, ydelta, params)
+    ydata <- food.dmnd(Ps, Pn, Pm, ydelta, params)
     eta.s <- (ydata$Qs - basedata$Qs) * yh * Y/basedata$Qs
     eta.n <- (ydata$Qn - basedata$Qn) * yh * Y/basedata$Qn
     eta.m <- (ydata$Qm - basedata$Qm) * yh * Y/basedata$Qm
 
     rtn <- data.frame(ess=eps.ss, ens=eps.ns, ems=eps.ms, esn=eps.sn, enn=eps.nn, emn=eps.mn,
-                      etas=eta.s, etan=eta.n, etam=eta.m)
+                      esm=eps.sm, enm=eps.nm, emm=eps.mm, etas=eta.s, etan=eta.n, etam=eta.m)
 
     ## See if these names will work in the UI (but we don't really want them here).
     ## names(rtn) <- c('\\(\\epsilon_{ss}\\)', '\\(\\epsilon_{ns}\\)', '\\(\\epsilon_{ms}\\)',
