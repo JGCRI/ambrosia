@@ -267,6 +267,30 @@ calc.elas.actual <- function(Ps,Pn,Pm,Y, params, basedata=NULL)
     rtn
 }
 
+calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
+{
+    ## Calculate the actual Hicks elasticities using the Slutsky equation.
+    ## Arguments:
+    ##   eps   - elasticity values calculated by calc.elas.actual
+    ## alpha.s - budget fraction for staples
+    ## alpha.n - budget fraction for nonstaples
+    ## alpha.m - budget fraction for materials
+    xi.ss <- eps$ess + alpha.s * eps$etas
+    rslt <- data.frame(xi.ss=xi.ss)
+    rslt$xi.sn <- eps$esn + alpha.n * eps$etas
+    rslt$xi.sm <- eps$esm + alpha.m * eps$etas
+
+    rslt$xi.ns <- eps$ens + alpha.s * eps$etan
+    rslt$xi.nn <- eps$enn + alpha.n * eps$etan
+    rslt$xi.nm <- eps$enm + alpha.m * eps$etan
+
+    rslt$xi.ms <- eps$ems + alpha.s * eps$etam
+    rslt$xi.mn <- eps$emn + alpha.n * eps$etam
+    rslt$xi.mm <- eps$emm + alpha.m * eps$etam
+
+    rslt
+}
+
 ## Set up some vectors of test values.  These can be used for exercising the
 ## demand function.
 

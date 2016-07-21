@@ -127,10 +127,12 @@ server <- function(input, output) {
       ydata <<- data.frame(Ps=ps, Pn=pn, Y=y.vals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                            Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
       erslt <- calc.elas.actual(ps, pn, pm, y.vals, params, rslt)
+      exi <- calc.hicks.actual(erslt, rslt$alpha.s, rslt$alpha.n, rslt$alpha.m)
       yelas <<- data.frame(ess=erslt$ess, esn=erslt$esn, esm=erslt$esm, etas=erslt$etas,
-                           deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
                            ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,
-                           deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan))
+                           deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
+                           deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan),
+                           xiss=exi$xi.ss, xinn=exi$xi.nn, ximm=exi$xi.mm)
     }
     
     ## compute results for staple price change
@@ -142,10 +144,12 @@ server <- function(input, output) {
       psdata <<- data.frame(Ps=Ps.vals, Pn=pn, Y=yvals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                             Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
       erslt <- calc.elas.actual(Ps.vals, pn, pm, yvals, params, rslt)
+      exi <- calc.hicks.actual(erslt, rslt$alpha.s, rslt$alpha.n, rslt$alpha.m)
       pselas <<- data.frame(ess=erslt$ess, esn=erslt$esn, esm=erslt$esm, etas=erslt$etas,
-                            deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
                             ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,
-                            deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan)) 
+                            deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
+                            deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan),
+                            xiss=exi$xi.ss, xinn=exi$xi.nn, ximm=exi$xi.mm) 
     }
     
     ## compute results for nonstaple price change
@@ -157,10 +161,12 @@ server <- function(input, output) {
       pndata <<- data.frame(Ps=ps, Pn=Pn.vals, Y=yvals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                             Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
       erslt <- calc.elas.actual(ps, Pn.vals, pm, yvals, params, rslt)
+      exi <- calc.hicks.actual(erslt, rslt$alpha.s, rslt$alpha.n, rslt$alpha.m)
       pnelas <<- data.frame(ess=erslt$ess, esn=erslt$esn, esm=erslt$esm, etas=erslt$etas,
-                            deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
                             ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,
-                            deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan)) 
+                            deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
+                            deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan),
+                            xiss=exi$xi.ss, xinn=exi$xi.nn, ximm=exi$xi.mm) 
     }
     ## return all of the above
     list(ydata=ydata, psdata=psdata, pndata=pndata, maxplot=maxplot, yelas=yelas, pselas=pselas, pnelas=pnelas)
