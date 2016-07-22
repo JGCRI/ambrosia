@@ -312,6 +312,83 @@ calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
 }
 
 
+### The next few functions support calling the food demand function
+### from a monte carlo calculation.  Since the monte carlo program is
+### written in C++, it's convenient to store the prices and incomes at
+### the beginning of the calculation because they don't change over
+### the course of the calc, and passing data between C and R is
+### costly.
+mc.Ps <- 1
+mc.Pn <- 1
+mc.Pm <- 1
+mc.Y <- 1
+mc.Qs <- 1
+mc.Qn <- 1
+mc.sig2Qs <- 1
+mc.sig2Qn <- 1
+
+mc.setup <- function(Ps, Pn, Y, Qs, Qn, sigQs, sigQn)
+{
+    ## Check validity
+    ndata <- length(Ps)
+    if( !(length(Pn)==ndata && length(Y)==ndata
+          && length(Qs)==ndata && length(Qn)==ndata
+          && (length(sigQs)==ndata || length(sigQs)==1)
+          && (length(sigQn)==ndata || length(sigQn)==1)) ) {
+        stop('mc.setprices:  all input vectors must be the same length (or sig vectors must be length 1).')
+    }
+    
+    mc.Ps <<- Ps
+    mc.Pn <<- Pn
+    mc.Y <<- Y
+    ## Pm is fixed at 1.
+    mc.Pm <<- rep(1,ndata)
+    mc.Qs <<- Qs
+    mc.Qn <<- Qn
+    mc.sig2Qs <<- sigQs^2
+    mc.sig2Qn <<- sigQn^2 
+}
+
+vec2param <- function(x)
+{
+    ## Convert a vector of parameters into a params structure.  We
+    ## assume that if you're using this you are doing an Monte Carlo
+    ## calculation, so we set the parameters of eta.s accordingly.  We
+    ## also look at the number of parameters passed in.  If it is 8,
+    ## we assume you want etas = constant.  If it's 9, we assume you
+    ## want etas = eta.s(lambda, k).  If it's anything else, we throw
+    ## an error.
+    ##
+    ## The parameters in the vector are:
+    ##  [A_s, A_n, xi_ss, xi_ns, xi_sn, xi_nn, nu1_n, lambda_s, k_s ]
+    ## If there are only 8 parameters, then the first 7 are as above,
+    ## and the last is eta_s.
+    if(length(x) == 9) {
+        etas <- eta.s(x[8],x[9],mc.mode=TRUE)
+    }
+    else if(length(x) == 8) {
+        etas <- eta.constant(x[8])
+    }
+    else {
+        msg <- paste('Invalid parameter vector.  Length must be 8 or 9.  length(x) == ', length(x))
+        stop(msg)
+    }
+
+    ## construct the parameter structure
+    list(A=x[1:2], yfunc=c(etas, eta.n(x[7])), xi=matrix(x[3:6], nrow=2))
+}
+
+mc.likelihood <- function(x)
+{
+    ## Evaluate the likelihood function 
+    params <- vec2param(x)
+    dmnd <- food.dmnd(mc.Ps, mc.Pn, mc.Pm, mc.Y, params)
+
+    ## return the log likelihood
+    sum((dmnd$Qs-mc.Qs)^2/mc.sig2Qs + (dmnd$Qn-mc.Qn)^2/mc.sig2Qn)
+}
+
+
 ## Set up some vectors of test values.  These can be used for exercising the
 ## demand function.
 
@@ -322,6 +399,7 @@ y.vals <- 10^c(seq(-1,log10(50), length.out=20))
 ## evenly spaced P values
 Ps.vals <- seq(0.5,2.5,by=0.1)
 Pn.vals <- Ps.vals
+Pm.vals <- rep(1.0, length(Ps.vals))
 
 
 ## a sample parameter structure
