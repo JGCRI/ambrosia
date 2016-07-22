@@ -124,53 +124,70 @@ eta.constant <- function(eta0) {
 
 ## eta.s and eta.n are alternative models for eta that vary as a function
 ## of Y, with eta_s and eta_n having two different models.
-eta.s <- function(nu1, y0) {
-  ## Return a function for calculating eta_s or Y^eta_s.  Which one 
-  ## gets calculated is controlled by the parameter 'calcQ'
-  ## nu1: elasticity at Y=1.
-  ## y0:  value of Y for which elasticity = 0
+eta.s <- function(nu1, y0, mc.mode=FALSE) {
+    ## Return a function for calculating eta_s or Y^eta_s.  Which one 
+    ## gets calculated is controlled by the parameter 'calcQ'
+    ## nu1: elasticity at Y=1.
+    ## y0:  value of Y for which elasticity = 0 
+    ## mc.mode: Monte Carlo mode.  If true, then treat the first two
+    ##          parameters as a direct specification of lambda and k
+    ##          (respectively).  Because parts of the parameter space
+    ##          are not accessible in the nu1-y0 formulation, when
+    ##          running monte carlo calcs we specify the coefficients
+    ##          directly.
 
-  ## validate inputs.  Elasticity goes from + to -, so if y0<1, nu1<0.  If y0>1, nu1>0.
-  ## If these conditions are violated, then the model doesn't make sense.  To protect against
-  ## this, we interpret only the magnitude of nu1 as meaningful, and we set the sign 
-  ## automatically
-  if(y0<=1) {
-    ## see below for special handling when y0 = 1
-    nu1 <- -abs(nu1)
-  }
-  else {
-    nu1 <- abs(nu1)
-  }
-
-  ## We need to caclulate the coefficients k and lambda.  Q = (kY)^(lambda/Y)
-  e <- exp(1.0)
-  k <- e/y0
-  if(abs(1-y0) > 1e-4) {
-    lam <- nu1/(1-log(k))
-  }
-  else {
-    ## This case is problematic.  Any value of lambda will give the requisite value at Y=1,
-    ## but the shape parameter is completely undefined.  This is the price we pay for letting
-    ## the user specify the shape in more natural terms.  In this case we reinterpret the nu1
-    ## input as the elasticity at Y=e so as to give a well-defined result.  It's not ideal, but
-    ## short of forcing users to calculate k and lambda, it's the best we can do.  In a MCMC
-    ## calculation, we'll work with k and lambda directly.
-    lam <- -abs(nu1)*e
-  }
-  
-  ## Calculate y1, the value of y where the elasticity is 1.  1-ln(k*y1) = y1/lam
-  y1 <- calc.etas.y1(k,lam)
-  Qy1 <- (k*y1)^(lam/y1) / y1       # match-up condition:  qty at y=y1, divided by y
-  scl <- k^(-lam)                   # scale factor gives Y(1) = 1.
-  function(Y,calcQ=FALSE) {
-    if(calcQ) {
-      scl * ifelse(Y>y1, (k*Y)^(lam/Y),
-                  Qy1*Y)
+    if(mc.mode) {
+        lam <- nu1
+        k <- y0
     }
     else {
-      ifelse(Y>y1,
-            lam*(1-log(k*Y))/Y,   # y1 is the value of Y for which this expression = 1  
-            1)
+        ## validate inputs.  Elasticity goes from + to -, so if y0<1,
+        ## nu1<0.  If y0>1, nu1>0.  If these conditions are violated,
+        ## then the model doesn't make sense.  To protect against
+        ## this, we interpret only the magnitude of nu1 as meaningful,
+        ## and we set the sign automatically
+        if(y0<=1) {
+            ## see below for special handling when y0 = 1
+            nu1 <- -abs(nu1)
+        }
+        else {
+            nu1 <- abs(nu1)
+        }
+        
+        ## We need to caclulate the coefficients k and lambda.  Q = (kY)^(lambda/Y)
+        e <- exp(1.0)
+        k <- e/y0
+        if(abs(1-y0) > 1e-4) {
+            lam <- nu1/(1-log(k))
+        }
+        else {
+            ## This case is problematic.  Any value of lambda will
+            ## give the requisite value at Y=1, but the shape
+            ## parameter is completely undefined.  This is the price
+            ## we pay for letting the user specify the shape in more
+            ## natural terms.  In this case we reinterpret the nu1
+            ## input as the elasticity at Y=e so as to give a
+            ## well-defined result.  It's not ideal, but short of
+            ## forcing users to calculate k and lambda, it's the best
+            ## we can do.  In a MCMC calculation, we'll work with k
+            ## and lambda directly.
+            lam <- -abs(nu1)*e
+        }
+    }
+    ## Calculate y1, the value of y where the elasticity is 1.  1-ln(k*y1) = y1/lam
+    y1 <- calc.etas.y1(k,lam)
+    Qy1 <- (k*y1)^(lam/y1) / y1       # match-up condition:  qty at y=y1, divided by y
+    scl <- k^(-lam)                   # scale factor gives Y(1) = 1.
+    function(Y,calcQ=FALSE) {
+        if(calcQ) {
+            scl * ifelse(Y>y1, (k*Y)^(lam/Y),
+                         Qy1*Y)
+        }
+        else {
+            ifelse(Y>y1,
+                   lam*(1-log(k*Y))/Y,   # y1 is the value of Y for which this expression = 1  
+                   1)
+        }
     }
 }
 
@@ -293,6 +310,7 @@ calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
 
     rslt
 }
+
 
 ## Set up some vectors of test values.  These can be used for exercising the
 ## demand function.
