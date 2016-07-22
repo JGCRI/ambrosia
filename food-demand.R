@@ -172,28 +172,36 @@ eta.s <- function(nu1, y0) {
             lam*(1-log(k*Y))/Y,   # y1 is the value of Y for which this expression = 1  
             1)
     }
-  }
 }
 
 eta.n <- function(nu1) {
-  ## Return a function for calculating eta_n or Y^eta_n.  Which one
-  ## gets calculated is controlled by the parameter 'calcQ'
-  k <- 2*nu1
-  function(Y, calcQ=FALSE) {
-    e.k <- exp(-k)
-    delta <- 1-Y
-    if (calcQ) {
-      ifelse(abs(delta)>1.0e-3/k, 
-             Y^(k/(delta)),
-             e.k + 0.5*k*e.k*delta - 1.0/24.0*e.k * k*(3*k-8)*delta*delta)
+    ## Return a function for calculating eta_n or Y^eta_n.  Which one
+    ## gets calculated is controlled by the parameter 'calcQ'.
+
+    ## We don't have a mc.mode parameter for this function because it
+    ## is well-behaved when specified in terms of nu1, so we just
+    ## stick with that.
+
+    ## Arguments:
+    ##   nu1 : elasticity at Y=1.  Evidently, k == 2*nu1
+    k <- 2*nu1
+
+    function(Y, calcQ=FALSE) {
+        e.k <- exp(-k)
+        delta <- 1-Y
+        scl <- 1/e.k
+        if (calcQ) {
+            scl*ifelse(abs(delta)>1.0e-3/k, 
+                       Y^(k/(delta)),
+                       e.k + 0.5*k*e.k*delta - 1.0/24.0*e.k * k*(3*k-8)*delta*delta)
+        }
+        else {
+            k * ifelse(Y<1e-4, 1,
+                       ifelse(abs(delta) > 1.0e-3/k,
+                              1/delta + Y*log(Y)/(delta*delta),
+                              0.5 - 1/6*delta + 1/12*delta*delta - 1/20 * delta^3))
+        }
     }
-    else {
-      k * ifelse(Y<1e-4, 1,
-                 ifelse(abs(delta) > 1.0e-3/k,
-                        1/delta + Y*log(Y)/(delta*delta),
-                        0.5 - 1/6*delta + 1/12*delta*delta - 1/20 * delta^3))
-    }
-  }
 }
 
 calc.etas.y1 <- function(k, lam)
@@ -257,14 +265,9 @@ calc.elas.actual <- function(Ps,Pn,Pm,Y, params, basedata=NULL)
     eta.n <- (ydata$Qn - basedata$Qn) * yh * Y/basedata$Qn
     eta.m <- (ydata$Qm - basedata$Qm) * yh * Y/basedata$Qm
 
-    rtn <- data.frame(ess=eps.ss, ens=eps.ns, ems=eps.ms, esn=eps.sn, enn=eps.nn, emn=eps.mn,
-                      esm=eps.sm, enm=eps.nm, emm=eps.mm, etas=eta.s, etan=eta.n, etam=eta.m)
+    data.frame(ess=eps.ss, ens=eps.ns, ems=eps.ms, esn=eps.sn, enn=eps.nn, emn=eps.mn,
+               esm=eps.sm, enm=eps.nm, emm=eps.mm, etas=eta.s, etan=eta.n, etam=eta.m)
 
-    ## See if these names will work in the UI (but we don't really want them here).
-    ## names(rtn) <- c('\\(\\epsilon_{ss}\\)', '\\(\\epsilon_{ns}\\)', '\\(\\epsilon_{ms}\\)',
-    ##                 '\\(\\epsilon_{sn}\\)', '\\(\\epsilon_{nn}\\)', '\\(\\epsilon_{mn}\\)',
-    ##                 '\\(\\eta_{s}\\)', '\\(\\eta_{n}\\)', '\\(\\eta_{m}\\)')
-    rtn
 }
 
 calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
@@ -304,7 +307,7 @@ Pn.vals <- Ps.vals
 
 
 ## a sample parameter structure
-samp.params <- list(A=c(0.5, 0.35),
-                    yfunc=c(eta.constant(-0.1), eta.n(0.5)),
-                    xi=matrix(c(-0.03, 0.01, 0.05, -0.4), nrow=2)
+samp.params <- list(A=c(0.3, 0.1),
+                    yfunc=c(eta.s(-0.15,0.6), eta.n(1.0)),
+                    xi=matrix(c(-0.05, 0.1, 0.2, -0.5), nrow=2)
                     )
