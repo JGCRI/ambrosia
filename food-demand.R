@@ -373,14 +373,27 @@ vec2param <- function(x)
     list(A=x[1:2], yfunc=c(etas, eta.n(x[7])), xi=matrix(x[3:6], nrow=2))
 }
 
-mc.likelihood <- function(x)
+mc.likelihood.1 <- function(x)
 {
-    ## Evaluate the likelihood function 
+    ## Evaluate the likelihood function for a single parameter set
     params <- vec2param(x)
     dmnd <- food.dmnd(mc.Ps, mc.Pn, mc.Pm, mc.Y, params)
 
     ## return the log likelihood
     sum((dmnd$Qs-mc.Qs)^2/mc.sig2Qs + (dmnd$Qn-mc.Qn)^2/mc.sig2Qn)
+}
+
+mc.likelihood <- function(x, npset=1)
+{
+    ## Evaluate the likelihood function for several parameter sets.
+    ## The parameter sets should be concatenated into a single vector:
+    ## x <- c(x1, x2, x3) 
+    ## All parameter sets must have the same number of elements, so
+    ## you can't combine the 8 and 9 parameter versions of the model
+    ## in a single call to this function.
+
+    xm <- matrix(x,ncol=npset)
+    apply(xm, 2, mc.likelihood.1)
 }
 
 
