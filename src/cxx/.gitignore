@@ -1,0 +1,3 @@
+# object and executable files
+*.o
+cxx-likefunc
