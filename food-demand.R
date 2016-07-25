@@ -327,26 +327,21 @@ mc.Qn <- 1
 mc.sig2Qs <- 1
 mc.sig2Qn <- 1
 
-mc.setup <- function(Ps, Pn, Y, Qs, Qn, sigQs, sigQn)
+mc.setup <- function(filename)
 {
-    ## Check validity
-    ndata <- length(Ps)
-    if( !(length(Pn)==ndata && length(Y)==ndata
-          && length(Qs)==ndata && length(Qn)==ndata
-          && (length(sigQs)==ndata || length(sigQs)==1)
-          && (length(sigQn)==ndata || length(sigQn)==1)) ) {
-        stop('mc.setprices:  all input vectors must be the same length (or sig vectors must be length 1).')
-    }
+    ## read observed data from input file.  Columns are:
+    ##  Ps, Pn, Y, Qs, Qn, sigQs, sigQn
+    obs.data <- read.csv(filename)
     
-    mc.Ps <<- Ps
-    mc.Pn <<- Pn
-    mc.Y <<- Y
+    mc.Ps <<- obs.data$Ps
+    mc.Pn <<- obs.data$Pn
+    mc.Y <<- obs.data$Y
     ## Pm is fixed at 1.
-    mc.Pm <<- rep(1,ndata)
-    mc.Qs <<- Qs
-    mc.Qn <<- Qn
-    mc.sig2Qs <<- sigQs^2
-    mc.sig2Qn <<- sigQn^2 
+    mc.Pm <<- rep(1,nrow(obs.data))
+    mc.Qs <<- obs.data$Qs
+    mc.Qn <<- obs.data$Qn
+    mc.sig2Qs <<- obs.data$sigQs^2
+    mc.sig2Qn <<- obs.data$sigQn^2 
 }
 
 vec2param <- function(x)
