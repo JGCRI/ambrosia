@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <RInside.h>
 
 int main(int argc, char *argv[])
@@ -34,7 +35,7 @@ int main(int argc, char *argv[])
 
   // evaluate the likelihood function and return values
   std::string lfcmd("mc.likelihood(input.params, 3)");
-  Rcpp::NumericVector lf = R.parseEval(lfcmd);
+  std::vector<float> lf = Rcpp::as<std::vector<float> >(R.parseEval(lfcmd));
 
   std::cout << "Likelihood function values:\n";
   for(int i=0; i<lf.size(); ++i) {
