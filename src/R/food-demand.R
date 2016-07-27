@@ -344,6 +344,27 @@ mc.setup <- function(filename)
     mc.sig2Qn <<- obs.data$sigQn^2 
 }
 
+## minimum and maximum value for parameters:  outside of this range the model may blow up.
+pmin9 <- c(0.0, 0.0, -Inf, -Inf, -Inf, -Inf, 0.0, 0.0, 1e-8)
+pmax9 <- c(Inf, Inf, 0.0, Inf, Inf, 0.0, Inf, Inf, Inf)
+## 8-parameter version
+pmin8 <- c(0.0, 0.0, -Inf, -Inf, -Inf, -Inf, 0.0, -Inf)
+pmax8 <- c(Inf, Inf, 0.0, Inf, Inf, 0.0, Inf, Inf)
+
+validate.params <- function(x)
+{
+    ## Return FALSE if the parameters are outside of allowed limits
+    if(length(x)==8 && (any(x<pmin8) || any(x>pmax9)))
+        FALSE
+    else if(length(x)==9 && (any(x<pmin9) || any(x>pmax9)))
+        FALSE
+    else if(length(x) < 8 || length(x) > 9)
+        FALSE
+    else
+        TRUE
+}
+
+
 vec2param <- function(x)
 {
     ## Convert a vector of parameters into a params structure.  We
@@ -375,12 +396,20 @@ vec2param <- function(x)
 
 mc.likelihood.1 <- function(x)
 {
-    ## Evaluate the likelihood function for a single parameter set
-    params <- vec2param(x)
-    dmnd <- food.dmnd(mc.Ps, mc.Pn, mc.Pm, mc.Y, params)
+    ## Set default value in case of failure
+    L <- -9.9e9
 
-    ## return the log likelihood
-    sum((dmnd$Qs-mc.Qs)^2/mc.sig2Qs + (dmnd$Qn-mc.Qn)^2/mc.sig2Qn)
+    if(validate.params(x)) {
+        try({
+    	    ## Evaluate the likelihood function for a single parameter set
+    	    params <- vec2param(x)
+    	    dmnd <- food.dmnd(mc.Ps, mc.Pn, mc.Pm, mc.Y, params)
+
+            ## return the log likelihood
+    	    L <- -sum((dmnd$Qs-mc.Qs)^2/mc.sig2Qs + (dmnd$Qn-mc.Qn)^2/mc.sig2Qn)
+        })
+      }
+    L
 }
 
 mc.likelihood <- function(x, npset=1)
