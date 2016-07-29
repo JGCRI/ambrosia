@@ -425,6 +425,45 @@ mc.likelihood <- function(x, npset=1)
     apply(xm, 2, mc.likelihood.1)
 }
 
+lamks2epsy0 <- function(df)
+{
+    ## convert the eta.s k and lambda parameters to nu1 and y0
+    if(!('lambda' %in% names(df)) || !('ks' %in% names(df))) {
+        warning('data frame does not contain lambda & ks vars.')
+    }
+    else {
+        e <- exp(1.0)
+        ## add y0 and nu1 columns
+        df$y0 <- e / df$ks
+        df$eps1s <- df$lambda * (1-log(df$ks))
+        ## drop ks and lambda columns.  Arrange for LL to still be at the end
+        lltmp <- df$LL
+        df$ks <- NULL
+        df$lambda <- NULL
+        df$LL <- NULL
+        df$LL <- lltmp
+    }
+    df
+}
+
+namemc <- function(nparam=9)
+{
+    ## Return the list of names for the parameters in the model.
+    ## Supports both the 8 and 9 parameter version.  Adds the "LL" tag
+    ## to the end to cover the log likelihood column appened by the
+    ## monte carlo code.
+    if(nparam == 8) {
+        c("As", "An", "xi.ss", "xi.ns", "xi.sn", "xi.nn", "eps1n", "eps.s", "LL")
+    }
+    else if(nparam == 9) {
+        c("As", "An", "xi.ss", "xi.ns", "xi.sn", "xi.nn", "eps1n", "lambda", "ks", "LL")
+    }
+    else {
+        warning("namemc:  nparam must be 8 or 9.")
+        NULL
+    }
+}
+
 
 ## Set up some vectors of test values.  These can be used for exercising the
 ## demand function.
