@@ -132,7 +132,8 @@ server <- function(input, output) {
                            ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,
                            deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
                            deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan),
-                           xiss=exi$xi.ss, xinn=exi$xi.nn, ximm=exi$xi.mm)
+                           xiss=exi$xi.ss, xinn=exi$xi.nn, ximm=exi$xi.mm,
+                           xins=exi$xi.ns, xisn=exi$xi.sn)
     }
     
     ## compute results for staple price change
@@ -149,7 +150,8 @@ server <- function(input, output) {
                             ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,
                             deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
                             deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan),
-                            xiss=exi$xi.ss, xinn=exi$xi.nn, ximm=exi$xi.mm) 
+                            xiss=exi$xi.ss, xinn=exi$xi.nn, ximm=exi$xi.mm,
+                            xins=exi$xi.ns, xisn=exi$xi.sn) 
     }
     
     ## compute results for nonstaple price change
@@ -166,7 +168,8 @@ server <- function(input, output) {
                             ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,
                             deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
                             deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan),
-                            xiss=exi$xi.ss, xinn=exi$xi.nn, ximm=exi$xi.mm) 
+                            xiss=exi$xi.ss, xinn=exi$xi.nn, ximm=exi$xi.mm,
+                            xins=exi$xi.ns, xisn=exi$xi.sn) 
     }
     ## return all of the above
     list(ydata=ydata, psdata=psdata, pndata=pndata, maxplot=maxplot, yelas=yelas, pselas=pselas, pnelas=pnelas)
