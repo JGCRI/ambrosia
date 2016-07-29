@@ -12,20 +12,20 @@ food.dmnd <- function(Ps, Pn, Pm, Y, params) {
 ##
 ##     Note that we don't need elasticity parameters for the materials
 ##     component because we calculate Qm as a residual
-##    
+##
 ## Output: list with the following elements:
 ##        Qs:  vector of quantity for S
 ##        Qn:  vector of quantity for N
-##        Qm:  vector of quantity for M    
+##        Qm:  vector of quantity for M
 ##   alpha.s:  vector of budget fraction for S
 ##   alpha.n:  vector of budget fraction for N
 ##   alpha.m:  vector of budget fraction for M
-  
-## Note on eta functions:  For one of the functional forms I was considering for 
+
+## Note on eta functions:  For one of the functional forms I was considering for
 ## eta(Y), eta blows up, but Y^(eta(Y)) is well behaved.  Therefore, the eta functions
 ## need to be able to calculate not just eta(Y), but Y^(eta(Y)), so they can handle the
 ## limiting cases.  In pracice we probably won't be able to use these eta functions because
-## the eta values they produce will likely cause the price elasticities to blow up, but I 
+## the eta values they produce will likely cause the price elasticities to blow up, but I
 ## wanted to be able to test them anyhow.
 
 
@@ -33,22 +33,22 @@ food.dmnd <- function(Ps, Pn, Pm, Y, params) {
     Ps <- Ps/Pm
     Pn <- Pn/Pm
     Y  <- Y/Pm
-    
+
   # get eta values
   eta.s <- params$yfunc[[1]](Y,FALSE)
   eta.n <- params$yfunc[[2]](Y,FALSE)
-  
-  # Get Y^eta values.  We have to let the eta object calculate them because it may 
+
+  # Get Y^eta values.  We have to let the eta object calculate them because it may
   # need to do something special near Y=0 or Y=1
   yterm.s <- params$yfunc[[1]](Y,TRUE)
   yterm.n <- params$yfunc[[2]](Y,TRUE)
-  
-  ## create the equation that we are going to solve for alpha.  Here alpha is 
+
+  ## create the equation that we are going to solve for alpha.  Here alpha is
   ## a 2xN vector, where N is the number of Y values.  alpha[1,] == alpha.s
   ## and alpha[2,] == alpha.n
   falpha <- function(alpha) {
     ## Calculate constant-price elasticities, leave in a list for calc1q below
-    eps <- mapply(calc1eps, alpha[1,], alpha[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi), 
+    eps <- mapply(calc1eps, alpha[1,], alpha[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi),
                   SIMPLIFY=FALSE)
     ## Calculate quantities Q[1,] is Qs and Q[2,] is Qn
     Q <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
@@ -56,7 +56,7 @@ food.dmnd <- function(Ps, Pn, Pm, Y, params) {
     alpha.out <- alpha
     alpha.out[1,] <- Ps*Q[1,]/Y
     alpha.out[2,] <- Pn*Q[2,]/Y
-    
+
     ## output of this function is alpha - alpha.out.  Solving for the roots of this
     ## equation will give us a self-consistent alpha
     alpha - alpha.out
@@ -69,16 +69,16 @@ food.dmnd <- function(Ps, Pn, Pm, Y, params) {
 
   ## calculate resulting Q values
   alpharslt <- matrix(rslt$x, nrow=2)
-  eps <- mapply(calc1eps, alpharslt[1,], alpharslt[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi), 
+  eps <- mapply(calc1eps, alpharslt[1,], alpharslt[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi),
                 SIMPLIFY=FALSE)
   qvals <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
   qs <- qvals[1,]
   qn <- qvals[2,]
-  ## calculate Qm as the budget residual.  
+  ## calculate Qm as the budget residual.
     resid <- Y - (Ps*qs + Pn*qn)
     qm <-  resid / Pm
     alpha.m <- resid / Y
-  
+
   list(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m)
 }
 
@@ -96,7 +96,7 @@ calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef) {
   ## not vectorized:  use mapply
   Qs <- Acoef[1] * Ps^eps[1,1] * Pn^eps[1,2] * Ysterm
   Qn <- Acoef[2] * Ps^eps[2,1] * Pn^eps[2,2] * Ynterm
-  
+
   ## Check the budget constraint
   alpha.s <- Ps*Qs/Y
   alpha.n <- Pn*Qn/Y
@@ -109,7 +109,7 @@ calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef) {
 }
 
 eta.constant <- function(eta0) {
-  ## Return an eta function where eta is constant with a specified value.  This still 
+  ## Return an eta function where eta is constant with a specified value.  This still
   ## uses the calcQ interface described below
   function(Y, calcQ=FALSE) {
     if(calcQ) {
@@ -125,10 +125,10 @@ eta.constant <- function(eta0) {
 ## eta.s and eta.n are alternative models for eta that vary as a function
 ## of Y, with eta_s and eta_n having two different models.
 eta.s <- function(nu1, y0, mc.mode=FALSE) {
-    ## Return a function for calculating eta_s or Y^eta_s.  Which one 
+    ## Return a function for calculating eta_s or Y^eta_s.  Which one
     ## gets calculated is controlled by the parameter 'calcQ'
     ## nu1: elasticity at Y=1.
-    ## y0:  value of Y for which elasticity = 0 
+    ## y0:  value of Y for which elasticity = 0
     ## mc.mode: Monte Carlo mode.  If true, then treat the first two
     ##          parameters as a direct specification of lambda and k
     ##          (respectively).  Because parts of the parameter space
@@ -153,7 +153,7 @@ eta.s <- function(nu1, y0, mc.mode=FALSE) {
         else {
             nu1 <- abs(nu1)
         }
-        
+
         ## We need to caclulate the coefficients k and lambda.  Q = (kY)^(lambda/Y)
         e <- exp(1.0)
         k <- e/y0
@@ -185,7 +185,7 @@ eta.s <- function(nu1, y0, mc.mode=FALSE) {
         }
         else {
             ifelse(Y>y1,
-                   lam*(1-log(k*Y))/Y,   # y1 is the value of Y for which this expression = 1  
+                   lam*(1-log(k*Y))/Y,   # y1 is the value of Y for which this expression = 1
                    1)
         }
     }
@@ -208,15 +208,15 @@ eta.n <- function(nu1) {
         delta <- 1-Y
         scl <- 1/e.k
         if (calcQ) {
-            scl*ifelse(abs(delta)>1.0e-3/k, 
+            scl*ifelse(abs(delta)>1.0e-3/k,
                        Y^(k/(delta)),
-                       e.k + 0.5*k*e.k*delta - 1.0/24.0*e.k * k*(3*k-8)*delta*delta)
+                       e.k - 0.5*k*e.k*delta + 1.0/24.0*e.k * k*(3*k-8)*delta*delta)
         }
         else {
             k * ifelse(Y<1e-4, 1,
                        ifelse(abs(delta) > 1.0e-3/k,
                               1/delta + Y*log(Y)/(delta*delta),
-                              0.5 - 1/6*delta + 1/12*delta*delta - 1/20 * delta^3))
+                              0.5 + 1/6*delta + 1/12*delta*delta + 1/20 * delta^3))
         }
     }
 }
@@ -249,7 +249,7 @@ calc.elas.actual <- function(Ps,Pn,Pm,Y, params, basedata=NULL)
 
     ## size of finite difference step
     h <- 0.001
-    
+
     ## Calculate Ps elasticities
     psdelta <- Ps + h
     psh <- 1.0/(psdelta - Ps)           # Using psdelta-ps instead of h helps with roundoff error.
@@ -332,7 +332,7 @@ mc.setup <- function(filename)
     ## read observed data from input file.  Columns are:
     ##  Ps, Pn, Y, Qs, Qn, sigQs, sigQn
     obs.data <- read.csv(filename)
-    
+
     mc.Ps <<- obs.data$Ps
     mc.Pn <<- obs.data$Pn
     mc.Y <<- obs.data$Y
@@ -341,7 +341,7 @@ mc.setup <- function(filename)
     mc.Qs <<- obs.data$Qs
     mc.Qn <<- obs.data$Qn
     mc.sig2Qs <<- obs.data$sigQs^2
-    mc.sig2Qn <<- obs.data$sigQn^2 
+    mc.sig2Qn <<- obs.data$sigQn^2
 }
 
 ## minimum and maximum value for parameters:  outside of this range the model may blow up.
@@ -416,7 +416,7 @@ mc.likelihood <- function(x, npset=1)
 {
     ## Evaluate the likelihood function for several parameter sets.
     ## The parameter sets should be concatenated into a single vector:
-    ## x <- c(x1, x2, x3) 
+    ## x <- c(x1, x2, x3)
     ## All parameter sets must have the same number of elements, so
     ## you can't combine the 8 and 9 parameter versions of the model
     ## in a single call to this function.
