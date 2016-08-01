@@ -13,7 +13,9 @@ int main(int argc, char *argv[])
   
   RInside R(argc, argv);        // initialize the embedded R instance
   std::string Rcode("../R/food-demand.R");
-  std::string obsdata("../../data/obsdata-test.csv");
+  std::string obsdata("../../data/obsdata-test-grand.csv");
+  if(argc > 1) 
+    obsdata = argv[1];
 
   std::string Rsrccmd = "source('" + Rcode + "')";
   
@@ -31,10 +33,13 @@ int main(int argc, char *argv[])
   }
   R["input.params"] = x;        // store x in R instance as input.params
   R["input.npset"] = 4;
+  R["input.mpi.rank"] = 0;
 
+  std::cout << "Ready to setup:\n";
   // set up the likelihood function
   std::string lfsetup = "mc.setup('" + obsdata + "')";
   R.parseEvalQ(lfsetup);
+  std::cout << "Setup complete\n";
 
   // evaluate the likelihood function and return values
   std::string lfcmd("mc.likelihood(input.params, input.npset)");

@@ -326,9 +326,18 @@ mc.Qs <- 1
 mc.Qn <- 1
 mc.sig2Qs <- 1
 mc.sig2Qn <- 1
+mc.logfile <- NULL
 
 mc.setup <- function(filename)
 {
+    if(exists('input.mpi.rank') && input.mpi.rank==0) {
+        mc.logfile <<- file('mcpar-rlog.txt', open='wt')
+	cat('Beginning mc.setup\n', as.character(Sys.time()), '\n', file=mc.logfile)
+        logging <- TRUE
+    }
+    else {
+    	 logging <- FALSE
+    }
     ## read observed data from input file.  Columns are:
     ##  Ps, Pn, Y, Qs, Qn, sigQs, sigQn
     obs.data <- read.csv(filename)
@@ -342,6 +351,11 @@ mc.setup <- function(filename)
     mc.Qn <<- obs.data$Qn
     mc.sig2Qs <<- obs.data$sigQs^2
     mc.sig2Qn <<- obs.data$sigQn^2
+
+    if(logging) {
+    	cat('End mc.setup\n', as.character(Sys.time()), '\n', file=mc.logfile)
+	flush(mc.logfile)
+    }
 }
 
 ## minimum and maximum value for parameters:  outside of this range the model may blow up.
@@ -421,8 +435,19 @@ mc.likelihood <- function(x, npset=1)
     ## you can't combine the 8 and 9 parameter versions of the model
     ## in a single call to this function.
 
+    if(!is.null(mc.logfile)) {
+        cat('Eval likelihood function:  ', as.character(Sys.time()), '\n', file=mc.logfile)
+    }
+
+
     xm <- matrix(x,ncol=npset)
-    apply(xm, 2, mc.likelihood.1)
+    L <- apply(xm, 2, mc.likelihood.1)
+
+    if(!is.null(mc.logfile)) {
+        cat('Finished eval:  ', as.character(Sys.time()), '\n', file=mc.logfile)
+	flush(mc.logfile)
+    }
+    L
 }
 
 lamks2epsy0 <- function(df)
