@@ -318,15 +318,10 @@ calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
 ### the beginning of the calculation because they don't change over
 ### the course of the calc, and passing data between C and R is
 ### costly.
-mc.Ps <- 1
-mc.Pn <- 1
-mc.Pm <- 1
-mc.Y <- 1
-mc.Qs <- 1
-mc.Qn <- 1
-mc.sig2Qs <- 1
-mc.sig2Qn <- 1
+mc.obsdata <- NULL
 mc.logfile <- NULL
+mc.chunksize <- 10                      # see note in mc.setup
+mc.splitvec <- 0                        # to be filled in later
 
 mc.setup <- function(filename)
 {
@@ -341,16 +336,19 @@ mc.setup <- function(filename)
     ## read observed data from input file.  Columns are:
     ##  Ps, Pn, Y, Qs, Qn, sigQs, sigQn
     obs.data <- read.csv(filename)
+    ## reformat slightly:
+    obs.data <- data.frame(Ps=obs.data$Ps, Pn=obs.data$Pn, Y=obs.data$Y,
+                           Pm=1,     # Pm is fixed at 1.0.
+                           Qs=obs.data$Qs, Qn=obs.data$Qn,
+                           sig2Qs=obs.data$sigQs^2, sig2Qn=obs.data$sigQn^2)
 
-    mc.Ps <<- obs.data$Ps
-    mc.Pn <<- obs.data$Pn
-    mc.Y <<- obs.data$Y
-    ## Pm is fixed at 1.
-    mc.Pm <<- rep(1,nrow(obs.data))
-    mc.Qs <<- obs.data$Qs
-    mc.Qn <<- obs.data$Qn
-    mc.sig2Qs <<- obs.data$sigQs^2
-    mc.sig2Qn <<- obs.data$sigQn^2
+    ## Using nleqslv to solve the "system" causes the run time to
+    ## scale nonlinearly with the number of input data.  In reality,
+    ## each data point can be solved independently.  Split the data
+    ## set into manageable chunks to avoid this effect.
+    n <- nrow(obs.data)
+    mc.splitvec <<- seq(1,n) %% ceiling(n/mc.chunksize)
+    mc.obsdata <<- split(obs.data, mc.splitvec)
 
     if(logging) {
     	cat('End mc.setup\n', as.character(Sys.time()), '\n', file=mc.logfile)
@@ -408,22 +406,39 @@ vec2param <- function(x)
     list(A=x[1:2], yfunc=c(etas, eta.n(x[7])), xi=matrix(x[3:6], nrow=2))
 }
 
+mc.eval.fd.likelihood <- function(df,params)
+{
+    ## Evaluate the food demand likelihood function for a subset of
+    ## the observation points
+    ##
+    ##    df:  data frame containing the observed data inputs and outputs
+    ## param:  model parameter data structure
+    
+    L <- -9.99e9                        # Default value, if the calc. fails
+    try({
+    	dmnd <- food.dmnd(df$Ps, df$Pn, df$Pm, df$Y, params)
+        
+        ## return the log likelihood.  dmnd$Q[sn] are the model
+        ## outputs, df$Q[sn] are the observations, and df$sig2Q[sn]
+        ## are the observational uncertainties.
+        L <- -sum((dmnd$Qs-df$Qs)^2/df$sig2Qs + (dmnd$Qn-df$Qn)^2/df$sig2Qn)
+    })
+    L
+}
 mc.likelihood.1 <- function(x)
 {
-    ## Set default value in case of failure
-    L <- -9.9e9
-
     if(validate.params(x)) {
-        try({
-    	    ## Evaluate the likelihood function for a single parameter set
-    	    params <- vec2param(x)
-    	    dmnd <- food.dmnd(mc.Ps, mc.Pn, mc.Pm, mc.Y, params)
+        ## Evaluate the likelihood function for a single parameter set
+        params <- vec2param(x)
 
-            ## return the log likelihood
-    	    L <- -sum((dmnd$Qs-mc.Qs)^2/mc.sig2Qs + (dmnd$Qn-mc.Qn)^2/mc.sig2Qn)
-        })
+        ## We've broken the data up into chunks.  Since the
+        ## log-likelihood function is additive, we can apply L to each
+        ## chunk and sum them up
+        sum(sapply(mc.obsdata,mc.eval.fd.likelihood, params)) 
       }
-    L
+    else {
+        -9.99e9 * length(mc.obsdata)    # treat as if each chunk had returned the default value of -9.99e9
+    }
 }
 
 mc.likelihood <- function(x, npset=1)
