@@ -450,19 +450,8 @@ mc.likelihood <- function(x, npset=1)
     ## you can't combine the 8 and 9 parameter versions of the model
     ## in a single call to this function.
 
-    if(!is.null(mc.logfile)) {
-        cat('Eval likelihood function:  ', as.character(Sys.time()), '\n', file=mc.logfile)
-    }
-
-
     xm <- matrix(x,ncol=npset)
-    L <- apply(xm, 2, mc.likelihood.1)
-
-    if(!is.null(mc.logfile)) {
-        cat('Finished eval:  ', as.character(Sys.time()), '\n', file=mc.logfile)
-	flush(mc.logfile)
-    }
-    L
+    apply(xm, 2, mc.likelihood.1)
 }
 
 lamks2epsy0 <- function(df)
