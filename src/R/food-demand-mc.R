@@ -25,11 +25,17 @@ mc.setup <- function(filename)
     ## read observed data from input file.  Columns are:
     ##  Ps, Pn, Y, Qs, Qn, sigQs, sigQn
     obs.data <- read.csv(filename)
-    ## reformat slightly:
-    obs.data <- data.frame(Ps=obs.data$Ps, Pn=obs.data$Pn, Y=obs.data$Y,
-                           Pm=1,     # Pm is fixed at 1.0.
-                           Qs=obs.data$Qs, Qn=obs.data$Qn,
-                           sig2Qs=obs.data$sigQs^2, sig2Qn=obs.data$sigQn^2)
+    if('GCAM_region_name' %in% names(obs.data)) {
+        ## The data set produced for GCAM needs some extra processing.
+        obs.data <- process.gcam.data(obs.data)
+    }
+    else {
+        ## reformat slightly:
+        obs.data <- data.frame(Ps=obs.data$Ps, Pn=obs.data$Pn, Y=obs.data$Y,
+                               Pm=1,     # Pm is fixed at 1.0.
+                               Qs=obs.data$Qs, Qn=obs.data$Qn,
+                               sig2Qs=obs.data$sigQs^2, sig2Qn=obs.data$sigQn^2)
+    }
 
     ## Using nleqslv to solve the "system" causes the run time to
     ## scale nonlinearly with the number of input data.  In reality,
@@ -141,4 +147,28 @@ mc.likelihood <- function(x, npset=1)
 
     xm <- matrix(x,ncol=npset)
     apply(xm, 2, mc.likelihood.1)
+}
+
+process.gcam.data <- function(gcam.data)
+{
+    ## Input prices are per 1000 dietary calories (presumably 2005
+    ## dollars?).  We want prices in thousands of USD for a year's
+    ## consumptiona at 1000 calories per day (i.e., thousand
+    ## US$/365,000 cal)
+    Ps <- 0.365 * gcam.data$s_usd_p1000cal
+    Pn <- 0.365 * gcam.data$ns_usd_p1000cal
+
+    ## Input quantities are in thousands of calories per capita per
+    ## day.  This is the unit we want.
+    Qs <- gcam.data$s_cal_pcap_day_thous
+    Qn <- gcam.data$ns_cal_pcap_day_thous
+
+    ## Input income is thousand US$ per capita per year.  This is also
+    ## the unit we want.
+    Y <- gcam.data$gdp_pcap_thous2005usd
+
+    ## construct the return data frame.  Right now we don't have any
+    ## weight factors, so just use equal weight.
+
+    data.frame(Ps=Ps, Pn=Pn, Y=Y, Pm=1, Qs=Qs, Qn=Qn, sig2Qs=1, sig2Qn=1)
 }
