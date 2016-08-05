@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
   float p3[] = {0.2507500,  0.7502500, -1.5000000,  0.5000000, -0.5000000, -0.5000000, 0.4125000,  -3.7500000,  7.5002494}; // should be invalid
   
   RInside R(argc, argv);        // initialize the embedded R instance
-  std::string Rcode("../R/food-demand.R");
+  std::string Rcode("../R/food-demand-mc.R");
   std::string obsdata("../../data/obsdata-test-grand.csv");
   if(argc > 1) 
     obsdata = argv[1];
