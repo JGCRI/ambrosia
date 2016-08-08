@@ -49,6 +49,14 @@ mc.setup <- function(filename)
     	cat('End mc.setup\n', as.character(Sys.time()), '\n', file=mc.logfile)
 	flush(mc.logfile)
     }
+
+    ## Return a matrix of recommended parameter limits to the caller
+    nparam <- 9
+    plohi <- matrix(nrow=2, ncol=nparam)
+    plohi[1,] <- c(0.001, 0.001, -2.0, -1.0, -1.0, -2.0, 0.05, 0.0, 0.001)
+    plohi[2,] <- c(1.0,   1.0,   0.0,   1.0,  1.0, 0.0, 1.5,   5.0,  10.0)
+
+    plohi
 }
 
 ## minimum and maximum value for parameters:  outside of this range the model may blow up.

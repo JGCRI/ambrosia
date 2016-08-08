@@ -38,8 +38,16 @@ int main(int argc, char *argv[])
   std::cout << "Ready to setup:\n";
   // set up the likelihood function
   std::string lfsetup = "mc.setup('" + obsdata + "')";
-  R.parseEvalQ(lfsetup);
-  std::cout << "Setup complete\n";
+  Rcpp::NumericMatrix plohi = R.parseEval(lfsetup); 
+  std::cout << "Setup complete:  nparam = "
+            << plohi.ncol() << "\n";
+  std::cout << "plohi = \n";
+  for(int i=0; i<plohi.nrow(); ++i) {
+    std::cout << "\t";
+    for(int j=0; j<plohi.ncol(); ++j)
+      std::cout << plohi(i,j) << "  ";
+    std::cout << "\n";
+  }
 
   // evaluate the likelihood function and return values
   std::string lfcmd("mc.likelihood(input.params, input.npset)");
