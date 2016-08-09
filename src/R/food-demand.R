@@ -331,25 +331,7 @@ lamks2epsy0 <- function(df)
         df$LL <- lltmp
     }
     df
-}
-
-namemc <- function(nparam=9)
-{
-    ## Return the list of names for the parameters in the model.
-    ## Supports both the 8 and 9 parameter version.  Adds the "LL" tag
-    ## to the end to cover the log likelihood column appened by the
-    ## monte carlo code.
-    if(nparam == 8) {
-        c("As", "An", "xi.ss", "xi.ns", "xi.sn", "xi.nn", "eps1n", "eps.s", "LL")
-    }
-    else if(nparam == 9) {
-        c("As", "An", "xi.ss", "xi.ns", "xi.sn", "xi.nn", "eps1n", "lambda", "ks", "LL")
-    }
-    else {
-        warning("namemc:  nparam must be 8 or 9.")
-        NULL
-    }
-}
+} 
 
 
 ## Set up some vectors of test values.  These can be used for exercising the
@@ -368,7 +350,7 @@ Pm.vals <- rep(1.0, length(Ps.vals))
 ## a sample parameter structure
 samp.params <- list(A=c(0.3, 0.1),
                     yfunc=c(eta.s(-0.15,0.6), eta.n(1.0)),
-                    xi=matrix(c(-0.05, 0.1, 0.2, -0.5), nrow=2)
+                    xi=matrix(c(-0.05, 0.1, 0.1, -0.5), nrow=2)
                     )
 ## Sample parameters in Monte Carlo representation
 ## same as samp.params above:
