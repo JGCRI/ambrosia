@@ -360,8 +360,8 @@ namemc <- function(nparam=9)
 y.vals <- 10^c(seq(-1,log10(50), length.out=20))
 
 ## evenly spaced P values
-Ps.vals <- seq(0.5,2.5,by=0.1)
-Pn.vals <- Ps.vals
+Ps.vals <- seq(0.05,2.0,length.out=20)
+Pn.vals <- seq(0.1, 2.5, length.out=20)
 Pm.vals <- rep(1.0, length(Ps.vals))
 
 
