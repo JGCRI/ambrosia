@@ -14,9 +14,7 @@ ui <- fluidPage(
             fluidRow(
                 column(width=8, withMathJax(h3("Price elasticity model")))
                 ),
-            fluidRow(
-                xi.matrix.input()
-                ),
+            xi.matrix.input(), 
             fluidRow(h3("Income elasticity model")),
             fluidRow(column(8,h4("Staple demand"))),
             fluidRow(column(8,eta.selector('eta.s.select','\\(\\eta = f_s(Y)\\)',1))),
@@ -106,7 +104,7 @@ set.model.params <-function(input)
   eta.fns <- c(eta.s.fn, eta.n.fn)
 
   list(
-    xi=matrix(c(input$xiss, input$xins, input$xisn, input$xinn), nrow=2),
+    xi=matrix(c(input$xiss, input$xicross, input$xicross, input$xinn), nrow=2),
     yfunc=eta.fns,
     A=c(input$As, input$An))
 }
@@ -141,7 +139,8 @@ server <- function(input, output) {
                            deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
                            deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan),
                            xiss=exi$xi.ss, xinn=exi$xi.nn, ximm=exi$xi.mm,
-                           xins=exi$xi.ns, xisn=exi$xi.sn)
+                           xins=exi$xi.ns, xisn=exi$xi.sn,
+                           xinswt=exi$xi.ns.wt, xisnwt=exi$xi.sn.wt)
     }
 
     ## compute results for staple price change.    The relationship isn't great, but it gives a better sense of what is happening
@@ -159,7 +158,8 @@ server <- function(input, output) {
                             deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
                             deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan),
                             xiss=exi$xi.ss, xinn=exi$xi.nn, ximm=exi$xi.mm,
-                            xins=exi$xi.ns, xisn=exi$xi.sn)
+                            xins=exi$xi.ns, xisn=exi$xi.sn,
+                            xinswt=exi$xi.ns.wt, xisnwt=exi$xi.sn.wt)
     }
 
     ## compute results for nonstaple price change
@@ -177,7 +177,8 @@ server <- function(input, output) {
                             deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
                             deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan),
                             xiss=exi$xi.ss, xinn=exi$xi.nn, ximm=exi$xi.mm,
-                            xins=exi$xi.ns, xisn=exi$xi.sn)
+                            xins=exi$xi.ns, xisn=exi$xi.sn,
+                            xinswt=exi$xi.ns.wt, xisnwt=exi$xi.sn.wt)
   }
 
     ## Compute results for covarying Ps and Pn.  Because rising staple
@@ -198,11 +199,12 @@ server <- function(input, output) {
         erslt <- calc.elas.actual(Ps.vals, pn, pm, yvals, params, rslt)
         exi <- calc.hicks.actual(erslt, rslt$alpha.s, rslt$alpha.n, rslt$alpha.m)
         pcovelas <<- data.frame(ess=erslt$ess, esn=erslt$esn, esm=erslt$esm, etas=erslt$etas,
-                              ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,
-                              deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
-                              deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan),
-                              xiss=exi$xi.ss, xinn=exi$xi.nn, ximm=exi$xi.mm,
-                              xins=exi$xi.ns, xisn=exi$xi.sn)
+                                ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,
+                                deltas=(erslt$ess + erslt$esn + erslt$esm + erslt$etas),
+                                deltan=(erslt$ens + erslt$enn + erslt$enm + erslt$etan),
+                                xiss=exi$xi.ss, xinn=exi$xi.nn, ximm=exi$xi.mm,
+                                xins=exi$xi.ns, xisn=exi$xi.sn,
+                                xinswt=exi$xi.ns.wt, xisnwt=exi$xi.sn.wt)
     }
     ## return all of the above
     list(ydata=ydata, psdata=psdata, pndata=pndata, pcovdata=pcovdata, maxplot=maxplot, yelas=yelas, pselas=pselas, pnelas=pnelas, pcovelas=pcovelas)

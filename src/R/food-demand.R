@@ -87,6 +87,14 @@ calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
     ## approximation to the Slutsky equations, inasmuch as we use
     ## these as the exponents directly, instead of solving for
     ## exponents that produce these values as the elasticities.
+
+    ## First apply symmetry condition.  This means that the xi.sn
+    ## value will be ignored.  Also, set a floor on the terms to
+    ## ensure that the function is well-behaved.
+    alphamin <- 1.0e-2
+    xi[1,2] <- max(alpha.n, alphamin)/max(alpha.s,alphamin) * xi[2,1]
+
+    ## Now calculate the epsilon matrix using the Slutsky equation.
   alpha <- c(alpha.s, alpha.n)
   eta <- c(eta.s,eta.n)
   xi - outer(eta, alpha)
@@ -308,6 +316,9 @@ calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
     rslt$xi.mn <- eps$emn + alpha.n * eps$etam
     rslt$xi.mm <- eps$emm + alpha.m * eps$etam
 
+    rslt$xi.sn.wt <- rslt$xi.sn * alpha.s
+    rslt$xi.ns.wt <- rslt$xi.ns * alpha.n
+
     rslt
 }
 
@@ -331,7 +342,7 @@ lamks2epsy0 <- function(df)
         df$LL <- lltmp
     }
     df
-} 
+}
 
 
 ## Set up some vectors of test values.  These can be used for exercising the

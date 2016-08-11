@@ -1,6 +1,6 @@
 ## Layout functions for the UI.
 
-xidefault <- c(-0.03, 0.01, 0.05, -0.4)
+xidefault <- c(-0.21, -0.13, 0.18)
 elasmin <- -2
 elasmax <- 2
 elasstep <- 0.01
@@ -20,23 +20,19 @@ spacer <- HTML(paste0(rep('&nbsp;',5),collapse=''))
 
 xi.matrix.input <- function()
 {
-  ## Draw the xi input table
-  tags$table(
-    tags$tr(
-      tags$th(spacer),
-      tags$td(numericInput(inputId="xiss", value=xidefault[1],label="\\(\\xi_{ss}\\)",
-                           min=elasmin, max=elasmax, step=elasstep, width='75px')),
-      tags$td(numericInput(inputId="xisn", value=xidefault[3], label="\\(\\xi_{sn}\\)",
-                           min=elasmin, max=elasmax, step=elasstep, width='75px'))
-    ),
-    tags$tr(
-      tags$th(spacer),
-      tags$td(numericInput(inputId="xins", value=xidefault[2], label="\\(\\xi_{ns}\\)",
-                           min=elasmin, max=elasmax, step=elasstep, width='75px')),
-      tags$td(numericInput(inputId="xinn", value=xidefault[4], label="\\(\\xi_{nn}\\)",
-                           min=elasmin, max=elasmax, step=elasstep, width='75px'))
-    )
-  )
+    ## Draw the xi input boxes
+
+    fluidRow(
+        column(4,
+               numericInput(inputId="xiss", value=xidefault[1],label="\\(\\xi_{ss}\\)",
+                            min=elasmin, max=elasmax, step=elasstep)),
+        column(4,
+               numericInput(inputId="xinn", value=xidefault[2], label="\\(\\xi_{nn}\\)",
+                            min=elasmin, max=elasmax, step=elasstep)),
+        column(4,
+               numericInput(inputId="xicross", value = xidefault[3], label='\\(\\xi_{\\text{cross}}\\)',
+                            min=elasmin, max=elasmax, step=elasstep))
+        ) 
 }
 
 
