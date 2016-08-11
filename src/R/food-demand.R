@@ -109,9 +109,21 @@ calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef) {
   alpha.s <- Ps*Qs/Y
   alpha.n <- Pn*Qn/Y
   alpha.t <- alpha.s + alpha.n
+  food.budget <- 1                      # maximum budget fraction for total food.
   if(alpha.t > 1) {
-    Qs <- Qs/alpha.t
-    Qn <- Qn/alpha.t
+      ## Food consumption exceeds the budget constraint; reduce
+      ## consumption to stay within budget.  Reduce nonstaples first,
+      ## since they will normally be a less efficient source of
+      ## calories than staples.
+      if(alpha.s < food.budget) {
+          alpha.n <- food.budget-alpha.s
+      }
+      else {
+          alpha.n <- 0
+          alpha.s <- food.budget
+      }
+      Qs <- alpha.s * Y/Ps
+      Qn <- alpha.n * Y/Pn
   }
   c(Qs=Qs, Qn=Qn)
 }
