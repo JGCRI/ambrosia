@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
   
   RInside R(argc, argv);        // initialize the embedded R instance
   std::string Rcode("../R/food-demand-mc.R");
-  std::string obsdata("../../data/obsdata-test-grand.csv");
+  std::string obsdata("../../data/food-dmnd-price-allrgn.csv");
   if(argc > 1) 
     obsdata = argv[1];
 
