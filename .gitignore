@@ -9,3 +9,6 @@
 # Mac cruft
 .DS_Store
 
+# Directory for output, test data, etc.
+runs
+

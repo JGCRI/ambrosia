@@ -178,10 +178,16 @@ process.gcam.data <- function(gcam.data)
     ## the unit we want.
     Y <- gcam.data$gdp_pcap_thous2005usd
 
-    ## construct the return data frame.  Right now we don't have any
-    ## weight factors, so just use equal weight.
+    ## The GCAM data stores sigma^2 values in
+    ## (thousand-cal-pc-per-day)^2, which is also the unit we want.
+    ## Some of the sig^2 values we calculated came out suspiciously
+    ## low, so we set a floor of 0.01 for these values.
+    sig2Qs = max(gcam.data$sig2Qs, 0.01)
+    sig2Qn = max(gcam.data$sig2Qn, 0.01)
+    
+    ## construct the return data frame.  
 
-    data.frame(Ps=Ps, Pn=Pn, Y=Y, Pm=1, Qs=Qs, Qn=Qn, sig2Qs=1, sig2Qn=1)
+    data.frame(Ps=Ps, Pn=Pn, Y=Y, Pm=1, Qs=Qs, Qn=Qn, sig2Qs=sig2Qs, sig2Qn=sig2Qn)
 }
 
 namemc <- function(nparam=8)

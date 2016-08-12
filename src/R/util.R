@@ -18,7 +18,7 @@ write.fddata <- function(dlist, stem='food-dmnd-price', byname=FALSE)
 
     for(iter in itervals) {
         ## construct filename
-        fn <- paste(stem,'.',iter,'.dat', sep='')
+        fn <- paste(stem,'.',iter,'.csv', sep='')
         write.csv(dlist[[iter]], file = fn, row.names=FALSE)
     }
 }
