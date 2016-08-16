@@ -28,8 +28,8 @@
 \begin{frame}
   \frametitle{Additional notes on Parameters}
   \begin{itemize}
-    \item We require $g_{ij} = g_{ji}$, so there are only three $g$
-      parameters, which we label $g_{ss}$, $g_{sn}$, and
+    \item We require $g_{ij} = \frac{\alpha_j}{\alpha_i}g_{ji}$, so there are only three $g$
+      parameters, which we label $g_{ss}$, $g_{nn}$, and
       $g_{\text{cross}}$.
     \item This makes a total of 8 parameters:
       \begin{itemize}
@@ -60,6 +60,13 @@
     R_{12} = \exp\left(L_1 - L_2\right)
   \end{equation}
   So, a difference of 5 in $L$ indicates an odds ratio of about 150:1.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Monte Carlo Results (model v. 0.2)}
+  \begin{center}
+    \includegraphics[width=0.85\textwidth]{fig/mcrslt-v0_2-allrgn.eps}
+  \end{center}
 \end{frame}
 
 \end{document}
