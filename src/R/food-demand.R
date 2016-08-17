@@ -1,4 +1,5 @@
 library('nleqslv')
+library('dplyr')
 
 food.dmnd <- function(Ps, Pn, Pm, Y, params) {
 ## Function for calculating food demand using the new model
@@ -332,6 +333,34 @@ calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
     rslt$xi.ns.wt <- rslt$xi.ns * alpha.n
 
     rslt
+}
+
+
+food.dmnd.byyear <- function(obsdata, params, region=NULL)
+{
+    ## Plot food demand by year for in input model using the observed
+    ## prices and incomes for a given region.  If region == NULL, do
+    ## it for all regions and concatenate the result
+    if(is.null(region)) {
+        ## run this function for all regions and collect the results
+        ## into a single table.
+        levels(obsdata$GCAM_region_name) %>%
+            lapply(. %>% food.dmnd.byyear(obsdata, params, .)) %>%
+            do.call(rbind, .)
+    }
+    else {
+        filter(obsdata, GCAM_region_name==region) %>%
+            mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal) %>%
+                select(year, Y=gdp_pcap_thous2005usd, Ps, Pn,
+                       Qs.Obs=s_cal_pcap_day_thous, Qn.Obs=ns_cal_pcap_day_thous) -> indata
+        Pm <- rep_len(1,nrow(indata))
+        rslt <- food.dmnd(indata$Ps, indata$Pn, Pm, indata$Y, params)
+        rslt$year <- indata$year
+        rslt$rgn <- region
+        rslt$Qs.Obs <- indata$Qs.Obs
+        rslt$Qn.Obs <- indata$Qn.Obs
+        as.data.frame(rslt)
+    }
 }
 
 
