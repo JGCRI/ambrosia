@@ -404,8 +404,3 @@ samp.params <- list(A=c(0.3, 0.1),
                     yfunc=c(eta.s(-0.15,0.6), eta.n(1.0)),
                     xi=matrix(c(-0.05, 0.1, 0.1, -0.5), nrow=2)
                     )
-## Sample parameters in Monte Carlo representation
-## same as samp.params above:
-x1 <- c(0.3, 0.1, -0.05, 0.1, 0.2, -0.5, 1.0, 0.2936423, 4.5304697)
-## parameters used to generate the test data:
-x0 <- c(0.5, 0.35, -0.03, 0.01, 0.05, -0.4, 0.5, 0.1442695, 5.436564)
