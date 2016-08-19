@@ -25,8 +25,11 @@ nrgn <- 0                               # number of regions, will be filled in b
 ## model may blow up.  Unlike the recommended guesses, these are hard
 ## limits.  Note we don't actually know at this point how many regions
 ## we will have, so these are a stand-in until setup is complete.
-pmin <- c(-Inf, -Inf, -Inf, 0.0, 0.0, 1e-8)
-pmax <- c(0.0,  Inf,  0.0, Inf, Inf, Inf)
+mc.parmin.struct <- c(-Inf, -Inf, -Inf, 0.0, 0.0, 1e-8) # These are the limits for the structural parameters; we'll add the scale parameters later
+mc.parmax.struct <- c(0.0,  Inf,  0.0, Inf, Inf, Inf)
+mc.parmin <- NULL
+mc.parmax <- NULL
+
 
 ### Note on regionalized input vectors:
 ###
@@ -72,11 +75,11 @@ mc.setup <- function(filename)
 	flush(mc.logfile)
     }
 
-    ## Set up the parameter hard limits.  Globals pmin and pmax give
+    ## Set up the parameter hard limits.  Globals mc.parmin and mc.parmax give
     ## the limits for the structure parameters.  The scale parameters
     ## are limited to >= 0.
-    pmin <<- c(rep(c(0,0), nrgn), pmin)
-    pmax <<- c(rep(c(Inf, Inf), nrgn), pmax)
+    mc.parmin <<- c(rep(c(0,0), nrgn), mc.parmin.struct)
+    mc.parmax <<- c(rep(c(Inf, Inf), nrgn), mc.parmax.struct)
 
     ## Return a matrix of recommended parameter guesses to the caller.
     ## These are limits for the initial guesses only, not hard limits
@@ -102,7 +105,7 @@ mc.setup <- function(filename)
 validate.params <- function(x)
 {
     ## Return FALSE if the parameters are outside of allowed limits
-    if(length(x) != length(pmin) || any(x<pmin) || any(x>pmax))
+    if(length(x) != length(mc.parmin) || any(x<mc.parmin) || any(x>mc.parmax))
         FALSE
     else
         TRUE
@@ -263,7 +266,7 @@ namemc <- function(rgnnames=NULL)
         astag <- paste('As', rgnnames, sep='.')
         antag <- paste('An', rgnnames, sep='.')
     }
-    c(astag, antag, "xi.ss", "xi.cross", "xi.nn", "eps1n", "eps.s", "LL")
+    c(astag, antag, "xi.ss", "xi.cross", "xi.nn", "eps1n", "lambda", "ks", "LL")
 }
 
 ## Some abbreviated region names.  You can use this in namemc, if you
@@ -293,7 +296,7 @@ mc.regionalize.param <- function(x)
 }
 
 ## Sample parameters in Monte Carlo representation.  These will need
-## to be regionalized by the function above. 
+## to be regionalized by the function above.
 ## x1: same as samp.params in food-demand.R:
 x1 <- c(0.3, 0.1, -0.05, 0.1, -0.5, 1.0, 0.2936423, 4.5304697)
 ## x0: parameters used to generate test data.  The test data is no

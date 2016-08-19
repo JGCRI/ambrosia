@@ -49,6 +49,13 @@ int main(int argc, char *argv[])
     std::cout << "\n";
   }
 
+  // convert parameters to regional version
+  std::string rgncmd("input.params <- apply(matrix(input.params, ncol=input.npset), 2, mc.regionalize.param)");
+  R.parseEvalQ(rgncmd);
+  std::string prncmd("print(input.params)");
+  R.parseEvalQ(prncmd);
+
+  
   // evaluate the likelihood function and return values
   std::string lfcmd("mc.likelihood(input.params, input.npset)");
   std::vector<float> lf = Rcpp::as<std::vector<float> >(R.parseEval(lfcmd));
