@@ -182,8 +182,8 @@ process.gcam.data <- function(gcam.data)
     ## (thousand-cal-pc-per-day)^2, which is also the unit we want.
     ## Some of the sig^2 values we calculated came out suspiciously
     ## low, so we set a floor of 0.01 for these values.
-    sig2Qs = max(gcam.data$sig2Qs, 0.01)
-    sig2Qn = max(gcam.data$sig2Qn, 0.01)
+    sig2Qs = pmax(gcam.data$sig2Qs, 0.01)
+    sig2Qn = pmax(gcam.data$sig2Qn, 0.01)
     
     ## construct the return data frame.  
 
