@@ -193,7 +193,7 @@ process.gcam.data <- function(gcam.data)
 namemc <- function(nparam=8)
 {
     ## Return the list of names for the parameters in the model.
-    ## Supports both the 8 and 9 parameter version.  Adds the "LL" tag
+    ## Supports both the 7 and i parameter version.  Adds the "LL" tag
     ## to the end to cover the log likelihood column appened by the
     ## monte carlo code.
     if(nparam == 7) {
@@ -202,12 +202,23 @@ namemc <- function(nparam=8)
     else if(nparam == 8) {
         c("As", "An", "xi.ss", "xi.cross", "xi.nn", "eps1n", "lambda", "ks", "LL")
     }
-    else if(nparam == 9) {
-        warning("namemc:  The 9-parameter model specification is deprecated; it may be repurposed in the future.")
-        c("As", "An", "xi.ss", "xi.ns", "xi.sn", "xi.nn", "eps1n", "lambda", "ks", "LL")
-    }
     else {
-        warning("namemc:  nparam must be 7, 8, or 9.")
+        warning(paste("namemc:  nparam must be 7 or 8.  nparam= ", nparam))
         NULL
     }
 }
+
+
+mc.food.dmnd.byyear <- function(obsdata, x, regions=NULL)
+{
+    ## Compute food demand by year for the input monte carlo parameter
+    ## set x.  The x input must be in lambda-ks format, *not* eps.s,
+    ## y0 format.
+    ##
+    ## obsdata: observations to compare to
+    ## x:       input parameter values (see notes above)
+    ## regions:  region(s) to compute.  If NULL, compute for all present
+
+    vec2param(x) %>% food.dmnd.byyear(obsdata, . , region)
+}
+
