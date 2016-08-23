@@ -45,7 +45,7 @@ make.byyear.plot <- function(byyear.data)
 
 }
 
-mc.make.byyear.plot <- function(mc.data, obsdata, region=NULL, nsamp=30)
+mc.make.byyear.plot <- function(mc.data, obsdata, region=NULL, nsamp=30, regionalized=TRUE)
 {
     ## Make the by-year plot for a set of monte carlo results by
     ## sampling the distribution
@@ -55,12 +55,13 @@ mc.make.byyear.plot <- function(mc.data, obsdata, region=NULL, nsamp=30)
 
     ## sample the parameters and apply the food demand function to the samples.
     mcsamp <- mcparam.sample(mc.data, nsamp=nsamp)
-    ## drop likelihood values so we have just the parameter values
+    ## drop likelihood and iteration count if present so we have just the parameter values
     mcsamp.xl <- mcsamp
     mcsamp.xl$LL <- NULL
+    mcsamp.xl$iter <- NULL
 
     fd.byyear <- apply(mcsamp.xl, 1,
-                       . %>% vec2param %>% food.dmnd.byyear(obsdata, ., region) ) %>%
+                       . %>% mc.food.dmnd.byyear(obsdata, . , region, regionalized )) %>%
         do.call(rbind, .)
 
     ## Do we want to return the samples and whatnot here?  Not sure.

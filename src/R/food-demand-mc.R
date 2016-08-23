@@ -283,6 +283,38 @@ default.region.abbrevs <-
           'USA')
         )
 
+mc.food.dmnd.byyear <- function(obsdata, x, regions=NULL, regionalized=TRUE)
+{
+    ## Compute food demand by year for the input monte carlo parameter
+    ## set x.  The x input must be in lambda-ks format, *not* eps.s,
+    ## y0 format.
+    ##
+    ## obsdata: observations to compare to
+    ## x:       input parameter values (see notes above)
+    ## region:  region(s) to compute.  If NULL, compute for all present
+    ## regionalized:  If TRUE (default), then x has separate A_s and A_n
+    ##          parameters for each region.  If FALSE, then there is a
+    ##          single A_s and A_n for all regions.
+
+    if(!regionalized) {
+        ## With just a single set of A avlues, we can convert to
+        ## parameter structure directly and call food.dmnd.byyear.
+        vec2param(x) %>% food.dmnd.byyear(obsdata, . , region)
+    }
+    else {
+        if(is.null(regions)) {
+            regions <- as.factor(levels(obsdata$GCAM_region_name))
+        }
+        lapply(regions,
+               function(rgn) {
+                   ## select regional parameters and pass to food.dmnd.byyear
+                   select.rgnl.coefs(x, rgn) %>% vec2param %>%
+                       food.dmnd.byyear(obsdata, . , rgn)
+               }) %>%
+            do.call(rbind, .)           # collect results into a single data frame
+    }
+}
+
 mc.regionalize.param <- function(x)
 {
     ## convert an old-style parameter set with single As and An values
@@ -302,3 +334,5 @@ x1 <- c(0.3, 0.1, -0.05, 0.1, -0.5, 1.0, 0.2936423, 4.5304697)
 ## x0: parameters used to generate test data.  The test data is no
 ## longer used, but this is still a pretty good parameter set:
 x0 <- c(0.5, 0.35, -0.03, 0.01, -0.4, 0.5, 0.1442695, 5.436564)
+
+
