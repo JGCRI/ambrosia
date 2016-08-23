@@ -274,10 +274,10 @@ namemc <- function(rgnnames=NULL)
 default.region.abbrevs <-
     factor(
         c('Afr-E', 'Afr-N', 'Afr-S', 'Afr-W',
-          'ARG', 'AUS-NZ', 'BRA', 'CAN',
+          'AUS-NZ', 'BRA', 'CAN',
           'CAandC', 'C-Asia', 'CHN', 'COL',
           'EU-12', 'EU-15', 'Eur-E', 'Non-EU',
-          'EFTA', 'IND', 'IDN', 'JPN', 'MEX',
+          'EFTA', 'HK-MC', 'IND', 'IDN', 'JPN', 'MEX',
           'MidEast', 'PAK', 'RUS', 'RSA', 'SAm-N',
           'SAm-S', 'S-Asia', 'KOR', 'SE-Asia',
           'USA')
