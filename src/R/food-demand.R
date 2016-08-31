@@ -364,6 +364,29 @@ food.dmnd.byyear <- function(obsdata, params, region=NULL)
 }
 
 
+food.dmnd.byincome <- function(obsdata, params, region=NULL)
+{
+    if(is.null(region)) {
+        levels(obsdata$GCAM_region_name) %>% lapply(. %>% food.dmnd.byincome(obsdata, params, .)) %>%
+            do.call(rbind, .)
+    }
+    else {
+        od <- filter(obsdata, GCAM_region_name == region) %>%
+            mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal) %>%
+                select(Y=gdp_pcap_thous2005usd, Ps, Pn,
+                       obs.qs=s_cal_pcap_day_thous,obs.qn=ns_cal_pcap_day_thous)
+        Pm <- rep(1, length(od$Y))
+        food.dmnd(od$Ps, od$Pn, Pm, od$Y, params) %>% as.data.frame %>%
+            mutate(region=simplify.region(region), pcGDP=od$Y,
+                   `Staple Residual`=Qs-od$obs.qs,
+                   `Nonstaple Residual`=Qn-od$obs.qn) %>%
+            select(region, pcGDP, `Staple Quantity`=Qs, `Nonstaple Quantity`=Qn,
+                   `Staple Residual`, `Nonstaple Residual`) %>%
+            melt(id=c('region','pcGDP'))
+    }
+
+}
+
 lamks2epsy0 <- function(df)
 {
     ## convert the eta.s k and lambda parameters to nu1 and y0

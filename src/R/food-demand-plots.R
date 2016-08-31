@@ -2,6 +2,7 @@
 library(ggplot2)
 library(reshape2)
 library('dplyr')
+library('RColorBrewer')
 
 make.demand.plot <- function(alldata,xdata,xlabel,max.yval)
 {
@@ -45,6 +46,18 @@ make.byyear.plot <- function(byyear.data)
 
 }
 
+
+make.byincome.plot <- function(obsdata, params, region=NULL)
+{
+    plotdata <- food.dmnd.byincome(obsdata, params, region)
+
+    ggplot(data=plotdata, aes(x=pcGDP, y=value, color=region, variable)) +
+        geom_point() + facet_wrap(~variable, ncol=2) +
+        ylab('Q (1000 Calories/person/day)') +
+        scale_color_brewer(type='qual', guide='legend',palette=7)
+
+}
+
 mc.make.byyear.plot <- function(mc.data, obsdata, region=NULL, nsamp=30)
 {
     ## Make the by-year plot for a set of monte carlo results by
@@ -78,4 +91,20 @@ fit.with.err <- function(Qdata)
 }
 
 
-
+simplify.region <- function(region)
+{
+    ## collapse GCAM regions into categories (Asia, South America,
+    ## etc.) so that there aren't so many of them.
+    ifelse( grepl('Africa',region), 'Africa',
+      ifelse( grepl('Europe|EU',region) | region == 'Russia', 'Europe',
+        ifelse( grepl('Asia', region) |
+                   region %in% c('Australia_NZ', 'HongKong_Macau',
+                                 'Japan','Middle East', 'Pakistan',
+                                 'South Korea'),
+               'Asia-Pacific',
+          ifelse( grepl('America', region) |
+                     region %in% c('Brazil', 'Canada',
+                                   'Colombia', 'Mexico'),
+                 'Americas',
+                 as.character(region)))))
+}
