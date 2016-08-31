@@ -66,7 +66,7 @@ food.dmnd <- function(Ps, Pn, Pm, Y, params) {
   alphatest <- matrix(0.5, nrow=2, ncol=length(Y))
   alphatest[2,] <- 0.05
   ## Solve for alpha
-  rslt <- nleqslv(alphatest, falpha, method='Broyden')
+  rslt <- nleqslv(alphatest, falpha, method='Broyden', control=list(maxit=200))
 
   ## calculate resulting Q values
   alpharslt <- matrix(rslt$x, nrow=2)
