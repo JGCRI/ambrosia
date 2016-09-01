@@ -1,21 +1,5 @@
-## Load libraries that I use
 library( ggplot2 )
 library( reshape2 )
-library( scales )
-library( extrafont )
-library( ggthemes )
-library( Hmisc )
-library( grid )
-library( psych )
-library( sandwich )
-library( lmtest )
-library( doBy )
-library( ggrepel )
-library( minpack.lm )
-library( binhf )
-library( lme4 )
-library( plm )
-library( xtable )
 library( tidyr )
 library( dplyr )
 
@@ -46,8 +30,8 @@ inputData <- function( d, inputFile, skipNumber )
 # --------------------------------------------------------------------------------------
 ## Shorter command to replace column names
 colnameReplace <- function ( d, x, y )
-{ 
-  colnames( d )[ colnames( d ) == x ] <- y  
+{
+  colnames( d )[ colnames( d ) == x ] <- y
   return( d )
 }
 
@@ -69,10 +53,10 @@ substrRight <- function( x, n )
 
 # -----------------------------------------------------------------------------
 ## Define basic theme for figures
-theme_basic <- theme_bw() + 
-  theme( legend.text = element_text( size = 16, family = "Gill Sans MT", vjust = .5 ) ) + 
+theme_basic <- theme_bw() +
+  theme( legend.text = element_text( size = 16, family = "Gill Sans MT", vjust = .5 ) ) +
   theme( legend.title = element_text( size = 16, family = "Gill Sans MT", vjust = 2 ) ) +
-  theme( axis.text = element_text( size = 16, family = "Gill Sans MT" ) ) + 
+  theme( axis.text = element_text( size = 16, family = "Gill Sans MT" ) ) +
   theme( axis.title = element_text( size = 20, family = "Gill Sans MT", face = "bold" ) ) +
   theme( plot.title = element_text( size = 24, family = "Gill Sans MT", face = "bold", vjust = 1 ) ) +
   theme( strip.text = element_text( size = 14, family = "Gill Sans MT" ) )
@@ -105,7 +89,7 @@ isoReplace <- function( d )
   d <- iso( d, "Cote dIvoire (IvoryCoast)", "civ" )
   d <- iso( d, "Cote Divoire", "civ" )
   d <- iso( d, "Cote d'Ivoire", "civ" )
-  d <- iso( d, "C\x99te d'Ivoire", "civ" ) 
+  d <- iso( d, "C\x99te d'Ivoire", "civ" )
   d <- iso( d, "C\x92\x82te d'Ivoire", "civ" )
   d <- iso( d, "C\xed\xc7te d'Ivoire", "civ" )
   d <- iso( d, "C\xc8te d'Ivoire", "civ" )
@@ -119,7 +103,7 @@ isoReplace <- function( d )
   d <- iso( d, "North Korea", "prk" )
   d <- iso( d, "Korea, South", "kor" )
   d <- iso( d, "Korea", "kor" )
-  d <- iso( d, "Republic of Korea", "kor" ) 
+  d <- iso( d, "Republic of Korea", "kor" )
   d <- iso( d, "South Korea", "kor" )
   d <- iso( d, "Laos", "lao" )
   d <- iso( d, "Libya", "lby" )
@@ -202,32 +186,32 @@ isoReplace <- function( d )
   d <- iso( d, "Turks and Caicos Islands", "tca" )
 #   d <- iso( d, "U.S. Pacific Islands", "" )
   d <- iso( d, "Virgin Islands,  U.S.", "vir" )
-  d <- iso( d, "Antigua and Barbuda", "atg" ) 
-  d <- iso( d, "Bolivia (Plurinational State of)", "bol" ) 
-  d <- iso( d, "British Virgin Islands", "vgb" ) 
-  d <- iso( d, "Cabo Verde", "cpv" ) 
-  d <- iso( d, "Democratic Republic of the Congo", "cod" ) 
-  d <- iso( d, "Iran (Islamic Republic of)", "irn" ) 
-  d <- iso( d, "Lao People's Democratic Republic", "lao" ) 
-  d <- iso( d, "Libya", "lby" ) 
-  d <- iso( d, "Micronesia (Federated States of)", "fsm" ) 
-  d <- iso( d, "R\x8eunion", "reu" ) 
-  d <- iso( d, "R̩union", "reu" ) 
-  d <- iso( d, "R\x92\xa9union", "reu" ) 
-  d <- iso( d, "R\xed\xa9union", "reu" ) 
-  d <- iso( d, "Republic of Moldova", "mda" ) 
-  d <- iso( d, "Saint Helena, Ascension and Tristan da Cunha", "shn" ) 
-  d <- iso( d, "South Sudan", "ssd" ) 
-  d <- iso( d, "Sudan (former)", "sdn" ) 
-  d <- iso( d, "The former Yugoslav Republic of Macedonia", "mkd" ) 
-  d <- iso( d, "Turks and Caicos Islands", "tca" ) 
-  d <- iso( d, "United Republic of Tanzania", "tza" ) 
-  d <- iso( d, "United States Virgin Islands", "vir" ) 
+  d <- iso( d, "Antigua and Barbuda", "atg" )
+  d <- iso( d, "Bolivia (Plurinational State of)", "bol" )
+  d <- iso( d, "British Virgin Islands", "vgb" )
+  d <- iso( d, "Cabo Verde", "cpv" )
+  d <- iso( d, "Democratic Republic of the Congo", "cod" )
+  d <- iso( d, "Iran (Islamic Republic of)", "irn" )
+  d <- iso( d, "Lao People's Democratic Republic", "lao" )
+  d <- iso( d, "Libya", "lby" )
+  d <- iso( d, "Micronesia (Federated States of)", "fsm" )
+  d <- iso( d, "R\x8eunion", "reu" )
+  d <- iso( d, "R̩union", "reu" )
+  d <- iso( d, "R\x92\xa9union", "reu" )
+  d <- iso( d, "R\xed\xa9union", "reu" )
+  d <- iso( d, "Republic of Moldova", "mda" )
+  d <- iso( d, "Saint Helena, Ascension and Tristan da Cunha", "shn" )
+  d <- iso( d, "South Sudan", "ssd" )
+  d <- iso( d, "Sudan (former)", "sdn" )
+  d <- iso( d, "The former Yugoslav Republic of Macedonia", "mkd" )
+  d <- iso( d, "Turks and Caicos Islands", "tca" )
+  d <- iso( d, "United Republic of Tanzania", "tza" )
+  d <- iso( d, "United States Virgin Islands", "vir" )
   d <- iso( d, "USSR", "svu" )
-  d <- iso( d, "Venezuela (Bolivarian Republic of)", "ven" ) 
-  d <- iso( d, "Wallis and Futuna Islands", "wlf" ) 
-  d <- iso( d, "West Bank and Gaza Strip", "pse" ) 
-#   d <- iso( d, "Wake Insland", "" ) 
+  d <- iso( d, "Venezuela (Bolivarian Republic of)", "ven" )
+  d <- iso( d, "Wallis and Futuna Islands", "wlf" )
+  d <- iso( d, "West Bank and Gaza Strip", "pse" )
+#   d <- iso( d, "Wake Insland", "" )
   ## Country code for Romania is sometimes "rom" and sometimes "rou"
   d <- iso( d, "Romania", "rou" )
   return ( d )

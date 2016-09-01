@@ -8,10 +8,10 @@
 # -----------------------------------------------------------------------------
 ### For now, let price of fish == price of sheep; change when more info becomes available
 
-## Input data sources: 
+## Input data sources:
   ## GDP_cap (PPP) - WB WDI
   ## consumption - FAO
-  ## Prices - FAO 
+  ## Prices - FAO
 
 ## Definitions:
   ## Staple foods: corn, other grains, rice, wheat, roots & tubers
@@ -28,12 +28,13 @@
 # -----------------------------------------------------------------------------
 # Define functions and load libraries
 # -----------------------------------------------------------------------------
-source( "functions.R" ) # Load my standard set of functions
+path <- dirname(sys.frame(1)$ofile)
+source( file.path(path,"functions.R") ) # Load my standard set of functions
 
 # -----------------------------------------------------------------------------
 # Input raw data
 # -----------------------------------------------------------------------------
-setwd( "../../data/raw-data" )
+setwd( file.path(path,"../../data/raw-data" ))
 d.iso <- inputData( d, "iso_GCAM_regID_name.csv", 0 )
 d.cons <- inputData( d, "FAOstat_food_supply.csv.gz", 0)
 d.pp <- inputData( d, "FAOstat_producer_prices.csv", 0)
@@ -86,7 +87,7 @@ faoClean <- function( d )
     select( country_name, iso, var, item, unit, year, value ) %>%
     filter( !( iso == "sdn" & year > 2009 ) ) %>%
     distinct( iso, unit, item, year ) %>%
-  ## Replace problem characters in values  
+  ## Replace problem characters in values
     charReplace( "var" ) %>%
     charReplace( "unit" )
   return( d )
@@ -94,9 +95,9 @@ faoClean <- function( d )
 
 # -----------------------------------------------------------------------------
 # Clean and prepare data for analysis
-# -----------------------------------------------------------------------------  
+# -----------------------------------------------------------------------------
 ## Clean USD GDP deflator
-d.deflator <- d.deflator %>% 
+d.deflator <- d.deflator %>%
   faoClean( ) %>%
   rename( deflator_2005usd = value ) %>%
   select( year, deflator_2005usd )
@@ -108,7 +109,7 @@ d.pop <- d.pop %>%
   select( iso, year, pop_thous )
 
 ## Clean consumption data
-d.cons <- faoClean( d.cons )  
+d.cons <- faoClean( d.cons )
   ## Prepare for merging with price data (below)
 d.cons <- d.cons %>%
   select( -var ) %>%
@@ -124,7 +125,7 @@ d.pp <- d.pp %>%
   spread( item, value )
   d.pp[["average(Sugar cane, Sugar beet)"]] <- ( d.pp[["Sugar cane"]] + d.pp[["Sugar beet"]] ) / 2
   d.pp[["average(Rapeseed, Mustard seed)"]] <- ( d.pp[["Rapeseed"]] + d.pp[["Mustard seed"]] ) / 2
-  d.pp[["average(Beans, dry; Peas, dry; Chick peas; Lentils)"]] <- ( d.pp[["Beans, dry"]] + d.pp[["Peas, dry"]] 
+  d.pp[["average(Beans, dry; Peas, dry; Chick peas; Lentils)"]] <- ( d.pp[["Beans, dry"]] + d.pp[["Peas, dry"]]
                                                                      + d.pp[["Chick peas"]] + d.pp[["Lentils"]] ) / 4
   d.pp[["average(Almonds, with shell; Walnuts, with shell)"]] <- ( d.pp[["Almonds, with shell"]] + d.pp[["Walnuts, with shell"]] ) / 2
   ### For now, let price of fish == price of sheep; change when more info becomes available ###
@@ -151,7 +152,7 @@ d.gdp <- d.gdp %>%
   mutate( gdp_mil_2005usd = gdp_pcap_thous2005usd  * pop_thous ) %>%
   select( -gdp_pcap_thous2005usd ) %>%
   na.omit( ) %>%
-  inner_join( d.iso, by = "iso" ) %>% 
+  inner_join( d.iso, by = "iso" ) %>%
   select( -country_name, -GCAM_region_ID ) %>%
   gather( var, value, c( pop_thous, gdp_mil_2005usd ) ) %>%
   spread( iso, value ) %>%
@@ -161,7 +162,7 @@ d.gdp <- d.gdp %>%
 
 ## Join price, consumption, pop, and gdp data
 ## Multiply country per capita values by population, aggregate to region, divide by population
-d.cons <- d.cons %>%  
+d.cons <- d.cons %>%
   inner_join( d.pop, by = c( "iso", "year" ) ) %>%
     # Compute total country demand
   mutate( food_supply_thous_cal_day = food_supply_kcal_capita_day * pop_thous ) %>%
@@ -193,9 +194,9 @@ d.cons.weight <- d.cons.weight %>%
 ## Estimate price per calorie
 d <- d.cons %>%
   spread( var, value ) %>%
-  # Compute cal/kg by region ## NOTE: for regions with very low caloric consumption of commodities, the cal/kg look wrong 
+  # Compute cal/kg by region ## NOTE: for regions with very low caloric consumption of commodities, the cal/kg look wrong
   # (e.g. bananas in Eastern Africa have cal/kg ~ 2-4 times higher than they should), but consumption is small, so don't worry about it
-  mutate( thous_cal_p_kg = ifelse ( food_supply_thous_kg_day != 0, 
+  mutate( thous_cal_p_kg = ifelse ( food_supply_thous_kg_day != 0,
                                   ( ( food_supply_thous_cal_day ) / ( food_supply_thous_kg_day * 1000 ) ), 0 ) ) %>%
   # Merge with prices per tonne
   full_join( d.pp, by = c( "cons_commod", "year" ) ) %>%
@@ -204,7 +205,7 @@ d <- d.cons %>%
   # Estimate cost per calorie in region by commodity
   mutate( usd_p1000cal = ifelse( thous_cal_p_kg != 0,( ( pp_2005usd_tonne / 1000 ) / thous_cal_p_kg ), NA ) ) %>%
   na.omit( )
- 
+
 ## Aggregate to staple and non-staples prices, weighted by consumption
 d.price.weight<- d %>%
   select( GCAM_region_name, s_ns, cons_commod, year, usd_p1000cal ) %>%
@@ -236,10 +237,10 @@ d.s.ns <- d %>%
   gather( var, value, c( cal_pcap_day_thous, usd_p1000cal ) ) %>%
   mutate( var = paste( s_ns, var, sep = "_" ) ) %>%
   select( -s_ns ) %>%
-  spread( var, value ) %>% 
+  spread( var, value ) %>%
   mutate( s_share = s_cal_pcap_day_thous / ( s_cal_pcap_day_thous + ns_cal_pcap_day_thous ) ) %>%
   mutate( ns_share = ns_cal_pcap_day_thous / ( s_cal_pcap_day_thous + ns_cal_pcap_day_thous ) )
-  
+
 # Bind with population to calculate consumption per capita
 d <- d %>%
   filter( s_ns != "ns" ) %>%
@@ -247,51 +248,51 @@ d <- d %>%
   full_join( d.s.ns, by = c( "GCAM_region_name", "year" ) ) %>%
   na.omit( )
 
-setwd( "../" )
-write.csv( d, "food_cons_price.csv", row.names = FALSE )
+write.csv( d, "../food_cons_price.csv", row.names = FALSE )
 
-rm( d.s.ns, d.cons.weight, d.price.weight, d.commod.map, d.iso, d.deflator_2011, d.pop, d.gdp, d.cons.ag, d.cons.an, d.map, 
+rm( d.s.ns, d.cons.weight, d.price.weight, d.commod.map, d.iso, d.deflator_2011, d.pop, d.gdp, d.cons.ag, d.cons.an, d.map,
     d.cons, d.pp, d.deflator, deflator_2011 )
 
 #------------------------------------------------------
-## Figures
+## Figures.  These will be generated and stored in the lists
+##           plots1 and plots2, but they will not be displayed
+##           unless specifically asked for.
 #------------------------------------------------------
-setwd( "../doc/fig/input-data-fig")
 ## Assign colors to regions
-region_color <- c( "Africa_Eastern" = "olivedrab2", 
-                   "Africa_Northern" = "darkgreen", 
-                   "Africa_Southern" = "green4", 
-                   "Africa_Western" = "olivedrab3", 
-                   "Argentina" = "mediumpurple", 
-                   "Australia_NZ" = "cornflowerblue", 
-                   "Brazil" = "mediumpurple4", 
-                   "Canada" = "chocolate1", 
-                   "Central America and Caribbean" = "darkorchid4", 
-                   "Central Asia" = "firebrick1", 
-                   "China" = "firebrick4", 
-                   "Colombia" = "magenta4", 
-                   "EU-12" = "dodgerblue4", 
-                   "EU-15" = "dodgerblue3", 
-                   "Europe_Eastern" = "deepskyblue3", 
-                   "Europe_Non_EU" = "cadetblue2", 
-                   "European Free Trade Association" = "cadetblue", 
-                   "HongKong_Macau" = "red2", 
-                   "India" = "indianred", 
-                   "Indonesia" = "firebrick2", 
-                   "Japan" = "deeppink4", 
-                   "Mexico" = "orchid4", 
-                   "Middle East" = "darkolivegreen3", 
-                   "Pakistan" = "indianred4", 
-                   "Russia" = "red4", 
-                   "South Africa" = "olivedrab4", 
-                   "South America_Northern" = "purple4", 
-                   "South America_Southern" = "purple2", 
-                   "South Asia" = "indianred2", 
-                   "South Korea" = "deeppink3", 
-                   "Southeast Asia" = "red3", 
-                   "Taiwan" = "deeppink3", 
+region_color <- c( "Africa_Eastern" = "olivedrab2",
+                   "Africa_Northern" = "darkgreen",
+                   "Africa_Southern" = "green4",
+                   "Africa_Western" = "olivedrab3",
+                   "Argentina" = "mediumpurple",
+                   "Australia_NZ" = "cornflowerblue",
+                   "Brazil" = "mediumpurple4",
+                   "Canada" = "chocolate1",
+                   "Central America and Caribbean" = "darkorchid4",
+                   "Central Asia" = "firebrick1",
+                   "China" = "firebrick4",
+                   "Colombia" = "magenta4",
+                   "EU-12" = "dodgerblue4",
+                   "EU-15" = "dodgerblue3",
+                   "Europe_Eastern" = "deepskyblue3",
+                   "Europe_Non_EU" = "cadetblue2",
+                   "European Free Trade Association" = "cadetblue",
+                   "HongKong_Macau" = "red2",
+                   "India" = "indianred",
+                   "Indonesia" = "firebrick2",
+                   "Japan" = "deeppink4",
+                   "Mexico" = "orchid4",
+                   "Middle East" = "darkolivegreen3",
+                   "Pakistan" = "indianred4",
+                   "Russia" = "red4",
+                   "South Africa" = "olivedrab4",
+                   "South America_Northern" = "purple4",
+                   "South America_Southern" = "purple2",
+                   "South Asia" = "indianred2",
+                   "South Korea" = "deeppink3",
+                   "Southeast Asia" = "red3",
+                   "Taiwan" = "deeppink3",
                    "USA" = "chocolate3" )
-colScaleRegion <- scale_colour_manual( name = "gcam_region", values = region_color ) 
+colScaleRegion <- scale_colour_manual( name = "gcam_region", values = region_color )
 colFillRegion <- scale_fill_manual( name = "gcam_region", values = region_color )
 
 ## Plots of time vs. variables:
@@ -307,7 +308,7 @@ makePlot1 <- function ( v )
   p <- p + theme( axis.text.x = element_text( angle = 50, vjust = 0.5 ) )
   return( p )
 }
-plots <- lapply( vars, makePlot1 )
+plots1 <- lapply( vars, makePlot1 )
 
 ## Plots of GDP/cap vs. variables:
 vars <- c( "ns_cal_pcap_day_thous", "ns_usd_p1000cal", "s_cal_pcap_day_thous",
@@ -320,4 +321,4 @@ makePlot2 <- function( v )
   p <- p + theme( axis.text.x = element_text( angle = 50, vjust = 0.5 ) )
   return( p )
 }
-plots <- lapply( vars, makePlot2 )
+plots2 <- lapply( vars, makePlot2 )
