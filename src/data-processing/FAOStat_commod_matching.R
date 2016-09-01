@@ -248,7 +248,11 @@ d <- d %>%
   full_join( d.s.ns, by = c( "GCAM_region_name", "year" ) ) %>%
   na.omit( )
 
-write.csv( d, "../food_cons_price.csv", row.names = FALSE )
+## create final data set
+source(file.path(path,'../R/util.R'))
+allrgn.data <- assign.sigma.Q(d)
+write.csv( allrgn.data, "../food-dmnd-price-allrgn.csv", row.names = FALSE )
+
 
 rm( d.s.ns, d.cons.weight, d.price.weight, d.commod.map, d.iso, d.deflator_2011, d.pop, d.gdp, d.cons.ag, d.cons.an, d.map,
     d.cons, d.pp, d.deflator, deflator_2011 )
