@@ -63,10 +63,9 @@ food.dmnd <- function(Ps, Pn, Pm, Y, params) {
     alpha - alpha.out
   }
   ## Now, use a nonlinear equation solver to find a consistent set of alpha values.
-  alphatest <- matrix(0.5, nrow=2, ncol=length(Y))
-  alphatest[2,] <- 0.05
+  alphatest <- matrix(0.01, nrow=2, ncol=length(Y))
   ## Solve for alpha
-  rslt <- nleqslv(alphatest, falpha, method='Broyden', control=list(maxit=200))
+  rslt <- nleqslv(alphatest, falpha, method='Broyden', control=list(maxit=500))
 
   ## calculate resulting Q values
   alpharslt <- matrix(rslt$x, nrow=2)
