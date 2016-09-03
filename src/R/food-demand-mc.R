@@ -11,6 +11,7 @@ mc.obsdata <- NULL
 mc.logfile <- NULL
 mc.chunksize <- 10                      # see note in mc.setup
 mc.splitvec <- 0                        # to be filled in later
+mc.pmval <- 0.02
 
 mc.setup <- function(filename)
 {
@@ -32,7 +33,7 @@ mc.setup <- function(filename)
     else {
         ## reformat slightly:
         obs.data <- data.frame(Ps=obs.data$Ps, Pn=obs.data$Pn, Y=obs.data$Y,
-                               Pm=1,     # Pm is fixed at 1.0.
+                               Pm=mc.pmval,     # Pm is fixed.
                                Qs=obs.data$Qs, Qn=obs.data$Qn,
                                sig2Qs=obs.data$sigQs^2, sig2Qn=obs.data$sigQn^2)
     }
@@ -187,7 +188,7 @@ process.gcam.data <- function(gcam.data)
     
     ## construct the return data frame.  
 
-    data.frame(Ps=Ps, Pn=Pn, Y=Y, Pm=1, Qs=Qs, Qn=Qn, sig2Qs=sig2Qs, sig2Qn=sig2Qn)
+    data.frame(Ps=Ps, Pn=Pn, Y=Y, Pm=mc.pmval, Qs=Qs, Qn=Qn, sig2Qs=sig2Qs, sig2Qn=sig2Qn)
 }
 
 namemc <- function(nparam=8)
