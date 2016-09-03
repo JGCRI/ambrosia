@@ -1,0 +1,65 @@
+## Functions to generate prospective plots for Paper I.
+
+library('ggplot2')
+library('reshape2')
+library('ggthemes')
+library('dplyr')
+
+srcdir <- dirname(sys.frame(1)$ofile)
+source(file.path(srcdir,'food-demand.R'))
+source(file.path(srcdir,'food-demand-plots.R'))
+
+make.paper1.plots <- function(params, y.vals=NULL, ps.vals=NULL, pn.vals=NULL)
+{
+    ## Default values of plot parameters
+    if(is.null(y.vals))
+        y.vals <- seq(1, 30, length.out=50)
+    len <- length(y.vals)
+    if(is.null(ps.vals))
+        ps.vals <- rep(0.022,len) # Approximate median of observational data
+    if(is.null(pn.vals))
+        pn.vals <- rep(0.135,len) # Approximate median of observational data
+    pm.vals <- rep(1,len)         # Pm==1, except when calculating elasticities
+
+    demand.data <- food.dmnd(ps.vals, pn.vals, pm.vals, y.vals, params) %>%
+        as.data.frame
+    
+    plt.by.gdp <- plot.qty(demand.data, y.vals, 'pcGDP-PPP (thousands)')
+
+    elas.data <- calc.elas.actual(ps.vals, pn.vals, pm.vals, y.vals, params)
+
+    plt.elas.by.gdp <- plot.elas(elas.data, y.vals, 'pcGDP-PPP (thousands)')
+    
+    list(qty.by.gdp=plt.by.gdp, elas.by.gdp=plt.elas.by.gdp)
+}
+
+
+plot.qty <- function(demand.data, x, xlabel)
+{
+    pltdata <- mutate(demand.data, x=x, Qs=1000*Qs, Qn=1000*Qn, Qtot=Qs+Qn) %>%
+        select(x, `Staple Calories`=Qs, `Nonstaple Calories`=Qn,
+               `Total Calories`=Qtot) %>%
+        melt(id='x')
+
+    ggplot(data=pltdata, aes(x=x, y=value, color=variable)) +
+        geom_line(size=1.5) + xlab(xlabel) + ylab('Calories/person/day') +
+            theme_minimal() + scale_color_ptol() +
+            ggtitle('Model Results: Calorie Consumption') 
+}
+
+plot.elas <- function(elas.data, x, xlabel)
+{
+    pltdata <- mutate(elas.data, x=x) %>%
+        select(x,
+               `Income Elasticity (staple)`=etas,
+               `Income Elasticity (nonstaple)`=etan,
+               `Own-price Elasticity (staple)`=ess,
+               `Own-price Elasticity (nonstaple)`=enn) %>%
+        melt(id='x')
+
+    ggplot(data=pltdata, aes(x=x, y=value, color=variable)) +
+        geom_line(size=1.5) + xlab(xlabel) + ylab('') +
+        theme_minimal() + scale_color_ptol() +
+        ggtitle('Food Demand Elasticities')
+                      
+}
