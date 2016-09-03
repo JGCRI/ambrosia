@@ -194,8 +194,11 @@ eta.s <- function(nu1, y0, mc.mode=FALSE) {
             lam <- -abs(nu1)*e
         }
     }
-    ## Calculate y1, the value of y where the elasticity is 1.  1-ln(k*y1) = y1/lam
-    y1 <- calc.etas.y1(k,lam)
+    ## Limit as Y->0 of the logarithmic derivative of this function is
+    ## not well behaved.  However, the quantity is very small for k*Y
+    ## < ~1e-3 anyhow, so we can replace this segment with a linear
+    ## relation with little change in behavior.
+    y1 <- 1e-3/k
     Qy1 <- (k*y1)^(lam/y1) / y1       # match-up condition:  qty at y=y1, divided by y
     scl <- k^(-lam)                   # scale factor gives Y(1) = 1.
     function(Y,calcQ=FALSE) {
@@ -241,21 +244,6 @@ eta.n <- function(nu1) {
     }
 }
 
-calc.etas.y1 <- function(k, lam)
-{
-  ## Given k and lambda, find the value of Y for which the elasticity in eta.s is 1.
-  ## This is expressible in terms of the Lambert W-function, but the R package
-  ## for calculating that function won't install properly.  It's easier just to
-  ## solve for it.
-  ##
-  ## We'll probably only use this function with single values, but it's vectorized
-  ## just in case. Using nleqslv is kind of overkill, but it does keep this function
-  ## simple
-  ffunc <- function(y) {1-log(k*y)-y/lam}
-  jfunc <- function(y) {diag(-k/y-1/lam, nrow=length(k))}
-  rslt <- nleqslv(x=rep(1,length(k)), fn=ffunc, jac=jfunc)
-  rslt$x
-}
 
 calc.elas.actual <- function(Ps,Pn,Pm,Y, params, basedata=NULL)
 {
