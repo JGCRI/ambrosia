@@ -11,7 +11,6 @@ mc.obsdata <- NULL
 mc.logfile <- NULL
 mc.chunksize <- 10                      # see note in mc.setup
 mc.splitvec <- 0                        # to be filled in later
-mc.pmval <- 0.02
 
 mc.setup <- function(filename)
 {
@@ -33,7 +32,6 @@ mc.setup <- function(filename)
     else {
         ## reformat slightly:
         obs.data <- data.frame(Ps=obs.data$Ps, Pn=obs.data$Pn, Y=obs.data$Y,
-                               Pm=mc.pmval,     # Pm is fixed.
                                Qs=obs.data$Qs, Qn=obs.data$Qn,
                                sig2Qs=obs.data$sigQs^2, sig2Qn=obs.data$sigQn^2)
     }
@@ -52,29 +50,29 @@ mc.setup <- function(filename)
     }
 
     ## Return a matrix of recommended parameter limits to the caller
-    nparam <- 8
+    nparam <- 9
     plohi <- matrix(nrow=2, ncol=nparam)
-    plohi[1,] <- c(0.001, 0.001, -2.0, -1.0, -2.0, 0.05, 0.0, 0.001)
-    plohi[2,] <- c(1.0,   1.0,   0.0,   1.0, 0.0, 1.5,   5.0,  10.0)
+    plohi[1,] <- c(0.001, 0.001, -2.0, -1.0, -2.0, 0.05, 0.0, 0.001, 0.1)
+    plohi[2,] <- c(1.0,   1.0,   0.0,   1.0, 0.0, 1.5,   5.0,  10.0, 2.0)
 
     plohi
 }
 
 ## minimum and maximum value for parameters:  outside of this range the model may blow up.
-pmin8 <- c(0.0, 0.0, -Inf, -Inf, -Inf, 0.0, 0.0, 1e-8)
-pmax8 <- c(Inf, Inf,  0.0,  Inf,  0.0, Inf, Inf, Inf)
+pmin9 <- c(0.0, 0.0, -Inf, -Inf, -Inf, 0.0, 0.0, 1e-8, 1e-6)
+pmax9 <- c(Inf, Inf,  0.0,  Inf,  0.0, Inf, Inf, Inf, Inf)
 ## 8-parameter version
-pmin7 <- c(0.0, 0.0, -Inf, -Inf, -Inf, 0.0, -Inf)
-pmax7 <- c(Inf, Inf,  0.0,  Inf,  0.0, Inf,  Inf)
+pmin8 <- c(0.0, 0.0, -Inf, -Inf, -Inf, 0.0, -Inf, 1e-6)
+pmax8 <- c(Inf, Inf,  0.0,  Inf,  0.0, Inf,  Inf, Inf)
 
 validate.params <- function(x)
 {
     ## Return FALSE if the parameters are outside of allowed limits
-    if(length(x)==7 && (any(x<pmin7) || any(x>pmax7)))
+    if(length(x)==8 && (any(x<pmin8) || any(x>pmax8)))
         FALSE
-    else if(length(x)==8 && (any(x<pmin8) || any(x>pmax8)))
+    else if(length(x)==9 && (any(x<pmin9) || any(x>pmax9)))
         FALSE
-    else if(length(x) < 7 || length(x) > 8)
+    else if(length(x) < 8 || length(x) > 9)
         FALSE
     else
         TRUE
@@ -86,22 +84,24 @@ vec2param <- function(x)
     ## Convert a vector of parameters into a params structure.  We
     ## assume that if you're using this you are doing an Monte Carlo
     ## calculation, so we set the parameters of eta.s accordingly.  We
-    ## also look at the number of parameters passed in.  If it is 7,
-    ## we assume you want etas = constant.  If it's 8, we assume you
+    ## also look at the number of parameters passed in.  If it is 8,
+    ## we assume you want etas = constant.  If it's 9, we assume you
     ## want etas = eta.s(lambda, k).  If it's anything else, we throw
     ## an error.
     ##
     ## The parameters in the vector are:
-    ##  [A_s, A_n, xi_ss, xi_cross, xi_nn, nu1_n, lambda_s, k_s ]
+    ##  [A_s, A_n, xi_ss, xi_cross, xi_nn, nu1_n, lambda_s, k_s, Pm ]
     ## xi_cross is used for both xi_sn and xi_ns, forcing them to be equal.
     ##
-    ## If there are only 7 parameters, then the first 6 are as above,
-    ## and the last is eta_s.
-    if(length(x) == 8) {
+    ## If there are only 8 parameters, then the first 6 are as above,
+    ## and the next to last is eta_s.
+    if(length(x) == 9) {
         etas <- eta.s(x[7],x[8],mc.mode=TRUE)
+        Pm <- x[9]
     }
-    else if(length(x) == 7) {
+    else if(length(x) == 8) {
         etas <- eta.constant(x[7])
+        Pm <- x[8]
     }
     else {
         msg <- paste('Invalid parameter vector.  Length must be 8 or 9.  length(x) == ', length(x))
@@ -110,7 +110,7 @@ vec2param <- function(x)
 
     xivals <- c(x[3], x[4], x[4], x[5])
     ## construct the parameter structure
-    list(A=x[1:2], yfunc=c(etas, eta.n(x[6])), xi=matrix(xivals, nrow=2))
+    list(A=x[1:2], yfunc=c(etas, eta.n(x[6])), xi=matrix(xivals, nrow=2), Pm=Pm)
 }
 
 mc.eval.fd.likelihood <- function(df,params)
@@ -123,7 +123,7 @@ mc.eval.fd.likelihood <- function(df,params)
     
     L <- -9.99e9                        # Default value, if the calc. fails
     try({
-    	dmnd <- food.dmnd(df$Ps, df$Pn, df$Pm, df$Y, params)
+    	dmnd <- food.dmnd(df$Ps, df$Pn, df$Y, params)
         
         ## return the log likelihood.  dmnd$Q[sn] are the model
         ## outputs, df$Q[sn] are the observations, and df$sig2Q[sn]
@@ -188,23 +188,23 @@ process.gcam.data <- function(gcam.data)
     
     ## construct the return data frame.  
 
-    data.frame(Ps=Ps, Pn=Pn, Y=Y, Pm=mc.pmval, Qs=Qs, Qn=Qn, sig2Qs=sig2Qs, sig2Qn=sig2Qn)
+    data.frame(Ps=Ps, Pn=Pn, Y=Y, Qs=Qs, Qn=Qn, sig2Qs=sig2Qs, sig2Qn=sig2Qn)
 }
 
-namemc <- function(nparam=8)
+namemc <- function(nparam=9)
 {
     ## Return the list of names for the parameters in the model.
     ## Supports both the 7 and i parameter version.  Adds the "LL" tag
     ## to the end to cover the log likelihood column appened by the
     ## monte carlo code.
-    if(nparam == 7) {
-        c("As", "An", "xi.ss", "xi.cross", "xi.nn", "eps1n", "eps.s", "LL")
+    if(nparam == 8) {
+        c("As", "An", "xi.ss", "xi.cross", "xi.nn", "eps1n", "eps.s", "Pm", "LL")
     }
-    else if(nparam == 8) {
-        c("As", "An", "xi.ss", "xi.cross", "xi.nn", "eps1n", "lambda", "ks", "LL")
+    else if(nparam == 9) {
+        c("As", "An", "xi.ss", "xi.cross", "xi.nn", "eps1n", "lambda", "ks", "Pm", "LL")
     }
     else {
-        warning(paste("namemc:  nparam must be 7 or 8.  nparam= ", nparam))
+        warning(paste("namemc:  nparam must be 8 or 9.  nparam= ", nparam))
         NULL
     }
 }

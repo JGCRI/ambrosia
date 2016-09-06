@@ -39,14 +39,15 @@ ui <- fluidPage(
                 ),
             fluidRow(h3('Other Price and Income Variables')),
             conditionalPanel(condition='input.tab != 1',
-                             sliderInput(inputId='y.val.slider', min=0, max=50.0, step=0.5, label='\\(Y\\)',
+                             sliderInput(inputId='y.val.slider', min=0, max=50.0, step=0.25, label='\\(Y\\)',
                                          value=1)),
             conditionalPanel(condition='input.tab != 2 && input.tab != 4',
-                             sliderInput(inputId='ps.val.slider', min=0.1, max=20.0, step=0.1, label='\\(P_s\\)',
+                             sliderInput(inputId='ps.val.slider', min=0, max=5.0, step=0.02, label='\\(P_s\\)',
                                          value=1)),
             conditionalPanel(condition='input.tab != 3',
-                             sliderInput(inputId='pn.val.slider', min=0.1, max=20.0, step=0.1, label='\\(P_n\\)',
-                                         value=1))
+                             sliderInput(inputId='pn.val.slider', min=0, max=5.0, step=0.02, label='\\(P_n\\)',
+                                         value=1)),
+            numericInput(inputId='pm.val', value=1, label='\\(P_m\\)', min=0.1, max=10.0, step=0.1)
             ),
 
   ## Main Panel
@@ -106,7 +107,8 @@ set.model.params <-function(input)
   list(
     xi=matrix(c(input$xiss, input$xicross, input$xicross, input$xinn), nrow=2),
     yfunc=eta.fns,
-    A=c(input$As, input$An))
+    A=c(input$As, input$An),
+    Pm=input$pm.val)
 }
 
 ## data frames to hold persistent results.
@@ -128,11 +130,10 @@ server <- function(input, output) {
     if(input$tab == 1) {
       ps <- rep(input$ps.val.slider, length(y.vals))
       pn <- rep(input$pn.val.slider, length(y.vals))
-      pm <- rep(1, length(y.vals))
-      rslt <- food.dmnd(ps,pn,pm,y.vals,params)
+      rslt <- food.dmnd(ps,pn,y.vals,params)
       ydata <<- data.frame(Ps=ps, Pn=pn, Y=y.vals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                            Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
-      erslt <- calc.elas.actual(ps, pn, pm, y.vals, params, rslt)
+      erslt <- calc.elas.actual(ps, pn, y.vals, params, rslt)
       exi <- calc.hicks.actual(erslt, rslt$alpha.s, rslt$alpha.n, rslt$alpha.m)
       yelas <<- data.frame(ess=erslt$ess, esn=erslt$esn, esm=erslt$esm, etas=erslt$etas,
                            ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,
@@ -147,11 +148,10 @@ server <- function(input, output) {
     if(input$tab == 2) {
       yvals <- rep(input$y.val.slider,length(Ps.vals))
       pn <- rep(input$pn.val.slider, length(Ps.vals))
-      pm <- rep(1, length(Ps.vals))
-      rslt <- food.dmnd(Ps.vals, pn, pm, yvals, params)
+      rslt <- food.dmnd(Ps.vals, pn, yvals, params)
       psdata <<- data.frame(Ps=Ps.vals, Pn=pn, Y=yvals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                             Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
-      erslt <- calc.elas.actual(Ps.vals, pn, pm, yvals, params, rslt)
+      erslt <- calc.elas.actual(Ps.vals, pn, yvals, params, rslt)
       exi <- calc.hicks.actual(erslt, rslt$alpha.s, rslt$alpha.n, rslt$alpha.m)
       pselas <<- data.frame(ess=erslt$ess, esn=erslt$esn, esm=erslt$esm, etas=erslt$etas,
                             ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,
@@ -166,11 +166,10 @@ server <- function(input, output) {
     if(input$tab == 3) {
       yvals <- rep(input$y.val.slider,length(Pn.vals))
       ps <- rep(input$ps.val.slider, length(Pn.vals))
-      pm <- rep(1, length(Pn.vals))
-      rslt <- food.dmnd(ps, Pn.vals, pm, yvals, params)
+      rslt <- food.dmnd(ps, Pn.vals, yvals, params)
       pndata <<- data.frame(Ps=ps, Pn=Pn.vals, Y=yvals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                             Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
-      erslt <- calc.elas.actual(ps, Pn.vals, pm, yvals, params, rslt)
+      erslt <- calc.elas.actual(ps, Pn.vals, yvals, params, rslt)
       exi <- calc.hicks.actual(erslt, rslt$alpha.s, rslt$alpha.n, rslt$alpha.m)
       pnelas <<- data.frame(ess=erslt$ess, esn=erslt$esn, esm=erslt$esm, etas=erslt$etas,
                             ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,
@@ -192,11 +191,10 @@ server <- function(input, output) {
         yvals <- rep(input$y.val.slider,length(Ps.vals))
         slope <- input$pn.val.slider - 0.1
         pn <- 0.1 + slope*Ps.vals
-        pm <- rep(1, length(Ps.vals))
-        rslt <- food.dmnd(Ps.vals, pn, pm, yvals, params)
+        rslt <- food.dmnd(Ps.vals, pn, yvals, params)
         pcovdata <<- data.frame(Ps=Ps.vals, Pn=pn, Y=yvals, alpha.s=rslt$alpha.s, alpha.n=rslt$alpha.n,
                                 Qs=rslt$Qs, Qn=rslt$Qn, Qm=rslt$Qm)
-        erslt <- calc.elas.actual(Ps.vals, pn, pm, yvals, params, rslt)
+        erslt <- calc.elas.actual(Ps.vals, pn, yvals, params, rslt)
         exi <- calc.hicks.actual(erslt, rslt$alpha.s, rslt$alpha.n, rslt$alpha.m)
         pcovelas <<- data.frame(ess=erslt$ess, esn=erslt$esn, esm=erslt$esm, etas=erslt$etas,
                                 ens=erslt$ens, enn=erslt$enn, enm=erslt$enm, etan=erslt$etan,

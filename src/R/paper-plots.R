@@ -21,12 +21,12 @@ make.paper1.plots <- function(params, y.vals=NULL, ps.vals=NULL, pn.vals=NULL)
         pn.vals <- rep(0.135,len) # Approximate median of observational data
     pm.vals <- rep(1,len)         # Pm==1, except when calculating elasticities
 
-    demand.data <- food.dmnd(ps.vals, pn.vals, pm.vals, y.vals, params) %>%
+    demand.data <- food.dmnd(ps.vals, pn.vals, y.vals, params) %>%
         as.data.frame
     
     plt.by.gdp <- plot.qty(demand.data, y.vals, 'pcGDP-PPP (thousands)')
 
-    elas.data <- calc.elas.actual(ps.vals, pn.vals, pm.vals, y.vals, params)
+    elas.data <- calc.elas.actual(ps.vals, pn.vals, y.vals, params)
 
     plt.elas.by.gdp <- plot.elas(elas.data, y.vals, 'pcGDP-PPP (thousands)')
     

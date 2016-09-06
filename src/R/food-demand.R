@@ -1,7 +1,7 @@
 library('nleqslv')
 library('dplyr')
 
-food.dmnd <- function(Ps, Pn, Pm, Y, params) {
+food.dmnd <- function(Ps, Pn, Y, params) {
 ## Function for calculating food demand using the new model
 ## Arguments: Ps, Pn, and Y (staple price, normal price, and pcGDP), params structure.  Ps, Pn, Y may be vectors but must all be
 ##            the same length
@@ -29,7 +29,8 @@ food.dmnd <- function(Ps, Pn, Pm, Y, params) {
 ## the eta values they produce will likely cause the price elasticities to blow up, but I
 ## wanted to be able to test them anyhow.
 
-
+    Pm <- params$Pm
+    
     ## Normalize income and prices to Pm
     Ps <- Ps/Pm
     Pn <- Pn/Pm
@@ -245,14 +246,14 @@ eta.n <- function(nu1) {
 }
 
 
-calc.elas.actual <- function(Ps,Pn,Pm,Y, params, basedata=NULL)
+calc.elas.actual <- function(Ps,Pn,Y, params, basedata=NULL)
 {
     ## Given a set of prices and incomes, and model
     ## parameters,calculate the elasticities using numerical
     ## derivatives.  Optionally, you can pass the model results for
     ## the base values, if you've already calculated them.
     if(is.null(basedata)) {
-        basedata <- food.dmnd(Ps, Pn, Pm, Y, params)
+        basedata <- food.dmnd(Ps, Pn, Y, params)
     }
 
     ## size of finite difference step
@@ -261,7 +262,7 @@ calc.elas.actual <- function(Ps,Pn,Pm,Y, params, basedata=NULL)
     ## Calculate Ps elasticities
     psdelta <- Ps + h
     psh <- 1.0/(psdelta - Ps)           # Using psdelta-ps instead of h helps with roundoff error.
-    psdata <- food.dmnd(psdelta, Pn, Pm, Y, params)
+    psdata <- food.dmnd(psdelta, Pn, Y, params)
     eps.ss <- (psdata$Qs - basedata$Qs) * psh * Ps/basedata$Qs
     eps.ns <- (psdata$Qn - basedata$Qn) * psh * Ps/basedata$Qn
     eps.ms <- (psdata$Qm - basedata$Qm) * psh * Ps/basedata$Qm
@@ -269,15 +270,19 @@ calc.elas.actual <- function(Ps,Pn,Pm,Y, params, basedata=NULL)
     ## Calculate Pn elasticities
     pndelta <- Pn + h
     pnh <- 1.0/(pndelta - Pn)
-    pndata <- food.dmnd(Ps, pndelta, Pm, Y, params)
+    pndata <- food.dmnd(Ps, pndelta, Y, params)
     eps.sn <- (pndata$Qs - basedata$Qs) * pnh * Pn/basedata$Qs
     eps.nn <- (pndata$Qn - basedata$Qn) * pnh * Pn/basedata$Qn
     eps.mn <- (pndata$Qm - basedata$Qm) * pnh * Pn/basedata$Qm
 
-    ## Calculate Pm elasticities
+    ## Calculate Pm elasticities.  Note that Pm is passed through the
+    ## parameters structure.
+    Pm <- params$Pm
     pmdelta <- Pm + h
     pmh <- 1.0/(pmdelta-Pm)
-    pmdata <- food.dmnd(Ps, Pn, pmdelta, Y, params)
+    ptemp <- params
+    ptemp$Pm <- pmdelta
+    pmdata <- food.dmnd(Ps, Pn, Y, ptemp)
     eps.sm <- (pmdata$Qs - basedata$Qs) * pmh * Pm/basedata$Qs
     eps.nm <- (pmdata$Qn - basedata$Qn) * pmh * Pm/basedata$Qn
     eps.mm <- (pmdata$Qm - basedata$Qm) * pmh * Pm/basedata$Qm
@@ -285,7 +290,7 @@ calc.elas.actual <- function(Ps,Pn,Pm,Y, params, basedata=NULL)
     ## Calculate income elasticities
     ydelta <- Y + h
     yh <- 1.0/(ydelta - Y)
-    ydata <- food.dmnd(Ps, Pn, Pm, ydelta, params)
+    ydata <- food.dmnd(Ps, Pn, ydelta, params)
     eta.s <- (ydata$Qs - basedata$Qs) * yh * Y/basedata$Qs
     eta.n <- (ydata$Qn - basedata$Qn) * yh * Y/basedata$Qn
     eta.m <- (ydata$Qm - basedata$Qm) * yh * Y/basedata$Qm
@@ -340,8 +345,7 @@ food.dmnd.byyear <- function(obsdata, params, region=NULL)
             mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal) %>%
                 select(year, Y=gdp_pcap_thous2005usd, Ps, Pn,
                        Qs.Obs=s_cal_pcap_day_thous, Qn.Obs=ns_cal_pcap_day_thous) -> indata
-        Pm <- rep_len(1,nrow(indata))
-        rslt <- food.dmnd(indata$Ps, indata$Pn, Pm, indata$Y, params)
+        rslt <- food.dmnd(indata$Ps, indata$Pn, indata$Y, params)
         rslt$year <- indata$year
         rslt$rgn <- region
         rslt$Qs.Obs <- indata$Qs.Obs
@@ -362,8 +366,7 @@ food.dmnd.byincome <- function(obsdata, params, region=NULL)
             mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal) %>%
                 select(Y=gdp_pcap_thous2005usd, Ps, Pn,
                        obs.qs=s_cal_pcap_day_thous,obs.qn=ns_cal_pcap_day_thous)
-        Pm <- rep(1, length(od$Y))
-        food.dmnd(od$Ps, od$Pn, Pm, od$Y, params) %>% as.data.frame %>%
+        food.dmnd(od$Ps, od$Pn, od$Y, params) %>% as.data.frame %>%
             mutate(region=simplify.region(region), pcGDP=od$Y,
                    `Staple Residual`=Qs-od$obs.qs,
                    `Nonstaple Residual`=Qn-od$obs.qn) %>%
@@ -400,22 +403,22 @@ lamks2epsy0 <- function(df)
 ## demand function.
 
 ## logarithmically-spaced pcGDP values
-##y.vals <- 10^c(seq(-1, 0, length.out=5), seq(0.1,log10(50),length.out=15))
-y.vals <- 10^c(seq(-1,log10(50), length.out=20))
+y.vals <- 10^seq(-1,log10(50), length.out=20)
 
 ## evenly spaced P values
-Ps.vals <- seq(0.05,2.0,length.out=20)
-Pn.vals <- seq(0.1, 2.5, length.out=20)
+Ps.vals <- 10^seq(-2,log10(2.5),length.out=20)
+Pn.vals <- 10^seq(-2, log10(2.5), length.out=20)
 Pm.vals <- rep(1.0, length(Ps.vals))
 
 
 ## a sample parameter structure
 samp.params <- list(A=c(0.3, 0.1),
                     yfunc=c(eta.s(-0.15,0.6), eta.n(1.0)),
-                    xi=matrix(c(-0.05, 0.1, 0.1, -0.5), nrow=2)
+                    xi=matrix(c(-0.05, 0.1, 0.1, -0.5), nrow=2),
+                    Pm=1
                     )
 ## Sample parameters in Monte Carlo representation
 ## same as samp.params above:
-x1 <- c(0.3, 0.1, -0.05, 0.1, 0.2, -0.5, 1.0, 0.2936423, 4.5304697)
+x1 <- c(0.3, 0.1, -0.05, 0.1, -0.5, 1.0, 0.2936423, 4.5304697, 1)
 ## parameters used to generate the test data:
-x0 <- c(0.5, 0.35, -0.03, 0.01, 0.05, -0.4, 0.5, 0.1442695, 5.436564)
+x0 <- c(0.5, 0.35, -0.03, 0.01, -0.4, 0.5, 0.1442695, 5.436564, 1)
