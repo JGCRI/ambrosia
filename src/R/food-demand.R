@@ -30,7 +30,7 @@ food.dmnd <- function(Ps, Pn, Y, params) {
 ## wanted to be able to test them anyhow.
 
     Pm <- params$Pm
-    
+
     ## Normalize income and prices to Pm
     Ps <- Ps/Pm
     Pn <- Pn/Pm
@@ -93,21 +93,19 @@ calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
     ## value will be ignored.  Also, set a floor on the terms to
     ## ensure that the function is well-behaved.
     alphamin <- 1.0e-2
-    xi[1,2] <- max(alpha.n, alphamin)/max(alpha.s,alphamin) * xi[2,1]
+    xi[3] <- max(alpha.n, alphamin)/max(alpha.s,alphamin) * xi[2]
 
     ## Now calculate the epsilon matrix using the Slutsky equation.
-    matrix(
-        c(xi[1,1] - alpha.s * eta.s,    # ess
-          xi[2,1] - alpha.s * eta.n,    # ens
-          xi[1,2] - alpha.n * eta.s,    # esn
-          xi[2,2] - alpha.n * eta.n),   # enn
-        nrow=2, ncol=2) 
+    c(xi[1] - alpha.s * eta.s,    # ess
+      xi[2] - alpha.s * eta.n,    # ens
+      xi[3] - alpha.n * eta.s,    # esn
+      xi[4] - alpha.n * eta.n)   # enn
 }
 
 calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef) {
   ## not vectorized:  use mapply
-  Qs <- Acoef[1] * Ps^eps[1,1] * Pn^eps[1,2] * Ysterm
-  Qn <- Acoef[2] * Ps^eps[2,1] * Pn^eps[2,2] * Ynterm
+  Qs <- Acoef[1] * Ps^eps[1] * Pn^eps[3] * Ysterm
+  Qn <- Acoef[2] * Ps^eps[2] * Pn^eps[4] * Ynterm
 
   ## Check the budget constraint
   alpha.s <- Ps*Qs/Y
