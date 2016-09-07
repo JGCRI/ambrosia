@@ -96,9 +96,12 @@ calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
     xi[1,2] <- max(alpha.n, alphamin)/max(alpha.s,alphamin) * xi[2,1]
 
     ## Now calculate the epsilon matrix using the Slutsky equation.
-  alpha <- c(alpha.s, alpha.n)
-  eta <- c(eta.s,eta.n)
-  xi - outer(eta, alpha)
+    matrix(
+        c(xi[1,1] - alpha.s * eta.s,    # ess
+          xi[2,1] - alpha.s * eta.n,    # ens
+          xi[1,2] - alpha.n * eta.s,    # esn
+          xi[2,2] - alpha.n * eta.n),   # enn
+        nrow=2, ncol=2) 
 }
 
 calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef) {
