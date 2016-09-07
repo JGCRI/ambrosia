@@ -127,7 +127,7 @@ calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef) {
       Qs <- alpha.s * Y/Ps
       Qn <- alpha.n * Y/Pn
   }
-  c(Qs=Qs, Qn=Qn)
+  c(Qs, Qn)
 }
 
 eta.constant <- function(eta0) {
