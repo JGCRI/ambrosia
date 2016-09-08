@@ -9,7 +9,7 @@ srcdir <- dirname(sys.frame(1)$ofile)
 source(file.path(srcdir,'food-demand.R'))
 source(file.path(srcdir,'food-demand-plots.R'))
 
-make.paper1.plots <- function(params, y.vals=NULL, ps.vals=NULL, pn.vals=NULL)
+make.paper1.param.plots <- function(params, y.vals=NULL, ps.vals=NULL, pn.vals=NULL)
 {
     ## Default values of plot parameters
     if(is.null(y.vals))
@@ -62,4 +62,15 @@ plot.elas <- function(elas.data, x, xlabel)
         theme_minimal() + scale_color_ptol() +
         ggtitle('Food Demand Elasticities')
                       
+}
+
+make.paper1.mc.plots <- function(mcrslt, obsdata)
+{
+    ## Remove Europe_Non_EU region because its input data appears suspect.
+    #obsdata <- filter(obsdata, GCAM_region_name != 'Europe_Non_EU')
+    #obsdata$GCAM_region_name <- factor(obsdata$GCAM_region_name) # remove unused level
+    plt.byyear <- mc.make.byyear.plot(mcrslt, obsdata) +
+            xlab('year') + ylab('1000 Calories/person/day') +
+            theme_minimal() + scale_color_ptol()
+
 }
