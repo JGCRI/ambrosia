@@ -1,6 +1,9 @@
 library('nleqslv')
 library('dplyr')
 
+psscl <- 50
+pnscl <- 10
+
 food.dmnd <- function(Ps, Pn, Y, params) {
 ## Function for calculating food demand using the new model
 ## Arguments: Ps, Pn, and Y (staple price, normal price, and pcGDP), params structure.  Ps, Pn, Y may be vectors but must all be
@@ -32,8 +35,8 @@ food.dmnd <- function(Ps, Pn, Y, params) {
     Pm <- params$Pm
 
     ## Normalize income and prices to Pm
-    Ps <- Ps/Pm
-    Pn <- Pn/Pm
+    Ps <- Ps/Pm * psscl
+    Pn <- Pn/Pm * pnscl
     Y  <- Y/Pm
 
   # get eta values
@@ -56,8 +59,8 @@ food.dmnd <- function(Ps, Pn, Y, params) {
     Q <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
     ## alpha.out = P*Q/Y
     alpha.out <- alpha
-    alpha.out[1,] <- Ps*Q[1,]/Y
-    alpha.out[2,] <- Pn*Q[2,]/Y
+    alpha.out[1,] <- Ps*Q[1,]/Y / psscl
+    alpha.out[2,] <- Pn*Q[2,]/Y / pnscl
 
     ## output of this function is alpha - alpha.out.  Solving for the roots of this
     ## equation will give us a self-consistent alpha
@@ -76,7 +79,7 @@ food.dmnd <- function(Ps, Pn, Y, params) {
   qs <- qvals[1,]
   qn <- qvals[2,]
   ## calculate Qm as the budget residual.
-    resid <- Y - (Ps*qs + Pn*qn)
+    resid <- Y - (Ps*qs/psscl + Pn*qn/pnscl)
     qm <-  resid / Pm
     alpha.m <- resid / Y
 
@@ -108,8 +111,8 @@ calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef) {
   Qn <- Acoef[2] * Ps^eps[2] * Pn^eps[4] * Ynterm
 
   ## Check the budget constraint
-  alpha.s <- Ps*Qs/Y
-  alpha.n <- Pn*Qn/Y
+  alpha.s <- Ps*Qs/Y / psscl
+  alpha.n <- Pn*Qn/Y / pnscl
   alpha.t <- alpha.s + alpha.n
   food.budget <- 1                      # maximum budget fraction for total food.
   if(alpha.t > 1) {
