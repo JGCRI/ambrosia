@@ -39,7 +39,7 @@ make.byyear.plot <- function(byyear.data)
     ggplot(data=modeldata, aes(x=year)) +
         facet_wrap(~rgn) +
         ylab('Q (1000 Cal pc/day)') +
-        geom_line(aes(y=value, colour=variable)) +
+        geom_line(aes(y=value, colour=variable), size=1.5) +
         geom_point(data=obsdata, aes(y=value, colour=variable)) +
         geom_ribbon(data=Qs.err, aes(x=year, ymin=Qlo, ymax=Qhi), alpha=0.2) +
         geom_ribbon(data=Qn.err, aes(x=year, ymin=Qlo, ymax=Qhi), alpha=0.2)

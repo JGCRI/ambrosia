@@ -95,7 +95,7 @@ calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
     ## First apply symmetry condition.  This means that the xi.sn
     ## value will be ignored.  Also, set a floor on the terms to
     ## ensure that the function is well-behaved.
-    alphamin <- 1.0e-2
+    alphamin <- 0.1
     xi[3] <- max(alpha.n, alphamin)/max(alpha.s,alphamin) * xi[2]
 
     ## Now calculate the epsilon matrix using the Slutsky equation.

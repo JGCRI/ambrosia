@@ -19,18 +19,20 @@ make.paper1.param.plots <- function(params, y.vals=NULL, ps.vals=NULL, pn.vals=N
         ps.vals <- rep(0.022,len) # Approximate median of observational data
     if(is.null(pn.vals))
         pn.vals <- rep(0.135,len) # Approximate median of observational data
-    pm.vals <- rep(1,len)         # Pm==1, except when calculating elasticities
 
     demand.data <- food.dmnd(ps.vals, pn.vals, y.vals, params) %>%
         as.data.frame
-    
+
     plt.by.gdp <- plot.qty(demand.data, y.vals, 'pcGDP-PPP (thousands)')
 
     elas.data <- calc.elas.actual(ps.vals, pn.vals, y.vals, params)
 
     plt.elas.by.gdp <- plot.elas(elas.data, y.vals, 'pcGDP-PPP (thousands)')
-    
-    list(qty.by.gdp=plt.by.gdp, elas.by.gdp=plt.elas.by.gdp)
+
+    hicks.data <- calc.hicks.actual(elas.data, demand.data$alpha.s, demand.data$alpha.n, demand.data$alpha.m)
+    plt.hicks.by.gdp <- plot.hicks(hicks.data, y.vals, 'pcGDP-PPP (thousands)')
+
+    list(qty.by.gdp=plt.by.gdp, elas.by.gdp=plt.elas.by.gdp, hicks.by.gdp=plt.hicks.by.gdp)
 }
 
 
@@ -44,7 +46,7 @@ plot.qty <- function(demand.data, x, xlabel)
     ggplot(data=pltdata, aes(x=x, y=value, color=variable)) +
         geom_line(size=1.5) + xlab(xlabel) + ylab('Calories/person/day') +
             theme_minimal() + scale_color_ptol() +
-            ggtitle('Model Results: Calorie Consumption') 
+            ggtitle('Model Results: Calorie Consumption')
 }
 
 plot.elas <- function(elas.data, x, xlabel)
@@ -59,9 +61,21 @@ plot.elas <- function(elas.data, x, xlabel)
 
     ggplot(data=pltdata, aes(x=x, y=value, color=variable)) +
         geom_line(size=1.5) + xlab(xlabel) + ylab('') +
-        theme_minimal() + scale_color_ptol() +
+        theme_minimal() + scale_color_ptol(name=NULL) +
         ggtitle('Food Demand Elasticities')
-                      
+
+}
+
+plot.hicks <- function(hicks.data, x, xlabel)
+{
+    pltdata <- mutate(hicks.data, x=x) %>%
+        select(x, xi.ss, xi.sn, xi.ns, xi.nn) %>%
+        melt(id='x')
+
+    ggplot(data=pltdata, aes(x=x, y=value, color=variable)) +
+        geom_line(size=1.5) + xlab(xlabel) + ylab('') +
+        theme_minimal() + scale_color_ptol(name=NULL) +
+        ggtitle('Food Demand Hicks Elasticities')
 }
 
 make.paper1.mc.plots <- function(mcrslt, obsdata)
@@ -71,6 +85,6 @@ make.paper1.mc.plots <- function(mcrslt, obsdata)
     #obsdata$GCAM_region_name <- factor(obsdata$GCAM_region_name) # remove unused level
     plt.byyear <- mc.make.byyear.plot(mcrslt, obsdata) +
             xlab('year') + ylab('1000 Calories/person/day') +
-            theme_minimal() + scale_color_ptol()
+            theme_minimal() + scale_color_ptol(name='Demand Type', labels=c('Staples', 'Nonstaples'))
 
 }
