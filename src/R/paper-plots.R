@@ -79,12 +79,33 @@ plot.hicks <- function(hicks.data, x, xlabel)
         ggtitle('Food Demand Hicks Elasticities')
 }
 
-make.paper1.mc.plots <- function(mcrslt, obsdata)
+make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
 {
-    ## Remove Europe_Non_EU region because its input data appears suspect.
-    #obsdata <- filter(obsdata, GCAM_region_name != 'Europe_Non_EU')
-    #obsdata$GCAM_region_name <- factor(obsdata$GCAM_region_name) # remove unused level
-    plt.byyear <- mc.make.byyear.plot(mcrslt, obsdata) +
+    ## Make plots for paper1 that involve the entire MC posterior distribution
+    ## (i.e., not just the best set of parameters)
+    ##
+    ## mcrslt - results of the Monte Carlo calculation
+    ## obsdata.trn - observed data training set
+    ## obsdata.tst - observed data testing set (optional).
+    ##
+    ## The Monte Carlo Results will be filtered to remove rows with a
+    ## likelihood in the bottom 1-percentile of likelihood values.
+    ## These results are typically a long tail of transients from the
+    ## beginning of the calculation.
+
+    mcrslt <- filter(mcrslt, LL > quantile(LL, probs=0.01))
+
+    ## Create a merged data set with training and testing observations marked as such
+    obsdata.trn$obstype <- 'Training'
+    if(!is.null(obsdata.tst)) {
+        obsdata.tst$obstype <- 'Testing'
+        obsdata.all <- rbind(obsdata.trn, obsdata.tst)
+    }
+    else
+        obsdata.all <- obsdata.trn
+    obsdata.all$obstype <- factor(obsdata.all$obstype)
+
+    plt.byyear <- mc.make.byyear.plot(mcrslt, obsdata.all) +
             xlab('year') + ylab('1000 Calories/person/day') +
             theme_minimal() + scale_color_ptol(name='Demand Type', labels=c('Staples', 'Nonstaples'))
 

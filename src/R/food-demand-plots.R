@@ -20,7 +20,11 @@ make.demand.plot <- function(alldata,xdata,xlabel,max.yval)
 
 make.byyear.plot <- function(byyear.data)
 {
-    select(byyear.data, rgn, year, Qs=Qs.Obs, Qn=Qn.Obs) %>% melt(id=c('year','rgn')) -> obsdata
+    if(is.null(byyear.data$obstype))
+        select(byyear.data, rgn, year, Qs=Qs.Obs, Qn=Qn.Obs) %>% melt(id=c('year','rgn')) -> obsdata 
+    else
+        select(byyear.data, rgn, year, Qs=Qs.Obs, Qn=Qn.Obs, obstype) %>%
+            melt(id=c('year','rgn','obstype')) -> obsdata
 
     ## Construct a curve through the model outputs.  The fit.with.err
     ## function should return a table with year, Q.predict, Qlo, and
@@ -36,14 +40,30 @@ make.byyear.plot <- function(byyear.data)
     Qs.err <- select(perr.Qs, rgn, year, Qlo, Qhi)
     Qn.err <- select(perr.Qn, rgn, year, Qlo, Qhi)
 
-    ggplot(data=modeldata, aes(x=year)) +
+    baseplt <- ggplot(data=modeldata, aes(x=year)) +
         facet_wrap(~rgn) +
         ylab('Q (1000 Cal pc/day)') +
         geom_line(aes(y=value, colour=variable), size=1.5) +
-        geom_point(data=obsdata, aes(y=value, colour=variable)) +
         geom_ribbon(data=Qs.err, aes(x=year, ymin=Qlo, ymax=Qhi), alpha=0.2) +
-        geom_ribbon(data=Qn.err, aes(x=year, ymin=Qlo, ymax=Qhi), alpha=0.2)
+        geom_ribbon(data=Qn.err, aes(x=year, ymin=Qlo, ymax=Qhi), alpha=0.2) +
+        theme(panel.margin=unit(1,'lines'))
 
+    ## Add the points for the observed data
+    if(is.null(obsdata$obstype)) {
+        ## observation data not separated into training and testing
+        ## sets, so just plot one type of point, but give it a legend
+        ## to make it a little more clear that the dots are
+        ## observations and the lines are model output.
+        obsdata$obstype <- 'obs'
+        baseplt + 
+            geom_point(data=obsdata, aes(y=value, colour=variable, shape=obstype)) +
+            scale_shape(guide=guide_legend(title='Observed Data', label=FALSE))
+    }
+    else {
+        baseplt +
+            geom_point(data=obsdata, aes(y=value, colour=variable, shape=obstype)) +
+            scale_shape(guide=guide_legend(title='Observed Data')) # This one includes labels for the obs types.
+    }
 }
 
 

@@ -345,15 +345,21 @@ food.dmnd.byyear <- function(obsdata, params, region=NULL)
             do.call(rbind, .)
     }
     else {
+        ## columns to keep in input data.
+        selcols <- c('year', 'Ps', 'Pn', 'Y', 'Qs.Obs', 'Qn.Obs')
+        if(!is.null(obsdata$obstype))
+            selcols <- c(selcols, 'obstype')
         filter(obsdata, GCAM_region_name==region) %>%
-            mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal) %>%
-                select(year, Y=gdp_pcap_thous2005usd, Ps, Pn,
-                       Qs.Obs=s_cal_pcap_day_thous, Qn.Obs=ns_cal_pcap_day_thous) -> indata
+            mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal, Y=gdp_pcap_thous2005usd,
+                   Qs.Obs=s_cal_pcap_day_thous, Qn.Obs=ns_cal_pcap_day_thous) %>%
+            select_(.dots=selcols) -> indata
         rslt <- food.dmnd(indata$Ps, indata$Pn, indata$Y, params)
         rslt$year <- indata$year
         rslt$rgn <- region
         rslt$Qs.Obs <- indata$Qs.Obs
         rslt$Qn.Obs <- indata$Qn.Obs
+        if(!is.null(indata$obstype))
+            rslt$obstype <- indata$obstype
         as.data.frame(rslt)
     }
 }
