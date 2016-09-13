@@ -109,4 +109,18 @@ make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
             xlab('year') + ylab('1000 Calories/person/day') +
             theme_minimal() + scale_color_ptol(name='Demand Type', labels=c('Staples', 'Nonstaples'))
 
+    
+    ## for the density plot, if the dataset is really large, sample it
+    ## randomly.  The reason for this is that making a density plot
+    ## with a multi-million row dataset is really slow.
+    den.row.max <- 10000
+    if(nrow(mcrslt) > den.row.max)
+        mcrslt <- sample_n(mcrslt, den.row.max)
+    ## Also, convert the eta.s parameters to eps-y0 notation.
+    mcrslt <- lamks2epsy0(mcrslt)
+    
+    plt.density <- mcparam.density(mcrslt) + theme_minimal()
+
+    list(byyear=plt.byyear, density=plt.density)
+
 }
