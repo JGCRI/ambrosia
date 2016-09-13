@@ -8,6 +8,7 @@ library('dplyr')
 srcdir <- dirname(sys.frame(1)$ofile)
 source(file.path(srcdir,'food-demand.R'))
 source(file.path(srcdir,'food-demand-plots.R'))
+source(file.path(srcdir,'mcpar-analysis.R'))
 
 make.paper1.param.plots <- function(params, y.vals=NULL, ps.vals=NULL, pn.vals=NULL)
 {
