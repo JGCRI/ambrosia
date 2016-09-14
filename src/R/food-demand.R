@@ -409,6 +409,14 @@ lamks2epsy0 <- function(df)
 }
 
 
+merge.trn.tst <- function(obs.trn, obs.tst)
+{
+    ## create a merged dataset with training and test data, each labeled accordingly
+    obs.trn$obstype <- 'Training'
+    obs.tst$obstype <- 'Testing'
+    rbind(obs.trn, obs.tst)
+}
+
 ## Set up some vectors of test values.  These can be used for exercising the
 ## demand function.
 
