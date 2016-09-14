@@ -251,10 +251,11 @@ d.cons.reg <- d.cons %>%
   select( GCAM_region_name, year, pop_thous, gdp_pcap_thous2005usd, ns_cal_pcap_day_thous, ns_usd_p1000cal, 
           s_cal_pcap_day_thous, s_usd_p1000cal, s_share, ns_share )
 
-## create final data set
+## create final data set.  Drop the Europe_Non_EU region because the data there is suspect
 source(file.path(path,'../R/util.R'))
-allrgn.data <- assign.sigma.Q(d.cons.reg)
+allrgn.data <- filter(d.cons.reg, GCAM_region_name != 'Europe_Non_EU') %>% assign.sigma.Q() 
 write.csv( allrgn.data, "../food-dmnd-price-allrgn.csv", row.names = FALSE )
+create.xval.data(allrgn.data, '..')
 
 rm( d.commod.map, d.cons, d.conv, d.deflator, d.gdp, d.gdp.reg, d.iso, d.pop, d.pop.reg, d.pp, d.pp.archive )
 

@@ -39,15 +39,14 @@ The second cross validation method splits the training and testing
 sets by region.  Of the thirty regions in the data set, 10 were
 selected at random to form the testing set.  The remining regions were
 assigned to the training set.  The 10 regions in the testing set are:  
-* Mexico
-* Hong Kong and Macau
-* Pakistan
-* Africa, Northern
-* Central Asia
-* Europe, Eastern
-* South Korea
 * Australia and New Zealand
-* Brazil
-* South America, Northern  
-
+* European Free Trade Association
+* South Africa
+* USA
+* Canada
+* Japan
+* South Asia
+* Pakistan
+* Middle East
+* China
 

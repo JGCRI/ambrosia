@@ -38,11 +38,11 @@ recursive.partition <- function(input.data, cluster.vars, min.members=5)
     ## item being a single cluster.  This irretrievably scrambles the
     ## order of the rows, so if recovering the original order is
     ## important, include an ID column.
-    
+
     minsplit <- 2*min.members           # clusters smaller than this can't be split
 
     if(nrow(input.data) < minsplit) {
-        ## no split possible.  We will just 
+        ## no split possible.  We will just
         cluster.list <- list(input.data)
     }
     else {
@@ -67,7 +67,7 @@ recursive.partition <- function(input.data, cluster.vars, min.members=5)
         }
         else {
             cluster.list <- cutree(dv,k) %>% split(input.data, .)
-            
+
             ## check if any clusters have more than minsplit members
             if(any(sapply(cluster.list, nrow) >= minsplit)) {
                 ## apply this function recursively to everything in the
@@ -89,7 +89,7 @@ recursive.partition <- function(input.data, cluster.vars, min.members=5)
     ## and 1.2.2, and so on.
     cluster.list
 }
-            
+
 
 assign.sigma.Q <- function(input.data, min.group=5)
 {
@@ -106,7 +106,7 @@ assign.sigma.Q <- function(input.data, min.group=5)
     ## Add the cluster identifier to each data frame in the list.  See
     ## note at the end of recursive.partition().
     for(clus in names(cluster.list)) {cluster.list[[clus]]$clusterID <- clus}
-    
+
     ## calcuate the desired variances for each group
     cluster.list <- lapply(cluster.list, . %>% mutate(sig2Qn = var(ns_cal_pcap_day_thous),
                                                       sig2Qs = var(s_cal_pcap_day_thous)))
@@ -119,4 +119,41 @@ assign.sigma.Q <- function(input.data, min.group=5)
     new.data
 }
 
-    
+
+create.xval.data <- function(alldata, outdir=NULL)
+{
+    ## Create and save the cross-validation data sets.  We create two such sets:
+    ##   1) Split by year:  year > 2000 goes in the testing set
+    ##   2) Split by region:  10 randomly-selected regions go in the testing set
+    ## Data are returned in a list.  If outdir is specified, they will
+    ## also be written to output files in that directory.
+
+    ## Randomly (but repeatably) select regions for the regional testing set
+    set.seed(8675309)
+    test.rgns <- sample(unique(as.character(alldata$GCAM_region_name)), 10)
+    ## With the standard input dataset, the test regions should be:
+    ## Australia_NZ
+    ## European Free Trade Association
+    ## South Africa
+    ## USA
+    ## Canada
+    ## Japan
+    ## South Asia
+    ## Pakistan
+    ## Middle East
+    ## China
+    cat('Test regions:',test.rgns, sep='\n\t')
+
+    xval.byyear <- split(alldata, ifelse(alldata$year > 2000, 'Testing', 'Training'))
+    xval.byrgn <- split(alldata, ifelse(alldata$GCAM_region_name %in% test.rgns,
+                                        'Testing', 'Training'))
+
+    if(!is.null(outdir)) {
+        write.csv(xval.byyear$Testing, file.path(outdir,'xval-byyear-tst.csv'), row.names=FALSE)
+        write.csv(xval.byyear$Training, file.path(outdir,'xval-byyear-trn.csv'), row.names=FALSE)
+        write.csv(xval.byrgn$Testing, file.path(outdir,'xval-byrgn-tst.csv'), row.names=FALSE)
+        write.csv(xval.byrgn$Training, file.path(outdir,'xval-byrgn-trn.csv'), row.names=FALSE)
+    }
+
+    c(xval.byyear=xval.byyear, xval.byrgn=xval.byrgn)
+}
