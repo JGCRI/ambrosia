@@ -1,8 +1,8 @@
 library('nleqslv')
 library('dplyr')
 
-psscl <- 50
-pnscl <- 10
+psscl <- 100
+pnscl <- 20
 
 food.dmnd <- function(Ps, Pn, Y, params) {
 ## Function for calculating food demand using the new model
