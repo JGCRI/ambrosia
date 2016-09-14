@@ -11,7 +11,8 @@
 ## Input data sources:
   ## GDP_cap (PPP) - WB WDI
   ## consumption - FAO
-  ## Prices - FAO
+  ## Prices - FAOStat3 (1991-2011, in 2004-2006 USD) and FAOStat Archive (1966-1990, in 2004-2006 local currency units), 
+  ## PP are US producer prices except coconut, palm oil, cassava, and sesame seed (Philippines, Nigeria, Nigeria, and India, respectively)
 
 ## Definitions:
   ## Staple foods: corn, other grains, rice, wheat, roots & tubers
@@ -36,15 +37,16 @@ source( file.path(path,"functions.R") ) # Load my standard set of functions
 # -----------------------------------------------------------------------------
 setwd( file.path(path,"../../data/raw-data" ))
 d.iso <- inputData( d, "iso_GCAM_regID_name.csv", 0 )
-d.cons <- inputData( d, "FAOstat_food_supply.csv.gz", 0)
-d.pp <- inputData( d, "FAOstat_producer_prices.csv", 0)
+d.cons <- inputData( d, "FAOstat_food_supply.csv.gz", 0 )
+d.pp <- inputData( d, "FAOstat_producer_prices.csv", 0 )
+d.pp.archive <- inputData( d, "FAOStat_pp_archive.csv", 0 )
+d.conv <- inputData( d, "UN_currency_conv.csv", 0 )
 d.commod.map <- inputData( d, "FAOStat_GCAM_mapping.csv", 2 )
 d.deflator <- inputData( d, "FAOstat_USD_deflator.csv", 0 )
 d.pop <- inputData( d, "FAOstat_population.csv", 0 )
-# FAO data have missing GDP for China, use WB instead
-# Argentina is missing for WDI, omit at this point, but check later if we can find it anywhere else
-d.gdp <- inputData( d, "WDI_gdp_pcap_ppp.csv", 0 )
-
+# FAO data have missing GDP for China, WB has missing Argentina data and only cover 1990+
+# Use PWT
+d.gdp <- inputData( d, "pwt81.csv", 0 )
 
 # -----------------------------------------------------------------------------
 # Edit standard GCAM region definitions to separate Hong Kong and Macau (per discussion with Robert)
@@ -76,12 +78,12 @@ faoClean <- function( d )
   d <- d %>%
     rename( var = Domain, country_name = AreaName, unit = ElementName, item = ItemName, year = Year, value = Value ) %>%
     select( country_name, year, item, var, unit, value ) %>%
-    filter( year > 1990 ) %>%
     full_join( d.iso, by = "country_name" ) %>%
     # Remove country names that cause duplicate iso values
     filter( !( country_name ==  "Belgium-Luxembourg" | country_name == "Ethiopia PDR" | country_name ==  "Czechoslovakia" | country_name == "Micronesia" ) ) %>%
     # Remove total and miscellaneous categories
     filter( !( item == "Miscellaneous" | item == "Grand Total" ) ) %>%
+    filter( year > 1969 ) %>%
     isoReplace( ) %>%
     filter( !is.na( iso ) ) %>% # Bulk download includes aggregated regions
     select( country_name, iso, var, item, unit, year, value ) %>%
@@ -112,6 +114,8 @@ d.pop <- d.pop %>%
 d.cons <- faoClean( d.cons )
   ## Prepare for merging with price data (below)
 d.cons <- d.cons %>%
+  filter( unit != "food" ) %>%
+  filter( unit != "" ) %>%
   select( -var ) %>%
   spread( unit, value ) %>%
   rename( cons_commod = item ) %>%
@@ -119,46 +123,55 @@ d.cons <- d.cons %>%
   select( -country_name )
 
 ## Clean producer price data
+d.pp.archive <- d.pp.archive %>%
+  select( -country.codes, -item.codes, -element, -element.codes ) %>%
+  mutate( item = ifelse( item == "Tangerines, mandarins, clementines, satsumas", "Fruit, citrus nes", item ) ) %>%
+  mutate( item = ifelse( item == "Fruit, fresh nes", "Fruit, stone nes", item ) ) %>%
+  gather( variable, pp_lcu_tonne, X1966:X1990 ) %>%
+  yr( ) %>%
+  filter( year > 1969 ) %>%
+  full_join( d.conv, by = c( "countries", "year" ) ) %>%
+  mutate( value = ( pp_lcu_tonne / cur_conv ) ) %>%
+  select( -countries, -pp_lcu_tonne, -cur_conv ) %>%
+  na.omit( ) %>%
+  mutate( unit = "producer_price_usd_tonne" ) %>%
+  mutate( var = "producer_prices_annual" ) %>%
+  colnameReplace( "pp_commod", "item" ) %>%
+  select( var, item, unit, year, value ) %>%
+  unique( )
+  
+## Clean archive data (1966-1990), change format, convert to USD
 d.pp <- d.pp %>%
   faoClean( ) %>%
   select( -country_name, -iso ) %>%
+  rbind( d.pp.archive ) %>%
   spread( item, value )
-  d.pp[["average(Sugar cane, Sugar beet)"]] <- ( d.pp[["Sugar cane"]] + d.pp[["Sugar beet"]] ) / 2
-  d.pp[["average(Rapeseed, Mustard seed)"]] <- ( d.pp[["Rapeseed"]] + d.pp[["Mustard seed"]] ) / 2
-  d.pp[["average(Beans, dry; Peas, dry; Chick peas; Lentils)"]] <- ( d.pp[["Beans, dry"]] + d.pp[["Peas, dry"]]
-                                                                     + d.pp[["Chick peas"]] + d.pp[["Lentils"]] ) / 4
-  d.pp[["average(Almonds, with shell; Walnuts, with shell)"]] <- ( d.pp[["Almonds, with shell"]] + d.pp[["Walnuts, with shell"]] ) / 2
+  d.pp[["average(Sugar cane, Sugar beet)"]] <- rowMeans( d.pp[ , c( "Sugar cane", "Sugar beet" ) ] )
+  d.pp[["average(Rapeseed, Mustard seed)"]] <- rowMeans( d.pp[ , c( "Rapeseed", "Mustard seed" ) ] )
+  d.pp[["average(Beans, dry; Peas, dry; Chick peas; Lentils)"]] <- rowMeans( d.pp[ , c( "Beans, dry", "Peas, dry", 
+                                                                                        "Chick peas", "Lentils" ) ] )
+  d.pp[["average(Almonds, with shell; Walnuts, with shell)"]] <- rowMeans( d.pp[ , c( "Almonds, with shell", "Walnuts, with shell" ) ] )
   ### For now, let price of fish == price of sheep; change when more info becomes available ###
   d.pp$fish <- d.pp[["Meat live weight, sheep"]]
 d.pp <- d.pp %>%
   gather( pp_commod, pp_usd_tonne, 4:ncol( d.pp ) ) %>%
   ## Merge price and deflator data
   full_join( d.deflator, by = "year") %>%
-  mutate( pp_2005usd_tonne = deflator_2005usd * pp_usd_tonne ) %>%
+  mutate( pp_2005usd_tonne = pp_usd_tonne * deflator_2005usd ) %>%
   ## Merge with GCAM mapping variables
   full_join( d.commod.map, by = "pp_commod" ) %>%
   select( cons_commod, pp_commod, year, pp_2005usd_tonne )
 
 ## Clean GDP data, aggregate to GCAM regions
-deflator_2011 <- filter( d.deflator, year == 2011 )
+# Units are GDP: mil2005$, population: millions
 d.gdp <- d.gdp %>%
-  gather( variable, gdp_pcap_ppp2011d, X1960:X2015 ) %>%
-  yr( ) %>%
-  rename( iso = Country.Code ) %>%
-  mutate( gdp_pcap_thous2005usd = ( gdp_pcap_ppp2011d / deflator_2011$deflator_2005usd ) / 1000 ) %>%
-  select( iso, year, gdp_pcap_thous2005usd ) %>%
+  rename( iso = countrycode ) %>%
   mutate( iso = tolower( iso ) ) %>%
-  inner_join( d.pop, by = c( "iso", "year" ) ) %>%
-  mutate( gdp_mil_2005usd = gdp_pcap_thous2005usd  * pop_thous ) %>%
-  select( -gdp_pcap_thous2005usd ) %>%
-  na.omit( ) %>%
-  inner_join( d.iso, by = "iso" ) %>%
-  select( -country_name, -GCAM_region_ID ) %>%
-  gather( var, value, c( pop_thous, gdp_mil_2005usd ) ) %>%
-  spread( iso, value ) %>%
-  mutate( value = rowSums( .[4:187], na.rm = TRUE ) ) %>%
-  select( GCAM_region_name, year, var, value ) %>%
-  spread( var, value )
+  filter( currency_unit != "Zimbabwe Dollar" ) %>%
+  mutate( pop_thous_pwt = pop * 1000 ) %>%
+  select( iso, year, rgdpna, pop_thous_pwt ) %>%
+  colnameReplace( "rgdpna", "gdp_mil_2005usd" ) %>%
+  filter( !is.na( gdp_mil_2005usd ) )
 
 ## Join price, consumption, pop, and gdp data
 ## Multiply country per capita values by population, aggregate to region, divide by population
@@ -167,101 +180,90 @@ d.cons <- d.cons %>%
     # Compute total country demand
   mutate( food_supply_thous_cal_day = food_supply_kcal_capita_day * pop_thous ) %>%
   mutate( food_supply_thous_kg_day = food_supply_quantity_kg_capita_yr * pop_thous / 365 ) %>%
-  select( -food_supply_kcal_capita_day, -food_supply_quantity_kg_capita_yr, -food, -pop_thous ) %>%
+  select( -food_supply_kcal_capita_day, -food_supply_quantity_kg_capita_yr ) %>%
+  inner_join( d.gdp, by = c( "iso", "year" ) ) %>%
     # Aggregate individual commodities to GCAM regions
-  full_join( d.iso, by = c( "iso" ) ) %>%
-  select( -GCAM_region_ID, -country_name ) %>%
-  gather( var, value, c( food_supply_thous_cal_day, food_supply_thous_kg_day ) ) %>%
+  inner_join( d.iso, by = "iso" ) %>%
+  select( -GCAM_region_ID, -country_name, -pp_archive ) 
+
+## Now that we've matched consumption, gdp, and pop data (countries are only included if they have all three in any year), we can separate GDP/cap estimation 
+d.gdp.reg <- d.cons %>%
+  select( GCAM_region_name, iso, year, gdp_mil_2005usd, pop_thous_pwt ) #%>%
+  d.gdp.reg <- d.gdp.reg[!duplicated( d.gdp.reg[1:5] ), ]
+d.gdp.reg <- d.gdp.reg %>%
+  gather( var, value, 4:5 ) %>%
   spread( iso, value ) %>%
-  mutate( value = rowSums( .[7:246], na.rm = TRUE ) ) %>%
-  mutate( s_ns = ( ifelse( ( GCAM_commodity == "Corn" | GCAM_commodity == "OtherGrain" | GCAM_commodity == "Rice" |
-                    GCAM_commodity == "Root_Tuber" | GCAM_commodity == "Wheat" ), "s", "ns" ) ) ) %>%
-  filter( !is.na( GCAM_commodity ) ) %>%
-  filter( GCAM_commodity != "alcohol" ) %>%
-  select( GCAM_region_name, s_ns, cons_commod, year, var, value )
-
-## Create weight variables for prices
-d.cons.weight <- d.cons %>%
-  filter( var == "food_supply_thous_cal_day" ) %>%
-  spread( cons_commod, value ) %>%
-  mutate( value = rowSums( .[5:91], na.rm = TRUE ) )
-for( x in 5:91 ) { d.cons.weight[[x]] = d.cons.weight[[x]] / d.cons.weight$value }
-d.cons.weight <- d.cons.weight %>%
-  select( -value, -var, -s_ns ) %>%
-  gather( cons_commod, weight, c( 3:89 ) ) %>%
-  filter( !is.na( weight ) )
-
-## Estimate price per calorie
-d <- d.cons %>%
+  mutate( value = rowSums( .[4:158], na.rm = TRUE ) ) %>%
+  select( GCAM_region_name, year, var, value ) %>%
   spread( var, value ) %>%
-  # Compute cal/kg by region ## NOTE: for regions with very low caloric consumption of commodities, the cal/kg look wrong
-  # (e.g. bananas in Eastern Africa have cal/kg ~ 2-4 times higher than they should), but consumption is small, so don't worry about it
-  mutate( thous_cal_p_kg = ifelse ( food_supply_thous_kg_day != 0,
-                                  ( ( food_supply_thous_cal_day ) / ( food_supply_thous_kg_day * 1000 ) ), 0 ) ) %>%
-  # Merge with prices per tonne
-  full_join( d.pp, by = c( "cons_commod", "year" ) ) %>%
+  mutate( gdp_pcap_thous2005usd = gdp_mil_2005usd / pop_thous_pwt ) %>%
+  select( GCAM_region_name, year, gdp_pcap_thous2005usd )
+
+## Same for population by region
+d.pop.reg <- d.cons %>%
+  select( GCAM_region_name, iso, year, pop_thous ) #%>%
+d.pop.reg <- d.pop.reg[!duplicated( d.pop.reg[1:4] ), ]
+d.pop.reg <- d.pop.reg %>%
+  spread( iso, pop_thous ) %>%
+  mutate( pop_thous = rowSums( .[3:ncol(.)], na.rm = TRUE ) ) %>%
+  select( GCAM_region_name, year, pop_thous )
+
+## Now aggregate consumption commodities to regions
+d.cons.reg <- d.cons %>%
+  select( -gdp_mil_2005usd, -pop_thous_pwt, -pop_thous ) %>%
+  ## Multiply quantity by prices to get expenditures by commodity and iso
+  left_join( d.pp, by = c( "cons_commod", "pp_commod", "year" ) ) %>%
   filter( !( pp_commod == "non_food" | pp_commod == "cons_not_reported" | pp_commod == "not_available" |
                pp_commod == "aggregate" ) ) %>%
-  # Estimate cost per calorie in region by commodity
-  mutate( usd_p1000cal = ifelse( thous_cal_p_kg != 0,( ( pp_2005usd_tonne / 1000 ) / thous_cal_p_kg ), NA ) ) %>%
-  na.omit( )
-
-## Aggregate to staple and non-staples prices, weighted by consumption
-d.price.weight<- d %>%
-  select( GCAM_region_name, s_ns, cons_commod, year, usd_p1000cal ) %>%
-  inner_join( d.cons.weight, by = c( "GCAM_region_name", "cons_commod", "year" ) ) %>%
-  mutate( price_weight = usd_p1000cal * weight ) %>%
-  select( -usd_p1000cal, - weight ) %>%
-  spread( cons_commod, price_weight ) %>%
-  mutate( usd_p1000cal = rowSums( .[4:81], na.rm = TRUE ) ) %>%
-  select( GCAM_region_name, s_ns, year, usd_p1000cal )
-
-## Calculate staple and non-staple per capita consumption by region
-d <- d %>%
-  select( GCAM_region_name, s_ns, cons_commod, year, food_supply_thous_cal_day ) %>%
-  spread( cons_commod, food_supply_thous_cal_day ) %>%
-  mutate( cal_thous_day = rowSums( .[ 4:81], na.rm = TRUE ) ) %>%
-  select( GCAM_region_name, s_ns, year, cal_thous_day ) %>%
-  # Merge with price, gdp, and population data
-  inner_join( d.gdp, by = c( "GCAM_region_name", "year" ) ) %>%
-  full_join( d.price.weight, by = c( "GCAM_region_name", "year", "s_ns" ) ) %>%
-  # Estimate per capita values by region
-  mutate( cal_pcap_day_thous = cal_thous_day / ( pop_thous * 1000 ) ) %>%
-  mutate( gdp_pcap_thous2005usd = gdp_mil_2005usd / pop_thous ) %>%
-  select( -cal_thous_day, -gdp_mil_2005usd ) %>%
-  filter( year < 2012 )
-
-## Create columns for staple, non-staple cons, share, and prices
-d.s.ns <- d %>%
-  select( -gdp_pcap_thous2005usd, -pop_thous ) %>%
-  gather( var, value, c( cal_pcap_day_thous, usd_p1000cal ) ) %>%
+  mutate( commod_exp_2005usd_day = ( ( pp_2005usd_tonne ) * food_supply_thous_kg_day ) ) %>%
+  select( -food_supply_thous_kg_day, -pp_2005usd_tonne ) %>%
+  ## Aggregate caloric consumption and expenditures by commodity to region
+  gather( var, value, c( food_supply_thous_cal_day, commod_exp_2005usd_day ) ) %>%
+  spread( iso, value ) %>%
+  mutate( value = rowSums( .[7:ncol(.) ], na.rm = TRUE ) ) %>%
+  select( 1:6,ncol(.) ) %>%
+  ## Aggregate commodity to staples and non-staples
+  filter( !( pp_commod == "non_food" | pp_commod == "cons_not_reported" | pp_commod == "not_available" |
+               pp_commod == "aggregate" ) ) %>%
+  filter( GCAM_commodity != "alcohol" ) %>%
+  mutate( s_ns = ( ifelse( ( GCAM_commodity == "Corn" | GCAM_commodity == "OtherGrain" | GCAM_commodity == "Rice" |
+                               GCAM_commodity == "Root_Tuber" | GCAM_commodity == "Wheat" ), "s", "ns" ) ) ) %>%
+  select( -pp_commod, -GCAM_commodity ) %>%
+  spread( cons_commod, value ) %>%
+  mutate( value = rowSums( .[5:ncol(.)], na.rm = TRUE ) ) %>%
+  select( 1:4,ncol(.) ) %>%
   mutate( var = paste( s_ns, var, sep = "_" ) ) %>%
   select( -s_ns ) %>%
   spread( var, value ) %>%
+  ## Divide expenditures by cons/day to get price
+  mutate( ns_usd_p1000cal = ns_commod_exp_2005usd_day / ns_food_supply_thous_cal_day ) %>%
+  mutate( s_usd_p1000cal = s_commod_exp_2005usd_day / s_food_supply_thous_cal_day ) %>%
+  select( -ns_commod_exp_2005usd_day, -s_commod_exp_2005usd_day ) %>%
+  ## Divide cons/day by pop to get cons/cap/day
+  full_join( d.pop.reg, by = c( "GCAM_region_name", "year" ) ) %>%
+  mutate( ns_cal_pcap_day_thous = ns_food_supply_thous_cal_day / ( pop_thous * 1000 ) ) %>%
+  mutate( s_cal_pcap_day_thous = s_food_supply_thous_cal_day / ( pop_thous * 1000 ) ) %>%
+  ## Consumption shares
   mutate( s_share = s_cal_pcap_day_thous / ( s_cal_pcap_day_thous + ns_cal_pcap_day_thous ) ) %>%
-  mutate( ns_share = ns_cal_pcap_day_thous / ( s_cal_pcap_day_thous + ns_cal_pcap_day_thous ) )
-
-# Bind with population to calculate consumption per capita
-d <- d %>%
-  filter( s_ns != "ns" ) %>%
-  select( GCAM_region_name, year, pop_thous, gdp_pcap_thous2005usd ) %>%
-  full_join( d.s.ns, by = c( "GCAM_region_name", "year" ) ) %>%
-  na.omit( )
+  mutate( ns_share = ns_cal_pcap_day_thous / ( s_cal_pcap_day_thous + ns_cal_pcap_day_thous ) ) %>%
+  ## Bind with GDP data
+  full_join( d.gdp.reg, by = c( "GCAM_region_name", "year" ) ) %>%
+  select( GCAM_region_name, year, pop_thous, gdp_pcap_thous2005usd, ns_cal_pcap_day_thous, ns_usd_p1000cal, 
+          s_cal_pcap_day_thous, s_usd_p1000cal, s_share, ns_share )
 
 ## create final data set
 source(file.path(path,'../R/util.R'))
-allrgn.data <- assign.sigma.Q(d)
+allrgn.data <- assign.sigma.Q(d.cons.reg)
 write.csv( allrgn.data, "../food-dmnd-price-allrgn.csv", row.names = FALSE )
 
-
-rm( d.s.ns, d.cons.weight, d.price.weight, d.commod.map, d.iso, d.deflator_2011, d.pop, d.gdp, d.cons.ag, d.cons.an, d.map,
-    d.cons, d.pp, d.deflator, deflator_2011 )
+rm( d.commod.map, d.cons, d.conv, d.deflator, d.gdp, d.gdp.reg, d.iso, d.pop, d.pop.reg, d.pp, d.pp.archive )
 
 #------------------------------------------------------
 ## Figures.  These will be generated and stored in the lists
 ##           plots1 and plots2, but they will not be displayed
 ##           unless specifically asked for.
 #------------------------------------------------------
+d <- d.cons.reg
 ## Assign colors to regions
 region_color <- c( "Africa_Eastern" = "olivedrab2",
                    "Africa_Northern" = "darkgreen",
@@ -310,6 +312,7 @@ makePlot1 <- function ( v )
   p <- p + theme_basic + colScaleRegion + guides( col = guide_legend( ncol = 1 ) )
   p <- p + xlab( "year" ) + ylab( v )
   p <- p + theme( axis.text.x = element_text( angle = 50, vjust = 0.5 ) )
+  ggsave( plot = p, paste( "time_v_", v, ".pdf", sep = "" ), width = 400, height = 300, units = "mm"  )  
   return( p )
 }
 plots1 <- lapply( vars, makePlot1 )
@@ -323,6 +326,10 @@ makePlot2 <- function( v )
   p <- p + theme_basic + colScaleRegion + guides( col = guide_legend( ncol = 1 ) )
   p <- p + xlab( "GDP/cap PPP" ) + ylab( v )
   p <- p + theme( axis.text.x = element_text( angle = 50, vjust = 0.5 ) )
+  ggsave( plot = p, paste( "gdppcap_v_", v, ".pdf", sep = "" ), width = 400, height = 300, units = "mm"  )  
   return( p )
 }
 plots2 <- lapply( vars, makePlot2 )
+
+rm( d, d.cons.reg, d.fig )
+

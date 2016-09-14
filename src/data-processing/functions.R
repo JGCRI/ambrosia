@@ -54,12 +54,12 @@ substrRight <- function( x, n )
 # -----------------------------------------------------------------------------
 ## Define basic theme for figures
 theme_basic <- theme_bw() +
-  theme( legend.text = element_text( size = 16, family = "Gill Sans MT", vjust = .5 ) ) +
-  theme( legend.title = element_text( size = 16, family = "Gill Sans MT", vjust = 2 ) ) +
-  theme( axis.text = element_text( size = 16, family = "Gill Sans MT" ) ) +
-  theme( axis.title = element_text( size = 20, family = "Gill Sans MT", face = "bold" ) ) +
-  theme( plot.title = element_text( size = 24, family = "Gill Sans MT", face = "bold", vjust = 1 ) ) +
-  theme( strip.text = element_text( size = 14, family = "Gill Sans MT" ) )
+  theme( legend.text = element_text( size = 16, vjust = .5 ) ) +
+  theme( legend.title = element_text( size = 16, vjust = 2 ) ) +
+  theme( axis.text = element_text( size = 16 ) ) +
+  theme( axis.title = element_text( size = 20, face = "bold" ) ) +
+  theme( plot.title = element_text( size = 24, face = "bold", vjust = 1 ) ) +
+  theme( strip.text = element_text( size = 14 ) )
 
 # -----------------------------------------------------------------------------
 ## List of GCAM regions
