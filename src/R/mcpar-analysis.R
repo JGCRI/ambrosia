@@ -4,7 +4,7 @@
 library(reshape2)
 library(ggplot2)
 
-read.mc.data <- function(filename, varnames=NULL)
+read.mc.data <- function(filename, varnames=namemc())
 {
     ## This is just a thin wrapper around the read.table function.  If
     ## names are given, we assign them; if not, then we just tag the
@@ -117,4 +117,25 @@ mcparam.itercount <- function(niter, nproc, npset)
 
     ## Now the iteration number is the batch sequence number plus outstep*(batch #)
     out.batch * outstep + seq.block
+}
+
+
+#### The remaining functions in this file are specific to analyzing
+#### the food demand monte carlo calculations.
+namemc <- function(nparam=9)
+{
+    ## Return the list of names for the parameters in the model.
+    ## Supports both the 7 and i parameter version.  Adds the "LL" tag
+    ## to the end to cover the log likelihood column appened by the
+    ## monte carlo code.
+    if(nparam == 8) {
+        c("As", "An", "xi.ss", "xi.cross", "xi.nn", "eps1n", "eps.s", "Pm", "LL")
+    }
+    else if(nparam == 9) {
+        c("As", "An", "xi.ss", "xi.cross", "xi.nn", "eps1n", "lambda", "ks", "Pm", "LL")
+    }
+    else {
+        warning(paste("namemc:  nparam must be 8 or 9.  nparam= ", nparam))
+        NULL
+    }
 }

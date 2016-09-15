@@ -28,9 +28,7 @@ food.dmnd <- function(Ps, Pn, Y, params) {
 ## Note on eta functions:  For one of the functional forms I was considering for
 ## eta(Y), eta blows up, but Y^(eta(Y)) is well behaved.  Therefore, the eta functions
 ## need to be able to calculate not just eta(Y), but Y^(eta(Y)), so they can handle the
-## limiting cases.  In pracice we probably won't be able to use these eta functions because
-## the eta values they produce will likely cause the price elasticities to blow up, but I
-## wanted to be able to test them anyhow.
+## limiting cases.
 
     Pm <- params$Pm
 

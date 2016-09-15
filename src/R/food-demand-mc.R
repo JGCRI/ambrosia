@@ -189,25 +189,7 @@ process.gcam.data <- function(gcam.data)
     ## construct the return data frame.  
 
     data.frame(Ps=Ps, Pn=Pn, Y=Y, Qs=Qs, Qn=Qn, sig2Qs=sig2Qs, sig2Qn=sig2Qn)
-}
-
-namemc <- function(nparam=9)
-{
-    ## Return the list of names for the parameters in the model.
-    ## Supports both the 7 and i parameter version.  Adds the "LL" tag
-    ## to the end to cover the log likelihood column appened by the
-    ## monte carlo code.
-    if(nparam == 8) {
-        c("As", "An", "xi.ss", "xi.cross", "xi.nn", "eps1n", "eps.s", "Pm", "LL")
-    }
-    else if(nparam == 9) {
-        c("As", "An", "xi.ss", "xi.cross", "xi.nn", "eps1n", "lambda", "ks", "Pm", "LL")
-    }
-    else {
-        warning(paste("namemc:  nparam must be 8 or 9.  nparam= ", nparam))
-        NULL
-    }
-}
+} 
 
 
 mc.food.dmnd.byyear <- function(obsdata, x, regions=NULL)
