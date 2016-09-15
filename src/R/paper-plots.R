@@ -169,3 +169,18 @@ make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
     list(byyear=plt.byyear, density=plt.density)
 
 }
+
+make.paper1.obs.plots <- function(obsdata)
+{
+    ## plots that require just the observational data
+
+    ## histogram of sigma values
+    pltdata <- mutate(obsdata, Nonstaples=sqrt(sig2Qn), Staples=sqrt(sig2Qs)) %>%
+        select(GCAM_region_name, year, Nonstaples, Staples) %>%
+        melt(id=c('GCAM_region_name', 'year'))
+
+    ggplot(data=pltdata, aes(x=value)) +
+        facet_grid(variable ~ .) + geom_histogram(binwidth=0.02) + theme_minimal() +
+        ggtitle('Imputed sigma values') + xlab('sigma (1000 cal/person/day)')
+
+}
