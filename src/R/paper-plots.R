@@ -138,7 +138,7 @@ make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
     ## the calculation.  They are generally harmless, but they mess up
     ## the scales of the density plots.
 
-    mcrslt <- filter(mcrslt, LL > quantile(LL, probs=0.01))
+    mcrslt.plt <- filter(mcrslt, LL > quantile(LL, probs=0.01))
 
     ## Create a merged data set with training and testing observations marked as such
     obsdata.trn$obstype <- 'Training'
@@ -150,7 +150,7 @@ make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
         obsdata.all <- obsdata.trn
     obsdata.all$obstype <- factor(obsdata.all$obstype)
 
-    plt.byyear <- mc.make.byyear.plot(mcrslt, obsdata.all) +
+    plt.byyear <- mc.make.byyear.plot(mcrslt.plt, obsdata.all) +
             xlab('year') + ylab('1000 Calories/person/day') +
             theme_minimal() + scale_color_ptol(name='Demand Type', labels=c('Staples', 'Nonstaples'))
 
@@ -159,14 +159,20 @@ make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
     ## randomly.  The reason for this is that making a density plot
     ## with a multi-million row dataset is really slow.
     den.row.max <- 10000
-    if(nrow(mcrslt) > den.row.max)
-        mcrslt <- sample_n(mcrslt, den.row.max)
+    if(nrow(mcrslt.plt) > den.row.max)
+        mcrslt.plt <- sample_n(mcrslt.plt, den.row.max)
     ## Also, convert the eta.s parameters to eps-y0 notation.
-    mcrslt <- lamks2epsy0(mcrslt)
+    mcrslt.plt <- lamks2epsy0(mcrslt.plt)
 
-    plt.density <- mcparam.density(mcrslt) + theme_minimal()
+    plt.density <- mcparam.density(mcrslt.plt) + theme_minimal()
 
-    list(byyear=plt.byyear, density=plt.density)
+    ## Not a plot, but the following code generates the 95% confidence intervals
+    ci.vals <- filter(mcrslt, LL > quantile(LL, probs=0.01)) %>% select(-LL) %>%
+        sapply(function(x) {c(min(x), max(x))})
+    row.names(ci.vals) <- c('ci.low', 'ci.high')
+    
+
+    list(byyear=plt.byyear, density=plt.density, conf.intvl=ci.vals)
 
 }
 
