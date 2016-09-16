@@ -20,7 +20,7 @@ make.paper1.param.plots <- function(params, obsdata, y.vals=NULL, ps.vals=NULL, 
 
     ## Default values of plot parameters
     if(is.null(y.vals))
-        y.vals <- seq(1, 30, length.out=50)
+        y.vals <- c(seq(0.25,0.9, length.out=10), seq(1, 50, length.out=60))
     len <- length(y.vals)
     if(is.null(ps.vals))
         ps.vals <- rep(median(obsdata$Ps),len)
@@ -73,7 +73,7 @@ plot.elas <- function(elas.data, x, xlabel)
     ggplot(data=pltdata, aes(x=x, y=value, color=variable)) +
         geom_line(size=1.5) + xlab(xlabel) + ylab('') +
         theme_minimal() + scale_color_ptol(name=NULL) +
-        ggtitle('Food Demand Elasticities')
+        ggtitle('Food Demand Elasticities') + ylim(-0.25, 1.0)
 
 }
 
