@@ -29,7 +29,7 @@
 # -----------------------------------------------------------------------------
 # Define functions and load libraries
 # -----------------------------------------------------------------------------
-path <- dirname(sys.frame(1)$ofile)
+path <- dirname(normalizePath(sys.frame(1)$ofile))
 source( file.path(path,"functions.R") ) # Load my standard set of functions
 
 # -----------------------------------------------------------------------------
@@ -253,7 +253,7 @@ d.cons.reg <- d.cons %>%
 
 ## create final data set.  Drop the Europe_Non_EU region because the data there is suspect
 source(file.path(path,'../R/util.R'))
-allrgn.data <- filter(d.cons.reg, GCAM_region_name != 'Europe_Non_EU') %>% assign.sigma.Q() 
+allrgn.data <- filter(d.cons.reg, GCAM_region_name != 'Europe_Non_EU', !(GCAM_region_name=='Central Asia' & year <= 1990)) %>% assign.sigma.Q() 
 write.csv( allrgn.data, "../food-dmnd-price-allrgn.csv", row.names = FALSE )
 create.xval.data(allrgn.data, '..')
 
