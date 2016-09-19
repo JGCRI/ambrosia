@@ -170,7 +170,7 @@ make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
     ci.vals <- filter(mcrslt, LL > quantile(LL, probs=0.01)) %>% select(-LL) %>%
         sapply(function(x) {c(min(x), max(x))})
     row.names(ci.vals) <- c('ci.low', 'ci.high')
-    
+
 
     list(byyear=plt.byyear, density=plt.density, conf.intvl=ci.vals)
 
@@ -188,5 +188,36 @@ make.paper1.obs.plots <- function(obsdata)
     ggplot(data=pltdata, aes(x=value)) +
         facet_grid(variable ~ .) + geom_histogram(binwidth=0.02) + theme_minimal() +
         ggtitle('Imputed sigma values') + xlab('sigma (1000 cal/person/day)')
+
+}
+
+
+paper1.chisq <- function(params, obsdata)
+{
+    ## correct units on prices
+    obsdata <- mutate(obsdata, Ps=s_usd_p1000cal*0.365, Pn=ns_usd_p1000cal*0.365) %>%
+        rename(Y=gdp_pcap_thous2005usd, Qs=s_cal_pcap_day_thous, Qn=ns_cal_pcap_day_thous)
+
+    y.vals <- obsdata$Y
+    ps.vals <- obsdata$Ps
+    pn.vals <- obsdata$Pn
+
+    ## apply floor to sigma values; see discussion in paper
+    sig2Qs <- pmax(obsdata$sig2Qs, 0.01)
+    sig2Qn <- pmax(obsdata$sig2Qn, 0.01)
+
+    moddata <- food.dmnd(ps.vals, pn.vals, y.vals, params)
+
+    chisq <- sum( (moddata$Qs - obsdata$Qs)^2 / sig2Qs +
+                     (moddata$Qn - obsdata$Qn)^2 / sig2Qn )
+
+    ## Calculating the degrees of freedom, we don't subtract for the
+    ## model parameters because this function is meant to be used with
+    ## the testing set for cross-validation, and the parameters
+    ## weren't actually fit to the testing set data.
+    df <- nrow(obsdata)
+    pval <- pchisq(chisq, df)
+
+    list(chisq=chisq, pval=pval, df=df)
 
 }
