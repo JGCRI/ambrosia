@@ -154,20 +154,28 @@ make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
             xlab('year') + ylab('1000 Calories/person/day') +
             theme_minimal() + scale_color_ptol(name='Demand Type', labels=c('Staples', 'Nonstaples'))
 
+    
+    ## The paper uses a slightly different notation than we're using.
+    ## Specifically, what the paper calls eps1n, we are calling
+    ## 2*eps1n
+    mcrslt.notation.fix <- mcrslt.plt
+    mcrslt.notation.fix$eps1n <- 2*mcrslt.notation.fix$eps1n
+    ## rename columns to match notation in paper
+    mcrslt.notation.fix <- rename(mcrslt.notation.fix, nu=eps1n, k=ks)
 
     ## for the density plot, if the dataset is really large, sample it
     ## randomly.  The reason for this is that making a density plot
     ## with a multi-million row dataset is really slow.
     den.row.max <- 10000
-    if(nrow(mcrslt.plt) > den.row.max)
-        mcrslt.plt <- sample_n(mcrslt.plt, den.row.max)
-    ## Also, convert the eta.s parameters to eps-y0 notation.
-    mcrslt.plt <- lamks2epsy0(mcrslt.plt)
+    if(nrow(mcrslt.notation.fix) > den.row.max)
+        mcrslt.plt <- sample_n(mcrslt.notation.fix, den.row.max)
+    else
+        mcrslt.plt <- mcrslt.notation.fix
 
     plt.density <- mcparam.density(mcrslt.plt) + theme_minimal()
 
     ## Not a plot, but the following code generates the 95% confidence intervals
-    ci.vals <- filter(mcrslt, LL > quantile(LL, probs=0.01)) %>% select(-LL) %>%
+    ci.vals <- filter(mcrslt.notation.fix, LL > quantile(LL, probs=0.01)) %>% select(-LL) %>%
         sapply(function(x) {c(min(x), max(x))})
     row.names(ci.vals) <- c('ci.low', 'ci.high')
 
