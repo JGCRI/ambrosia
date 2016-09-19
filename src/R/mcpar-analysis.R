@@ -139,3 +139,20 @@ namemc <- function(nparam=9)
         NULL
     }
 }
+
+mc2param <- function(x)
+{
+    ## Convert a vector of parameters from a Monte Carlo result into a
+    ## params structure.
+    ##
+    ## The parameters in the vector are:
+    ##  [A_s, A_n, xi_ss, xi_cross, xi_nn, nu1_n, lambda_s, k_s, Pm ]
+    ## xi_cross is used for both xi_sn and xi_ns, forcing them to be equal.
+    ##
+    etas <- eta.s(x[7],x[8],mc.mode=TRUE)
+    Pm <- x[9]
+
+    xivals <- c(x[3], x[4], x[4], x[5])
+    ## construct the parameter structure
+    list(A=x[1:2], yfunc=c(etas, eta.n(x[6])), xi=matrix(xivals, nrow=2), Pm=Pm)
+}

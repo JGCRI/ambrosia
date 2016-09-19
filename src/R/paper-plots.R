@@ -141,14 +141,14 @@ make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
     mcrslt.plt <- filter(mcrslt, LL > quantile(LL, probs=0.01))
 
     ## Create a merged data set with training and testing observations marked as such
-    obsdata.trn$obstype <- 'Training'
     if(!is.null(obsdata.tst)) {
+        obsdata.trn$obstype <- 'Training'
         obsdata.tst$obstype <- 'Testing'
         obsdata.all <- rbind(obsdata.trn, obsdata.tst)
+        obsdata.all$obstype <- factor(obsdata.all$obstype)
     }
     else
         obsdata.all <- obsdata.trn
-    obsdata.all$obstype <- factor(obsdata.all$obstype)
 
     plt.byyear <- mc.make.byyear.plot(mcrslt.plt, obsdata.all) +
             xlab('year') + ylab('1000 Calories/person/day') +
@@ -200,7 +200,7 @@ make.paper1.obs.plots <- function(obsdata)
 }
 
 
-paper1.chisq <- function(params, obsdata)
+paper1.chisq <- function(params, obsdata, dfcorrect=0)
 {
     ## correct units on prices
     obsdata <- mutate(obsdata, Ps=s_usd_p1000cal*0.365, Pn=ns_usd_p1000cal*0.365) %>%
@@ -222,8 +222,10 @@ paper1.chisq <- function(params, obsdata)
     ## Calculating the degrees of freedom, we don't subtract for the
     ## model parameters because this function is meant to be used with
     ## the testing set for cross-validation, and the parameters
-    ## weren't actually fit to the testing set data.
-    df <- nrow(obsdata)
+    ## weren't actually fit to the testing set data.  If you are using
+    ## this on data that was used in the fit, set dfcorrect to the
+    ## number of fitted parameters.
+    df <- nrow(obsdata) - dfcorrect
     pval <- pchisq(chisq, df)
 
     list(chisq=chisq, pval=pval, df=df)

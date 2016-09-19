@@ -4,6 +4,9 @@ library(reshape2)
 library('dplyr')
 library('RColorBrewer')
 
+path <- dirname(sys.frame(1)$ofile)
+source(file.path(path,'food-demand-mc.R'))
+
 make.demand.plot <- function(alldata,xdata,xlabel,max.yval)
 {
   ## alldata: results of the food demand calculation
