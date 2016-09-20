@@ -179,8 +179,8 @@ paper1.chisq <- function(params, obsdata, dfcorrect=0)
 
     moddata <- food.dmnd(ps.vals, pn.vals, y.vals, params)
 
-    chisq <- sum( (moddata$Qs - obsdata$Qs)^2 / sig2Qs +
-                     (moddata$Qn - obsdata$Qn)^2 / sig2Qn )
+    chisq <- sum( obsdata$weight*((moddata$Qs - obsdata$Qs)^2 / sig2Qs +
+                                  (moddata$Qn - obsdata$Qn)^2 / sig2Qn ))
 
     ## Calculating the degrees of freedom, we don't subtract for the
     ## model parameters because this function is meant to be used with
@@ -188,7 +188,7 @@ paper1.chisq <- function(params, obsdata, dfcorrect=0)
     ## weren't actually fit to the testing set data.  If you are using
     ## this on data that was used in the fit, set dfcorrect to the
     ## number of fitted parameters.
-    df <- nrow(obsdata) - dfcorrect
+    df <- sum(obsdata$weight) - dfcorrect
     pval <- pchisq(chisq, df)
 
     list(chisq=chisq, pval=pval, df=df)
