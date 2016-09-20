@@ -39,11 +39,7 @@ make.paper1.param.plots <- function(params, obsdata, y.vals=NULL, ps.vals=NULL, 
     hicks.data <- calc.hicks.actual(elas.data, demand.data$alpha.s, demand.data$alpha.n, demand.data$alpha.m)
     plt.hicks.by.gdp <- plot.hicks(hicks.data, y.vals, 'pcGDP-PPP (thousands)')
 
-    ## scatter plots of observations vs model outputs.
-
-    plt.scatter <- plot.model.obs.scatter(obsdata, params)
-
-    list(qty.by.gdp=plt.by.gdp, elas.by.gdp=plt.elas.by.gdp, hicks.by.gdp=plt.hicks.by.gdp, scatter=plt.scatter)
+    list(qty.by.gdp=plt.by.gdp, elas.by.gdp=plt.elas.by.gdp, hicks.by.gdp=plt.hicks.by.gdp)
 }
 
 
@@ -89,39 +85,6 @@ plot.hicks <- function(hicks.data, x, xlabel)
         ggtitle('Food Demand Hicks Elasticities')
 }
 
-plot.model.obs.scatter <- function(obsdata, params)
-{
-    obsdata <- rename(obsdata, rgn=GCAM_region_name)
-    rgn <- obsdata$rgn
-    pltdata <- split(obsdata, rgn) %>%
-        lapply(function(d) {
-                   rslt <- food.dmnd(d$Ps, d$Pn, d$Y, params)
-                   mutate(d, Qs.model=rslt$Qs, Qn.model=rslt$Qn)
-               }) %>%
-        do.call(rbind, . )
-
-    ## need to turn this into a paired dataset
-    if(is.null(pltdata$obstype)) {
-        pltdata$obstype <- 'obs'
-        label.obstype <- FALSE
-    }
-    else
-        label.obstype <- TRUE
-
-    pltdata.s <- select(pltdata, obs=Qs.obs, model=Qs.model, obstype) %>% mutate(demand='Staples')
-    pltdata.n <- select(pltdata, obs=Qn.obs, model=Qn.model, obstype) %>% mutate(demand='Nonstaples')
-    pltdata.all <- rbind(pltdata.s, pltdata.n)
-
-    plt <- ggplot(data=pltdata.all, aes(x=obs, y=model, colour=demand, shape=obstype)) +
-        geom_point(size=1.5) + xlab('Observation') + ylab('Model') +
-        scale_color_ptol(name='Demand Type') + geom_abline(slope=1, intercept=0, linetype=2, size=1.5)
-
-    if(label.obstype)
-        plt + scale_shape(name='Observation Type')
-    else
-        plt + scale_shape(guide=FALSE)
-
-}
 
 make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
 {
@@ -154,7 +117,7 @@ make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
             xlab('year') + ylab('1000 Calories/person/day') +
             theme_minimal() + scale_color_ptol(name='Demand Type', labels=c('Staples', 'Nonstaples'))
 
-    
+
     ## The paper uses a slightly different notation than we're using.
     ## Specifically, what the paper calls eps1n, we are calling
     ## 2*eps1n
@@ -230,4 +193,73 @@ paper1.chisq <- function(params, obsdata, dfcorrect=0)
 
     list(chisq=chisq, pval=pval, df=df)
 
+}
+
+
+paper1.gen.scatter.data <- function(obsdata, params)
+{
+    obsdata <- rename(obsdata,
+                      rgn=GCAM_region_name,
+                      Y=gdp_pcap_thous2005usd,
+                      Qs=s_cal_pcap_day_thous,
+                      Qn=ns_cal_pcap_day_thous) %>%
+        mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal) # unit conversion
+
+    moddata <- split(obsdata, obsdata$rgn) %>%  # operate on each region separately for speed.
+        lapply(function(d) {
+                   rslt <- food.dmnd(d$Ps, d$Pn, d$Y, params)
+                   mutate(d, Qs.model=rslt[['Qs']], Qn.model=rslt[['Qn']])
+               }) %>%
+            do.call(rbind, .) %>%
+            select(rgn, Qs, Qn, Qs.model, Qn.model, obstype, expt)
+
+    moddata.s <- select(moddata, rgn, obs=Qs, model=Qs.model, obstype, expt) %>%
+        mutate(demand='Staples')
+    moddata.n <- select(moddata, rgn, obs=Qn, model=Qn.model, obstype, expt) %>%
+        mutate(demand='Nonstaples')
+
+    rbind(moddata.s,moddata.n)
+}
+
+make.paper1.scatter.plots <- function(mcrslt.rgn, mcrslt.yr,
+                                      obsdata.rgn.trn, obsdata.rgn.tst, obsdata.yr.trn, obsdata.yr.tst)
+
+{
+    p.rgn <- mc2param(mcparam.ML(mcrslt.rgn))
+    p.yr <- mc2param(mcparam.ML(mcrslt.yr))
+
+    obsdata.rgn.trn$obstype <- 'Training'
+    obsdata.rgn.tst$obstype <- 'Testing'
+    obsdata.rgn.trn$expt <- 'Regional cross-validation'
+    obsdata.rgn.tst$expt <- 'Regional cross-validation'
+
+    obsdata.yr.trn$obstype <- 'Training'
+    obsdata.yr.tst$obstype <- 'Testing'
+    obsdata.yr.trn$expt <- 'Yearly cross-validation'
+    obsdata.yr.tst$expt <- 'Yearly cross-validation'
+
+    data <- list(obsdata.rgn.trn, obsdata.rgn.tst, obsdata.yr.trn, obsdata.yr.tst)
+    params <- list(p.rgn, p.rgn, p.yr, p.yr)
+
+    pltdata <- mapply(paper1.gen.scatter.data, data, params, SIMPLIFY=FALSE) %>% do.call(rbind,.)
+
+    scatter <- ggplot(data=pltdata, aes(x=obs, y=model, colour=demand)) +
+        geom_point(size=1.5) + xlab('Observation') + ylab('Model') +
+        scale_color_ptol(name='Demand Type') + geom_abline(slope=1, intercept=0, linetype=2, size=1, color='Dark Slate Grey') +
+        facet_grid(obstype ~ expt) + theme_minimal()
+
+
+    ## Not technically a scatter plot, but a histogram of the
+    ## residuals shows a lot of what we want to get from this
+    ## analysis.
+    pltdata$resid <- pltdata$model - pltdata$obs
+    resid.hist <- ggplot(data=pltdata, aes(x=resid)) +
+        geom_histogram(binwidth=0.05) + xlab('Residual (1000 Calories/person/day)') +
+        facet_grid(obstype ~ expt) + theme_minimal()
+
+    resid.conf <-
+        split(pltdata$resid, list(pltdata$obstype, pltdata$expt)) %>% sapply(. %>% quantile(probs=c(0.05, 0.95)))
+
+    list(scatter=scatter, resid.hist=resid.hist, resid.conf=resid.conf)
+    
 }
