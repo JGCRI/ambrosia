@@ -290,3 +290,16 @@ paper1.residual.analysis <- function(mcrslt.rgn, mcrslt.yr,
     list(scatter=scatter, resid.hist=resid.hist, rmse=resid.rms, resid.conf=resid.conf, ks=ks)
     
 }
+
+paper1.rmse.all <- function(obsdata, params)
+{
+    ## simple RMS error for a combined data set
+    if(is.null(obsdata$obstype))
+        obsdata$obstype='Training'
+    if(is.null(obsdata$expt))
+        obsdata$expt='Primary'
+    data <- paper1.gen.residual.data(obsdata, params) %>% mutate(resid=model-obs)
+
+    sqrt(sum(data$resid^2)/nrow(data))
+
+}

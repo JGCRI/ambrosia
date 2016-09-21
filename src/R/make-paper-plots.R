@@ -61,6 +61,8 @@ plts.mc.yr <- make.paper1.mc.plots(mcrslt.yr, xval.yr.trn, xval.yr.tst)
 print('Running:  Cross-validation scatter plot.')
 resid.stats <- paper1.residual.analysis(mcrslt.rgn, mcrslt.yr,
                                          xval.rgn.trn, xval.rgn.tst, xval.yr.trn, xval.yr.tst)
+## Also get the RMSE for the primary run (RMSE fro cross-validation sets was included in resid.stats)
+rmse.all <- paper1.rmse.all(alldata, p.all)
 
 ### Calculate the chi-squared values.  Use testing set only for xval
 ### experiments.
