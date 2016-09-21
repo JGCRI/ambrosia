@@ -59,7 +59,7 @@ plts.mc.yr <- make.paper1.mc.plots(mcrslt.yr, xval.yr.trn, xval.yr.tst)
 
 ## Scatter plots for cross-validation experiment
 print('Running:  Cross-validation scatter plot.')
-plt.scatter <- make.paper1.scatter.plots(mcrslt.rgn, mcrslt.yr,
+resid.stats <- paper1.residual.analysis(mcrslt.rgn, mcrslt.yr,
                                          xval.rgn.trn, xval.rgn.tst, xval.yr.trn, xval.yr.tst)
 
 ### Calculate the chi-squared values.  Use testing set only for xval

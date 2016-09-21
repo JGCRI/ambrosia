@@ -196,7 +196,7 @@ paper1.chisq <- function(params, obsdata, dfcorrect=0)
 }
 
 
-paper1.gen.scatter.data <- function(obsdata, params)
+paper1.gen.residual.data <- function(obsdata, params)
 {
     obsdata <- rename(obsdata,
                       rgn=GCAM_region_name,
@@ -221,7 +221,7 @@ paper1.gen.scatter.data <- function(obsdata, params)
     rbind(moddata.s,moddata.n)
 }
 
-make.paper1.scatter.plots <- function(mcrslt.rgn, mcrslt.yr,
+paper1.residual.analysis <- function(mcrslt.rgn, mcrslt.yr,
                                       obsdata.rgn.trn, obsdata.rgn.tst, obsdata.yr.trn, obsdata.yr.tst)
 
 {
@@ -241,7 +241,7 @@ make.paper1.scatter.plots <- function(mcrslt.rgn, mcrslt.yr,
     data <- list(obsdata.rgn.trn, obsdata.rgn.tst, obsdata.yr.trn, obsdata.yr.tst)
     params <- list(p.rgn, p.rgn, p.yr, p.yr)
 
-    pltdata <- mapply(paper1.gen.scatter.data, data, params, SIMPLIFY=FALSE) %>% do.call(rbind,.)
+    pltdata <- mapply(paper1.gen.residual.data, data, params, SIMPLIFY=FALSE) %>% do.call(rbind,.)
 
     scatter <- ggplot(data=pltdata, aes(x=obs, y=model, colour=demand)) +
         geom_point(size=1.5) + xlab('Observation') + ylab('Model') +
@@ -257,9 +257,36 @@ make.paper1.scatter.plots <- function(mcrslt.rgn, mcrslt.yr,
         geom_histogram(binwidth=0.05) + xlab('Residual (1000 Calories/person/day)') +
         facet_grid(obstype ~ expt) + theme_minimal()
 
-    resid.conf <-
-        split(pltdata$resid, list(pltdata$obstype, pltdata$expt)) %>% sapply(. %>% quantile(probs=c(0.05, 0.95)))
+    ## split the residuals by experiment and observation type for further analysis
+    resid.split <- split(pltdata$resid, list(pltdata$obstype, pltdata$expt))
+    ## RMSE for each category
+    resid.rms <- sapply(resid.split, function(x) {sqrt(sum(x^2)/length(x))})
+    ## 95% confidence intervals for each of the four categories
+    resid.conf <- sapply(resid.split, . %>% quantile(probs=c(0.05, 0.95)))
 
-    list(scatter=scatter, resid.hist=resid.hist, resid.conf=resid.conf)
+    ## Perform a Kolmogorov-Smirnov test on the squared residuals.
+    ## The goal is to see if the residuals in the testing set are
+    ## *larger* than those in the training set (we have no reason to
+    ## expect them to be smaller).  If we were confident that the
+    ## residuals were normally distributed we could use an F-test
+    ## here, but given the chi-squared values we've been seeing, that
+    ## assumption looks at least a little bit questionable, so e'll
+    ## stick with K-S.
+    resid.rgn.trn <- resid.split[['Training.Regional cross-validation']]
+    resid.rgn.tst <- resid.split[['Testing.Regional cross-validation']]
+    resid.yr.trn <- resid.split[['Training.Yearly cross-validation']]
+    resid.yr.tst <- resid.split[['Testing.Yearly cross-validation']]
+
+
+    ## The KS test is a test of the CDF, so "greater" means the CDF of
+    ## x is greater than the CDF of y.  We want to test whether the
+    ## x-values (i.e., testing residuals) are on the whole greater
+    ## than the y-values (i.e., training residuals).  That means the
+    ## CDF for the x-values would be *less* those for the y-values at
+    ## comparable values.
+    ks <- list(rgn=ks.test(resid.rgn.tst, resid.rgn.trn, alternative='less'), 
+               yr=ks.test(resid.yr.tst, resid.yr.trn, alternative='less'))
+    
+    list(scatter=scatter, resid.hist=resid.hist, rmse=resid.rms, resid.conf=resid.conf, ks=ks)
     
 }
