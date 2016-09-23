@@ -211,11 +211,11 @@ paper1.gen.residual.data <- function(obsdata, params)
                    mutate(d, Qs.model=rslt[['Qs']], Qn.model=rslt[['Qn']])
                }) %>%
             do.call(rbind, .) %>%
-            select(rgn, Qs, Qn, Qs.model, Qn.model, obstype, expt)
+            select(rgn, Qs, Qn, Qs.model, Qn.model, obstype, expt, weight)
 
-    moddata.s <- select(moddata, rgn, obs=Qs, model=Qs.model, obstype, expt) %>%
+    moddata.s <- select(moddata, rgn, obs=Qs, model=Qs.model, obstype, expt, weight) %>%
         mutate(demand='Staples')
-    moddata.n <- select(moddata, rgn, obs=Qn, model=Qn.model, obstype, expt) %>%
+    moddata.n <- select(moddata, rgn, obs=Qn, model=Qn.model, obstype, expt, weight) %>%
         mutate(demand='Nonstaples')
 
     rbind(moddata.s,moddata.n)
@@ -258,11 +258,11 @@ paper1.residual.analysis <- function(mcrslt.rgn, mcrslt.yr,
         facet_grid(obstype ~ expt) + theme_minimal()
 
     ## split the residuals by experiment and observation type for further analysis
-    resid.split <- split(pltdata$resid, list(pltdata$obstype, pltdata$expt))
+    resid.split <- select(pltdata, resid, weight) %>% split(list(pltdata$obstype, pltdata$expt))
     ## RMSE for each category
-    resid.rms <- sapply(resid.split, function(x) {sqrt(sum(x^2)/length(x))})
+    resid.rms <- sapply(resid.split, function(d) {sqrt(sum(d$weight*d$resid^2)/sum(d$weight))})
     ## 95% confidence intervals for each of the four categories
-    resid.conf <- sapply(resid.split, . %>% quantile(probs=c(0.05, 0.95)))
+    resid.conf <- sapply(resid.split, function(d) {quantile(d$resid, probs=c(0.05, 0.95))})
 
     ## Perform a Kolmogorov-Smirnov test on the squared residuals.
     ## The goal is to see if the residuals in the testing set are
@@ -284,11 +284,11 @@ paper1.residual.analysis <- function(mcrslt.rgn, mcrslt.yr,
     ## than the y-values (i.e., training residuals).  That means the
     ## CDF for the x-values would be *less* those for the y-values at
     ## comparable values.
-    ks <- list(rgn=ks.test(resid.rgn.tst, resid.rgn.trn, alternative='less'), 
-               yr=ks.test(resid.yr.tst, resid.yr.trn, alternative='less'))
-    
+    ks <- list(rgn=ks.test(resid.rgn.tst$resid, resid.rgn.trn$resid, alternative='less'),
+               yr=ks.test(resid.yr.tst$resid, resid.yr.trn$resid, alternative='less'))
+
     list(scatter=scatter, resid.hist=resid.hist, rmse=resid.rms, resid.conf=resid.conf, ks=ks)
-    
+
 }
 
 paper1.rmse.all <- function(obsdata, params)
@@ -300,6 +300,6 @@ paper1.rmse.all <- function(obsdata, params)
         obsdata$expt='Primary'
     data <- paper1.gen.residual.data(obsdata, params) %>% mutate(resid=model-obs)
 
-    sqrt(sum(data$resid^2)/nrow(data))
+    sqrt(sum(data$weight * data$resid^2)/sum(data$weight))
 
 }
