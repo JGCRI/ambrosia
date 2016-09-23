@@ -81,7 +81,7 @@ food.dmnd <- function(Ps, Pn, Y, params) {
     qm <-  resid / Pm
     alpha.m <- resid / Y
 
-  list(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m)
+  data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m)
 }
 
 calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
@@ -358,7 +358,7 @@ food.dmnd.byyear <- function(obsdata, params, region=NULL)
         rslt$Qn.Obs <- indata$Qn.Obs
         if(!is.null(indata$obstype))
             rslt$obstype <- indata$obstype
-        as.data.frame(rslt)
+        rslt
     }
 }
 
@@ -374,7 +374,7 @@ food.dmnd.byincome <- function(obsdata, params, region=NULL)
             mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal) %>%
                 select(Y=gdp_pcap_thous2005usd, Ps, Pn,
                        obs.qs=s_cal_pcap_day_thous,obs.qn=ns_cal_pcap_day_thous)
-        food.dmnd(od$Ps, od$Pn, od$Y, params) %>% as.data.frame %>%
+        food.dmnd(od$Ps, od$Pn, od$Y, params) %>%
             mutate(region=simplify.region(region), pcGDP=od$Y,
                    `Staple Residual`=Qs-od$obs.qs,
                    `Nonstaple Residual`=Qn-od$obs.qn) %>%

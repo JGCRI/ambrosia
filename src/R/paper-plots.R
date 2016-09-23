@@ -27,8 +27,7 @@ make.paper1.param.plots <- function(params, obsdata, y.vals=NULL, ps.vals=NULL, 
     if(is.null(pn.vals))
         pn.vals <- rep(median(obsdata$Pn),len)
 
-    demand.data <- food.dmnd(ps.vals, pn.vals, y.vals, params) %>%
-        as.data.frame
+    demand.data <- food.dmnd(ps.vals, pn.vals, y.vals, params)
 
     plt.by.gdp <- plot.qty(demand.data, y.vals, 'pcGDP-PPP (thousands)')
 
@@ -284,11 +283,11 @@ paper1.residual.analysis <- function(mcrslt.rgn, mcrslt.yr,
     ## than the y-values (i.e., training residuals).  That means the
     ## CDF for the x-values would be *less* those for the y-values at
     ## comparable values.
-    ks <- list(rgn=ks.test(resid.rgn.tst, resid.rgn.trn, alternative='less'), 
+    ks <- list(rgn=ks.test(resid.rgn.tst, resid.rgn.trn, alternative='less'),
                yr=ks.test(resid.yr.tst, resid.yr.trn, alternative='less'))
-    
+
     list(scatter=scatter, resid.hist=resid.hist, rmse=resid.rms, resid.conf=resid.conf, ks=ks)
-    
+
 }
 
 paper1.rmse.all <- function(obsdata, params)
