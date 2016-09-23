@@ -4,7 +4,7 @@ library('dplyr')
 psscl <- 100
 pnscl <- 20
 
-food.dmnd <- function(Ps, Pn, Y, params) {
+food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL) {
 ## Function for calculating food demand using the new model
 ## Arguments: Ps, Pn, and Y (staple price, normal price, and pcGDP), params structure.  Ps, Pn, Y may be vectors but must all be
 ##            the same length
@@ -81,7 +81,10 @@ food.dmnd <- function(Ps, Pn, Y, params) {
     qm <-  resid / Pm
     alpha.m <- resid / Y
 
-  data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m)
+    if(is.null(rgn))
+        data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m)
+    else
+        data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m, rgn=rgn)
 }
 
 calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
@@ -330,7 +333,7 @@ calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
 }
 
 
-food.dmnd.byyear <- function(obsdata, params, region=NULL)
+food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
 {
     ## Plot food demand by year for in input model using the observed
     ## prices and incomes for a given region.  If region == NULL, do
@@ -339,7 +342,7 @@ food.dmnd.byyear <- function(obsdata, params, region=NULL)
         ## run this function for all regions and collect the results
         ## into a single table.
         levels(obsdata$GCAM_region_name) %>%
-            lapply(. %>% food.dmnd.byyear(obsdata, params, .)) %>%
+            lapply(. %>% food.dmnd.byyear(obsdata, params, bc, .)) %>%
             do.call(rbind, .)
     }
     else {
@@ -351,7 +354,9 @@ food.dmnd.byyear <- function(obsdata, params, region=NULL)
             mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal, Y=gdp_pcap_thous2005usd,
                    Qs.Obs=s_cal_pcap_day_thous, Qn.Obs=ns_cal_pcap_day_thous) %>%
             select_(.dots=selcols) -> indata
-        rslt <- food.dmnd(indata$Ps, indata$Pn, indata$Y, params)
+        rslt <- as.data.frame(food.dmnd(indata$Ps, indata$Pn, indata$Y, params))
+        if(!is.null(bc))
+            apply.bias.corrections(rslt, bc)
         rslt$year <- indata$year
         rslt$rgn <- region
         rslt$Qs.Obs <- indata$Qs.Obs
@@ -413,6 +418,62 @@ merge.trn.tst <- function(obs.trn, obs.tst)
     obs.trn$obstype <- 'Training'
     obs.tst$obstype <- 'Testing'
     rbind(obs.trn, obs.tst)
+}
+
+
+prepare.obs <- function(obs)
+{
+    ## Convert units on prices and rename certain columns so they
+    ## aren't such a pain to work with.
+    mutate(obs,
+           Ps=0.365*s_usd_p1000cal, # convert daily cost in dollars to annual cost in thousands of dollars.
+           Pn=0.365*ns_usd_p1000cal) %>%
+        rename(rgn=GCAM_region_name, Y=gdp_pcap_thous2005usd,
+               Qs=s_cal_pcap_day_thous, Qn=ns_cal_pcap_day_thous)
+}
+
+compute.bc.rgn <- function(obs, params)
+{
+    ## compute the bias corrections for an individual region.  Bias
+    ## corrections are *multiplied* by model data to get adjusted
+    ## data.
+    yrmax <- max(obs$year)
+    yrmin <- yrmax-10
+    obs <- filter(obs, year > yrmin)
+
+    mod <- food.dmnd(obs$Ps, obs$Pn, obs$Y, params)
+
+    c(s=mean(obs$Qs)/mean(mod$Qs), n=mean(obs$Qn)/mean(mod$Qn))
+
+}
+
+compute.bias.corrections <- function(params, obs.trn)
+{
+    ## compute regional bias correction for a set of parameters and a
+    ## training set of observations.
+    obs <- prepare.obs(obs.trn)
+    obs <- split(obs, obs$rgn)
+    params$bc <- sapply(obs, . %>% compute.bc.rgn(params))
+}
+
+
+apply.bc.rgn <- function(mod, bc)
+{
+    mod$Qs <- mod$Qs * bc['s',mod$rgn]
+    mod$Qn <- mod$Qn * bc['n',mod$rgn]
+    mod
+}
+
+apply.bias.corrections <- function(mod, bc)
+{
+    ## make this function work whether or not the column names have been converted.
+    rgn <- if(is.null(mod$rgn))
+        mod$GCAM_region_name
+    else
+        mod$rgn
+    split(mod, mod$rgn) <- lapply(split(mod, mod$rgn),
+                                  . %>% apply.bc.rgn(bc))
+    mod
 }
 
 ## Set up some vectors of test values.  These can be used for exercising the
