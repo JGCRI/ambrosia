@@ -81,10 +81,17 @@ make.byincome.plot <- function(obsdata, params, region=NULL)
 
 }
 
-mc.make.byyear.plot <- function(mc.data, obsdata, region=NULL, nsamp=30)
+mc.make.byyear.plot <- function(mc.data, obsdata, bias.correction=NULL, region=NULL, nsamp=30)
 {
     ## Make the by-year plot for a set of monte carlo results by
     ## sampling the distribution
+
+    ## Arguments:
+    ##   mc.data:  monte carlo results data
+    ##   obsdata:  observational data
+    ##  bias.correction:  bias correction factors (default = none)
+    ##  region:    regions to run (default = all)
+    ##  nsamp:  number of samples from the MC distribution (default = 30)
 
     ## NB: you have to have sourced the mcpar-analysis functions from
     ## the mcpar project to use this function.
@@ -96,7 +103,7 @@ mc.make.byyear.plot <- function(mc.data, obsdata, region=NULL, nsamp=30)
     mcsamp.xl$LL <- NULL
 
     fd.byyear <- apply(mcsamp.xl, 1,
-                       . %>% vec2param %>% food.dmnd.byyear(obsdata, ., region) ) %>%
+                       . %>% vec2param %>% food.dmnd.byyear(obsdata, ., bias.correction, region) ) %>%
         do.call(rbind, .)
 
     ## Do we want to return the samples and whatnot here?  Not sure.

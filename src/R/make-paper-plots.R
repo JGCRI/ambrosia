@@ -58,10 +58,11 @@ plts.mc.rgn <- make.paper1.mc.plots(mcrslt.rgn, xval.rgn.trn, xval.rgn.tst)
 plts.mc.yr <- make.paper1.mc.plots(mcrslt.yr, xval.yr.trn, xval.yr.tst)
 
 ## Scatter plots for cross-validation experiment
-print('Running:  Cross-validation scatter plot.')
+print('Running:  Cross-validation scatter plots and RMSE. (output=resid.stats)')
 resid.stats <- paper1.residual.analysis(mcrslt.rgn, mcrslt.yr,
                                          xval.rgn.trn, xval.rgn.tst, xval.yr.trn, xval.yr.tst)
 ## Also get the RMSE for the primary run (RMSE fro cross-validation sets was included in resid.stats)
+print('Running: All-data RMSE (output=rmse.all)')
 rmse.all <- paper1.rmse.all(alldata, p.all)
 
 ### Calculate the chi-squared values.  Use testing set only for xval
@@ -70,9 +71,12 @@ chisq.all <- paper1.chisq(p.all, alldata, 9)
 chisq.rgn <- paper1.chisq(p.rgn, xval.rgn.tst)
 chisq.yr <- paper1.chisq(p.yr, xval.yr.tst)
 
-cat('All data:\n')
+cat('Chi-squared, All data:\n')
 print(chisq.all)
-cat('Regional xval:\n')
+cat('Chi-squared, Regional xval:\n')
 print(chisq.rgn)
-cat('Year xval:\n')
+cat('Chi-squared, Year xval:\n')
 print(chisq.yr)
+
+### Compute the bias correction for the yearly crossval
+plts.bc <- paper1.bc.plots(p.yr, xval.yr.trn, xval.yr.tst)

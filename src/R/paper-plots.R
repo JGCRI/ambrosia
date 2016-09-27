@@ -162,7 +162,7 @@ make.paper1.obs.plots <- function(obsdata)
 }
 
 
-paper1.chisq <- function(params, obsdata, dfcorrect=0)
+paper1.chisq <- function(params, obsdata, dfcorrect=0, bc=NULL)
 {
     ## correct units on prices
     obsdata <- mutate(obsdata, Ps=s_usd_p1000cal*0.365, Pn=ns_usd_p1000cal*0.365) %>%
@@ -176,7 +176,10 @@ paper1.chisq <- function(params, obsdata, dfcorrect=0)
     sig2Qs <- pmax(obsdata$sig2Qs, 0.01)
     sig2Qn <- pmax(obsdata$sig2Qn, 0.01)
 
-    moddata <- food.dmnd(ps.vals, pn.vals, y.vals, params)
+    moddata <- food.dmnd(ps.vals, pn.vals, y.vals, params, obsdata$GCAM_region_name)
+
+    if(!is.null(bc))
+        moddata <- apply.bias.corrections(moddata, bc)
 
     chisq <- sum( obsdata$weight*((moddata$Qs - obsdata$Qs)^2 / sig2Qs +
                                   (moddata$Qn - obsdata$Qn)^2 / sig2Qn ))
@@ -195,8 +198,12 @@ paper1.chisq <- function(params, obsdata, dfcorrect=0)
 }
 
 
-paper1.gen.residual.data <- function(obsdata, params)
+paper1.gen.residual.data <- function(obsdata, params, bc=NULL)
 {
+    ## obsdata:  observed data, labeled by type
+    ## params:  model parameters
+    ## bc:  bias correction factors (optional)
+    
     obsdata <- rename(obsdata,
                       rgn=GCAM_region_name,
                       Y=gdp_pcap_thous2005usd,
@@ -206,7 +213,9 @@ paper1.gen.residual.data <- function(obsdata, params)
 
     moddata <- split(obsdata, obsdata$rgn) %>%  # operate on each region separately for speed.
         lapply(function(d) {
-                   rslt <- food.dmnd(d$Ps, d$Pn, d$Y, params)
+                   rslt <- food.dmnd(d$Ps, d$Pn, d$Y, params, d$rgn)
+                   if(!is.null(bc))
+                       rslt <- apply.bias.corrections(rslt, bc)
                    mutate(d, Qs.model=rslt[['Qs']], Qn.model=rslt[['Qn']])
                }) %>%
             do.call(rbind, .) %>%
@@ -251,15 +260,15 @@ paper1.residual.analysis <- function(mcrslt.rgn, mcrslt.yr,
     ## Not technically a scatter plot, but a histogram of the
     ## residuals shows a lot of what we want to get from this
     ## analysis.
-    pltdata$resid <- pltdata$model - pltdata$obs
+    pltdata<- mutate(pltdata, resid=model - obs, resid2=resid^2)
     resid.hist <- ggplot(data=pltdata, aes(x=resid)) +
         geom_histogram(binwidth=0.05) + xlab('Residual (1000 Calories/person/day)') +
         facet_grid(obstype ~ expt) + theme_minimal()
 
     ## split the residuals by experiment and observation type for further analysis
-    resid.split <- select(pltdata, resid, weight) %>% split(list(pltdata$obstype, pltdata$expt))
+    resid.split <- select(pltdata, resid, resid2, weight) %>% split(list(pltdata$obstype, pltdata$expt))
     ## RMSE for each category
-    resid.rms <- sapply(resid.split, function(d) {sqrt(sum(d$weight*d$resid^2)/sum(d$weight))})
+    resid.rms <- sapply(resid.split, function(d) {sqrt(sum(d$weight*d$resid2)/sum(d$weight))})
     ## 95% confidence intervals for each of the four categories
     resid.conf <- sapply(resid.split, function(d) {quantile(d$resid, probs=c(0.05, 0.95))})
 
@@ -283,8 +292,8 @@ paper1.residual.analysis <- function(mcrslt.rgn, mcrslt.yr,
     ## than the y-values (i.e., training residuals).  That means the
     ## CDF for the x-values would be *less* those for the y-values at
     ## comparable values.
-    ks <- list(rgn=ks.test(resid.rgn.tst$resid, resid.rgn.trn$resid, alternative='less'),
-               yr=ks.test(resid.yr.tst$resid, resid.yr.trn$resid, alternative='less'))
+    ks <- list(rgn=ks.test(resid.rgn.tst$resid2, resid.rgn.trn$resid2, alternative='less'),
+               yr=ks.test(resid.yr.tst$resid2, resid.yr.trn$resid2, alternative='less'))
 
     list(scatter=scatter, resid.hist=resid.hist, rmse=resid.rms, resid.conf=resid.conf, ks=ks)
 
@@ -302,3 +311,73 @@ paper1.rmse.all <- function(obsdata, params)
     sqrt(sum(data$weight * data$resid^2)/sum(data$weight))
 
 }
+
+
+paper1.bc.plots <- function(params, obs.trn, obs.tst)
+{
+    ## Make plots with bias corrected data.
+    
+    ## NB: There is a lot of duplicated code here, but the existing
+    ## functions don't do exactly what we want, and it's quicker to
+    ## rewrite than to refactor.
+    
+    bc <- compute.bias.corrections(params, obs.trn)
+    obs.trn$obstype <- 'Training'
+    obs.tst$obstype <- 'Testing'
+    obs.trn$expt <- 'yr'                # Not used, but paper1.gen.residual.data needs it to exist.
+    obs.tst$expt <- 'yr'
+    data <- list(obs.trn, obs.tst)
+    
+    pltdata <- mapply(paper1.gen.residual.data, data, list(params), list(bc), SIMPLIFY=FALSE) %>% do.call(rbind,.)
+
+    scatter <- ggplot(data=pltdata, aes(x=obs, y=model, colour=demand)) +
+        geom_point(size=1.5) + xlab('Observation') + ylab('Model') +
+        scale_color_ptol(name='Demand Type') + geom_abline(slope=1, intercept=0, linetype=2, size=1, color='Dark Slate Grey') +
+        facet_wrap(~obstype) + theme_minimal()
+
+    resid.all <- mutate(pltdata, resid=model-obs, resid2=resid^2) %>% select(resid, resid2, weight, obstype)
+    resid.split <- split(resid.all, resid.all$obstype)
+    ## RMSE
+    resid.rms <- sapply(resid.split, function(d) {sqrt(sum(d$weight*d$resid^2)/sum(d$weight))})
+    ## 95% confidence intervals
+    resid.conf <- sapply(resid.split, function(d) {quantile(d$resid, probs=c(0.05, 0.95))})
+
+    ecdf <- ggplot(data=resid.all, aes(x=resid2, colour=obstype)) +
+        stat_ecdf(size=1.5) + xlab('Residual-squared') + ylab('CDF') +
+        scale_color_ptol(name='Demand Type') + theme_minimal()
+
+    resid.hist <- ggplot(data=resid.all, aes(x=resid)) +
+        geom_histogram(binwidth=0.05) + xlab('Residual') +
+        facet_grid(obstype~.) + theme_minimal()
+
+    resid.density <- ggplot(data=resid.all, aes(x=resid, colour=obstype)) +
+        scale_color_ptol(name=NULL) +
+        geom_density(size=1.5) + xlab('Residual') + theme_minimal()
+
+
+    resid2.hist <- ggplot(data=resid.all, aes(x=resid2)) +
+        geom_histogram(binwidth=0.01) + xlab('Residual-squared') +
+        facet_grid(obstype~.) + theme_minimal()
+
+    resid2.density <- ggplot(data=resid.all, aes(x=resid2, colour=obstype)) +
+        geom_density(size=1.5) + xlab('Residual-squared') + theme_minimal() +
+        scale_color_ptol(name=NULL)
+
+    ## Not sure if the K-S test is really useful here, but calculate it anyhow
+    resid.trn <- resid.split$Training
+    resid.tst <- resid.split$Testing
+    ks <- ks.test(resid.tst$resid2, resid.trn$resid2, alternative='less')
+
+    chi2.trn <- paper1.chisq(params, obs.trn, 9, bc)
+    chi2.tst <- paper1.chisq(params, obs.tst, 0, bc)
+    
+    list(scatter=scatter, ecdf=ecdf, hist.resid=resid.hist, den.resid=resid.density,
+         hist.resid2=resid2.hist, den.resid2=resid2.density,
+         chi2.trn=chi2.trn, chi2.tst=chi2.tst,
+         rms=resid.rms, conf=resid.conf, ks=ks)
+}
+
+                                                       
+    
+
+    
