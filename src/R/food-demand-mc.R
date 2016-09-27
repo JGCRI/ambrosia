@@ -33,7 +33,8 @@ mc.setup <- function(filename)
         ## reformat slightly:
         obs.data <- data.frame(Ps=obs.data$Ps, Pn=obs.data$Pn, Y=obs.data$Y,
                                Qs=obs.data$Qs, Qn=obs.data$Qn,
-                               sig2Qs=obs.data$sigQs^2, sig2Qn=obs.data$sigQn^2)
+                               sig2Qs=obs.data$sigQs^2, sig2Qn=obs.data$sigQn^2,
+                               weight=1.0)
     }
 
     ## Using nleqslv to solve the "system" causes the run time to
@@ -128,7 +129,7 @@ mc.eval.fd.likelihood <- function(df,params)
         ## return the log likelihood.  dmnd$Q[sn] are the model
         ## outputs, df$Q[sn] are the observations, and df$sig2Q[sn]
         ## are the observational uncertainties.
-        L <- -sum((dmnd$Qs-df$Qs)^2/df$sig2Qs + (dmnd$Qn-df$Qn)^2/df$sig2Qn)
+        L <- -sum(df$weight*0.5*((dmnd$Qs-df$Qs)^2/df$sig2Qs + (dmnd$Qn-df$Qn)^2/df$sig2Qn))
     })
     L
 }
@@ -188,8 +189,9 @@ process.gcam.data <- function(gcam.data)
     
     ## construct the return data frame.  
 
-    data.frame(Ps=Ps, Pn=Pn, Y=Y, Qs=Qs, Qn=Qn, sig2Qs=sig2Qs, sig2Qn=sig2Qn)
-} 
+    data.frame(Ps=Ps, Pn=Pn, Y=Y, Qs=Qs, Qn=Qn, sig2Qs=sig2Qs, sig2Qn=sig2Qn,
+               weight=gcam.data$weight)
+}
 
 
 mc.food.dmnd.byyear <- function(obsdata, x, regions=NULL)

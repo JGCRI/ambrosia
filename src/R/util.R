@@ -120,6 +120,13 @@ assign.sigma.Q <- function(input.data, min.group=5)
 }
 
 
+calc.pop.weight <- function(input.data)
+{
+    ## Calculate a weight factor based on the population.
+    popmax <- max(input.data$pop_thous)
+    mutate(input.data, weight=pop_thous/popmax)
+}
+
 create.xval.data <- function(alldata, outdir=NULL)
 {
     ## Create and save the cross-validation data sets.  We create two such sets:
