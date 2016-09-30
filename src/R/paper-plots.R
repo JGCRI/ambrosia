@@ -20,7 +20,7 @@ make.paper1.param.plots <- function(params, obsdata, y.vals=NULL, ps.vals=NULL, 
 
     ## Default values of plot parameters
     if(is.null(y.vals))
-        y.vals <- c(seq(0.25,0.9, length.out=10), seq(1, 50, length.out=60))
+        y.vals <- c(seq(0.3,0.9, length.out=7), seq(1, 30, length.out=60))
     len <- length(y.vals)
     if(is.null(ps.vals))
         ps.vals <- rep(median(obsdata$Ps),len)
@@ -116,14 +116,8 @@ make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
             xlab('year') + ylab('1000 Calories/person/day') +
             theme_minimal() + scale_color_ptol(name='Demand Type', labels=c('Staples', 'Nonstaples'))
 
-
-    ## The paper uses a slightly different notation than we're using.
-    ## Specifically, what the paper calls eps1n, we are calling
-    ## 2*eps1n
-    mcrslt.notation.fix <- mcrslt.plt
-    mcrslt.notation.fix$eps1n <- 2*mcrslt.notation.fix$eps1n
-    ## rename columns to match notation in paper
-    mcrslt.notation.fix <- rename(mcrslt.notation.fix, nu=eps1n, k=ks)
+    ## rename columns and transform values to match notation in paper
+    mcrslt.notation.fix <- paper1.fix.notation(mcrslt.plt)
 
     ## for the density plot, if the dataset is really large, sample it
     ## randomly.  The reason for this is that making a density plot
@@ -144,6 +138,36 @@ make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
 
     list(byyear=plt.byyear, density=plt.density, conf.intvl=ci.vals)
 
+}
+
+
+paper1.fix.notation <- function(pdata)
+{
+    ## The paper uses a slightly different notation than we use in the
+    ## code.  This function transforms and renames as necessary to
+    ## provide results that are consistent with the paper.  Note that
+    ## you cannot use any parameters so transformed to run in the
+    ## model.
+
+    pdata$eps1n <- 2*pdata$eps1n    # paper's 'nu' is 2x our eps1n
+    pdata$ks <- log(pdata$ks)       # paper's 'kappa' is log of our k_s
+    rename(pdata, nu=eps1n, kappa=ks)
+}
+
+report.param.values <- function(param.vec)
+{
+    ## Pretty-print the parameter values contained in a vector.  Note
+    ## that if you're dealing with a row from the monte carlo output
+    ## data frame, you don't need this function; call
+    ## paper1.fix.notation instead.
+
+    if(length(param.vec) < 10)
+        ## no likelihood value attached.  Add a placeholder.
+        param.vec <- c(param.vec, rep(NA, 10-length(param.vec)))
+    param <- as.data.frame(matrix(param.vec,nrow=1))
+    names(param) <- namemc()
+    
+    paper1.fix.notation(param)
 }
 
 make.paper1.obs.plots <- function(obsdata)
@@ -193,7 +217,9 @@ paper1.chisq <- function(params, obsdata, dfcorrect=0, bc=NULL)
     df <- sum(obsdata$weight) - dfcorrect
     pval <- pchisq(chisq, df)
 
-    list(chisq=chisq, pval=pval, df=df)
+    x2df <- chisq/df
+    
+    list(chisq=chisq, pval=pval, df=df, x2df=x2df)
 
 }
 
@@ -377,7 +403,3 @@ paper1.bc.plots <- function(params, obs.trn, obs.tst)
          rms=resid.rms, conf=resid.conf, ks=ks)
 }
 
-                                                       
-    
-
-    

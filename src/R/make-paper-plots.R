@@ -29,14 +29,17 @@ mcrslt.rgn <- read.mc.data('mc-food-dmnd.xval-byrgn.dat.gz')
 mcrslt.yr <- read.mc.data('mc-food-dmnd.xval-byyear.dat.gz')
 
 ## find the maximum likelihood parameter sets
-pv.all <- mcparam.ML(mcrslt.all)
-p.all <- mc2param(pv.all)
+pv.all <- mcparam.ML(mcrslt.all)        # vector for passing to mc.likelihood 
+p.all <- mc2param(pv.all)               # parameter struct for passing to food.dmnd
+pp.all <- mcrslt.all[which.max(mcrslt.all$LL),] # data frame for pretty-printing
 
 pv.rgn <- mcparam.ML(mcrslt.rgn)
 p.rgn <- mc2param(pv.rgn)
+pp.rgn <- mcrslt.rgn[which.max(mcrslt.rgn$LL),] # data frame for pretty-printing
 
 pv.yr <- mcparam.ML(mcrslt.yr)
 p.yr <- mc2param(pv.yr)
+pp.yr <- mcrslt.yr[which.max(mcrslt.yr$LL),] # data frame for pretty-printing
 
 ### Make the plots.  This is a bit of overkill, since we don't actually
 ### want all of these.
@@ -70,6 +73,10 @@ rmse.all <- paper1.rmse.all(alldata, p.all)
 chisq.all <- paper1.chisq(p.all, alldata, 9)
 chisq.rgn <- paper1.chisq(p.rgn, xval.rgn.tst)
 chisq.yr <- paper1.chisq(p.yr, xval.yr.tst)
+
+### Add chi-squared values for training set too
+chisq.yr.trn <- paper1.chisq(p.yr, xval.yr.trn, 9)
+chisq.rgn.trn <- paper1.chisq(p.rgn, xval.rgn.trn, 9)
 
 cat('Chi-squared, All data:\n')
 print(chisq.all)
