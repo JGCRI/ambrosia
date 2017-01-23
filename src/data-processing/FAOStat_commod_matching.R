@@ -157,7 +157,7 @@ d.pp <- d.pp %>%
   gather( pp_commod, pp_usd_tonne, 4:ncol( d.pp ) ) %>%
   ## Merge price and deflator data
   full_join( d.deflator, by = "year") %>%
-  mutate( pp_2005usd_tonne = pp_usd_tonne * deflator_2005usd ) %>%
+  mutate( pp_2005usd_tonne = pp_usd_tonne / deflator_2005usd ) %>%
   ## Merge with GCAM mapping variables
   full_join( d.commod.map, by = "pp_commod" ) %>%
   select( cons_commod, pp_commod, year, pp_2005usd_tonne )
