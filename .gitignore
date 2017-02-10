@@ -12,3 +12,7 @@
 # Directory for output, test data, etc.
 runs
 
+# plots 
+*.pdf
+*.png
+

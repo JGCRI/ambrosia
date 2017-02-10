@@ -136,19 +136,20 @@ create.xval.data <- function(alldata, outdir=NULL)
     ## also be written to output files in that directory.
 
     ## Randomly (but repeatably) select regions for the regional testing set
-    set.seed(8675309)
-    test.rgns <- sample(unique(as.character(alldata$GCAM_region_name)), 10)
-    ## With the standard input dataset, the test regions should be:
-    ## Australia_NZ
-    ## European Free Trade Association
-    ## South Africa
-    ## USA
-    ## Canada
-    ## Japan
-    ## South Asia
-    ## Pakistan
-    ## Middle East
-    ## China
+    ## The original code for doing this was:
+    ##     set.seed(8675309)
+    ##     test.rgns <- sample(unique(as.character(alldata$GCAM_region_name)), 10)
+    ## However, changes in certain library code (e.g. dplyr) have occasionally
+    ## caused the order of region names to change in the output, which causes
+    ## the regions selected for the test set to change.  Worse, these changes
+    ## depend on the version of the library installed, meaning that two users
+    ## running the same version of this code could get different results.  To
+    ## prevent this, we now set the testing regions explicitly to the set that
+    ## we got from the procedure above at the time we submitted the first paper.
+
+    test.rgns <- c('Australia_NZ', 'European Free Trade Association',
+                   'South Africa', 'USA', 'Canada', 'Japan', 'South Asia',
+                   'Pakistan', 'Middle East', 'China')
     cat('Test regions:',test.rgns, sep='\n\t')
 
     xval.byyear <- split(alldata, ifelse(alldata$year > 2000, 'Testing', 'Training'))

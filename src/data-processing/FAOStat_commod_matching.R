@@ -11,7 +11,7 @@
 ## Input data sources:
   ## GDP_cap (PPP) - WB WDI
   ## consumption - FAO
-  ## Prices - FAOStat3 (1991-2011, in 2004-2006 USD) and FAOStat Archive (1966-1990, in 2004-2006 local currency units), 
+  ## Prices - FAOStat3 (1991-2011, in 2004-2006 USD) and FAOStat Archive (1966-1990, in 2004-2006 local currency units),
   ## PP are US producer prices except coconut, palm oil, cassava, and sesame seed (Philippines, Nigeria, Nigeria, and India, respectively)
 
 ## Definitions:
@@ -88,7 +88,7 @@ faoClean <- function( d )
     filter( !is.na( iso ) ) %>% # Bulk download includes aggregated regions
     select( country_name, iso, var, item, unit, year, value ) %>%
     filter( !( iso == "sdn" & year > 2009 ) ) %>%
-    distinct( iso, unit, item, year ) %>%
+    distinct( iso, unit, item, year, .keep_all=TRUE ) %>%
   ## Replace problem characters in values
     charReplace( "var" ) %>%
     charReplace( "unit" )
@@ -139,7 +139,7 @@ d.pp.archive <- d.pp.archive %>%
   colnameReplace( "pp_commod", "item" ) %>%
   select( var, item, unit, year, value ) %>%
   unique( )
-  
+
 ## Clean archive data (1966-1990), change format, convert to USD
 d.pp <- d.pp %>%
   faoClean( ) %>%
@@ -148,7 +148,7 @@ d.pp <- d.pp %>%
   spread( item, value )
   d.pp[["average(Sugar cane, Sugar beet)"]] <- rowMeans( d.pp[ , c( "Sugar cane", "Sugar beet" ) ] )
   d.pp[["average(Rapeseed, Mustard seed)"]] <- rowMeans( d.pp[ , c( "Rapeseed", "Mustard seed" ) ] )
-  d.pp[["average(Beans, dry; Peas, dry; Chick peas; Lentils)"]] <- rowMeans( d.pp[ , c( "Beans, dry", "Peas, dry", 
+  d.pp[["average(Beans, dry; Peas, dry; Chick peas; Lentils)"]] <- rowMeans( d.pp[ , c( "Beans, dry", "Peas, dry",
                                                                                         "Chick peas", "Lentils" ) ] )
   d.pp[["average(Almonds, with shell; Walnuts, with shell)"]] <- rowMeans( d.pp[ , c( "Almonds, with shell", "Walnuts, with shell" ) ] )
   ### For now, let price of fish == price of sheep; change when more info becomes available ###
@@ -184,9 +184,9 @@ d.cons <- d.cons %>%
   inner_join( d.gdp, by = c( "iso", "year" ) ) %>%
     # Aggregate individual commodities to GCAM regions
   inner_join( d.iso, by = "iso" ) %>%
-  select( -GCAM_region_ID, -country_name, -pp_archive ) 
+  select( -GCAM_region_ID, -country_name, -pp_archive )
 
-## Now that we've matched consumption, gdp, and pop data (countries are only included if they have all three in any year), we can separate GDP/cap estimation 
+## Now that we've matched consumption, gdp, and pop data (countries are only included if they have all three in any year), we can separate GDP/cap estimation
 d.gdp.reg <- d.cons %>%
   select( GCAM_region_name, iso, year, gdp_mil_2005usd, pop_thous_pwt ) #%>%
   d.gdp.reg <- d.gdp.reg[!duplicated( d.gdp.reg[1:5] ), ]
@@ -248,7 +248,7 @@ d.cons.reg <- d.cons %>%
   mutate( ns_share = ns_cal_pcap_day_thous / ( s_cal_pcap_day_thous + ns_cal_pcap_day_thous ) ) %>%
   ## Bind with GDP data
   full_join( d.gdp.reg, by = c( "GCAM_region_name", "year" ) ) %>%
-  select( GCAM_region_name, year, pop_thous, gdp_pcap_thous2005usd, ns_cal_pcap_day_thous, ns_usd_p1000cal, 
+  select( GCAM_region_name, year, pop_thous, gdp_pcap_thous2005usd, ns_cal_pcap_day_thous, ns_usd_p1000cal,
           s_cal_pcap_day_thous, s_usd_p1000cal, s_share, ns_share )
 
 ## create final data set.  Drop the Europe_Non_EU region because the data there is suspect
@@ -314,7 +314,7 @@ makePlot1 <- function ( v )
   p <- p + theme_basic + colScaleRegion + guides( col = guide_legend( ncol = 1 ) )
   p <- p + xlab( "year" ) + ylab( v )
   p <- p + theme( axis.text.x = element_text( angle = 50, vjust = 0.5 ) )
-  ggsave( plot = p, paste( "time_v_", v, ".pdf", sep = "" ), width = 400, height = 300, units = "mm"  )  
+  ggsave( plot = p, paste( "time_v_", v, ".pdf", sep = "" ), width = 400, height = 300, units = "mm"  )
   return( p )
 }
 plots1 <- lapply( vars, makePlot1 )
@@ -328,7 +328,7 @@ makePlot2 <- function( v )
   p <- p + theme_basic + colScaleRegion + guides( col = guide_legend( ncol = 1 ) )
   p <- p + xlab( "GDP/cap PPP" ) + ylab( v )
   p <- p + theme( axis.text.x = element_text( angle = 50, vjust = 0.5 ) )
-  ggsave( plot = p, paste( "gdppcap_v_", v, ".pdf", sep = "" ), width = 400, height = 300, units = "mm"  )  
+  ggsave( plot = p, paste( "gdppcap_v_", v, ".pdf", sep = "" ), width = 400, height = 300, units = "mm"  )
   return( p )
 }
 plots2 <- lapply( vars, makePlot2 )
