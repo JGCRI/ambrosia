@@ -1,0 +1,88 @@
+code,FBS_commod,GCAM_commodity
+2617,Apples and products,MiscCrop
+2615,Bananas,MiscCrop
+2513,Barley and products,OtherGrain
+2546,Beans,MiscCrop
+2532,Cassava and products,Root_Tuber
+2520,"Cereals, Other",OtherGrain
+2614,"Citrus, Other",MiscCrop
+2642,Cloves,MiscCrop
+2633,Cocoa Beans and products,MiscCrop
+2578,Coconut Oil,PalmFruit
+2560,Coconuts - Incl Copra,PalmFruit
+2630,Coffee and products,MiscCrop
+2559,Cottonseed,FiberCrop
+2575,Cottonseed Oil,FiberCrop
+2619,Dates,MiscCrop
+2625,"Fruits, Other",MiscCrop
+2613,Grapefruit and products,MiscCrop
+2620,Grapes and products (excl wine),MiscCrop
+2572,Groundnut Oil,OilCrop
+2556,Groundnuts (Shelled Eq),OilCrop
+2612,"Lemons, Limes and products",MiscCrop
+2514,Maize and products,Corn
+2582,Maize Germ Oil,Corn
+2517,Millet and products,OtherGrain
+2551,Nuts and products,MiscCrop
+2516,Oats,OtherGrain
+2586,"Oilcrops Oil, Other",OilCrop
+2570,"Oilcrops, Other",OilCrop
+2580,Olive Oil,OilCrop
+2563,Olives (including preserved),OilCrop
+2602,Onions,MiscCrop
+2611,"Oranges, Mandarines",MiscCrop
+2577,Palm Oil,PalmFruit
+2576,Palmkernel Oil,PalmFruit
+2562,Palm kernels,PalmFruit
+2547,Peas,MiscCrop
+2640,Pepper,MiscCrop
+2641,Pimento,MiscCrop
+2618,Pineapples and products,MiscCrop
+2616,Plantains,MiscCrop
+2531,Potatoes and products,Root_Tuber
+2549,"Pulses, Other and products",MiscCrop
+2574,Rape and Mustard Oil,OilCrop
+2558,Rape and Mustardseed,OilCrop
+2805,Rice (Milled Equivalent),Rice
+2581,Ricebran Oil,Rice
+2534,"Roots, Other",Root_Tuber
+2515,Rye and products,OtherGrain
+2561,Sesame seed,OilCrop
+2579,Sesameseed Oil,OilCrop
+2518,Sorghum and products,OtherGrain
+2571,Soyabean Oil,OilCrop
+2555,Soyabeans,OilCrop
+2645,"Spices, Other",MiscCrop
+2542,Sugar (Raw Equivalent),SugarCrop
+2537,Sugar beet,SugarCrop
+2536,Sugar cane,SugarCrop
+2557,Sunflower seed,OilCrop
+2573,Sunflowerseed Oil,OilCrop
+2533,Sweet potatoes,Root_Tuber
+2635,Tea (including mate),MiscCrop
+2601,Tomatoes and products,MiscCrop
+2605,"Vegetables, Other",MiscCrop
+2511,Wheat and products,Wheat
+2535,Yams,Root_Tuber
+2769,"Aquatic Animals, Others",OtherMeat_Fish
+2731,Bovine Meat,Beef
+2766,Cephalopods,OtherMeat_Fish
+2765,Crustaceans,OtherMeat_Fish
+2762,Demersal Fish,OtherMeat_Fish
+2744,Eggs,Poultry
+2737,"Fats, Animals, Raw",OtherMeat_Fish
+2781,"Fish, Body Oil",OtherMeat_Fish
+2782,"Fish, Liver Oil",OtherMeat_Fish
+2761,Freshwater Fish,OtherMeat_Fish
+2764,"Marine Fish, Other",OtherMeat_Fish
+2768,"Meat, Aquatic Mammals",OtherMeat_Fish
+2735,"Meat, Other",OtherMeat_Fish
+2848,Milk - Excluding Butter,Dairy
+2767,"Molluscs, Other",OtherMeat_Fish
+2732,Mutton & Goat Meat,SheepGoat
+2736,"Offals, Edible",OtherMeat_Fish
+2763,Pelagic Fish,OtherMeat_Fish
+2733,Pigmeat,Pork
+2734,Poultry Meat,Poultry
+2740,"Butter, Ghee",Dairy
+2743,Cream,Dairy
