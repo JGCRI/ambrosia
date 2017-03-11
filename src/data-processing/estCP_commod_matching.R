@@ -27,15 +27,15 @@
 # -----------------------------------------------------------------------------
 # Define functions and load libraries
 # -----------------------------------------------------------------------------
-source( "D:/Projects/GCAM food demand/repos/src/data-processing/functions.R" ) # Load my standard set of functions
+path <- dirname(normalizePath(sys.frame(1)$ofile))
+source( file.path(path,"functions.R") ) # Load my standard set of functions
 library(Rcpp)
 library(magrittr)
 
 # -----------------------------------------------------------------------------
 # Input raw data
 # -----------------------------------------------------------------------------
-
-setwd( "D:/Projects/GCAM food demand/repos/data/raw-data" )
+setwd( file.path(path,"../../data/raw-data" ))
 d.iso <- inputData( d, "iso_GCAM_regID_name.csv", 0 )
 d.cons <- inputData( d, "FAOstat_food_supply.csv.gz", 0 )
 d.commod.map_gcam <- inputData( d, "FAOStat_FBS_GCAM_mapping.csv", 0 )
@@ -204,12 +204,12 @@ d.cons.reg <- d.cons %>%
           s_cal_pcap_day_thous, s_usd_p1000cal, s_share, ns_share )
 
 ## create final data set
-source('D:/Projects/GCAM food demand/repos/src/R/util.R')
+source(file.path(path,'../R/util.R'))
 allrgn.data <- filter(d.cons.reg, GCAM_region_name != 'Europe_Non_EU', !(GCAM_region_name=='Central Asia' & year <= 1990),
                       GCAM_region_name != 'Taiwan', year > 1970 ) %>% # data goes back to 1971, no data for Taiwan
   assign.sigma.Q()  %>%
   calc.pop.weight()
-write.csv( allrgn.data, "D:/Projects/GCAM food demand/repos/data/food-dmnd-price-allrgn.csv", row.names = FALSE )
+write.csv( allrgn.data, "../food-dmnd-price-allrgn.csv", row.names = FALSE )
 create.xval.data(allrgn.data, '..')
 
 rm( d.commod.map, d.cons, d.conv, d.deflator, d.gdp, d.gdp.reg, d.iso, d.pop, d.pop.reg, d.pp, d.pp.archive )
