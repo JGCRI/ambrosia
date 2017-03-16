@@ -44,7 +44,7 @@ d.pop <- inputData( d, "FAOstat_population.csv", 0 )
 # Use PWT
 d.gdp <- inputData( d, "pwt81.csv", 0 )
 # right now read in the estimated CP by region and GCAM_commodity directly, later R scripts from raw data
-d.est.cp <- inputData( d, "est_cp_glm_dummy.csv", 0) # 2005usd_tonne
+d.est.cp <- inputData( d, "est_cp_glm_dummy_wo_cons.csv", 0) # 2005usd_tonne
 
 # -----------------------------------------------------------------------------
 # Edit standard GCAM region definitions to separate Hong Kong and Macau (per discussion with Robert)
