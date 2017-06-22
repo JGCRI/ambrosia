@@ -68,7 +68,7 @@ plot.elas <- function(elas.data, x, xlabel)
     ggplot(data=pltdata, aes(x=x, y=value, color=variable)) +
         geom_line(size=1.5) + xlab(xlabel) + ylab('') +
         theme_minimal() + scale_color_ptol(name=NULL) +
-        ggtitle('Food Demand Elasticities') + ylim(-0.25, 1.0)
+        ggtitle('Food Demand Elasticities')  + ylim(-0.5, 1.0)
 
 }
 
@@ -166,7 +166,7 @@ report.param.values <- function(param.vec)
         param.vec <- c(param.vec, rep(NA, 10-length(param.vec)))
     param <- as.data.frame(matrix(param.vec,nrow=1))
     names(param) <- namemc()
-    
+
     paper1.fix.notation(param)
 }
 
@@ -218,7 +218,7 @@ paper1.chisq <- function(params, obsdata, dfcorrect=0, bc=NULL)
     pval <- pchisq(chisq, df)
 
     x2df <- chisq/df
-    
+
     list(chisq=chisq, pval=pval, df=df, x2df=x2df)
 
 }
@@ -229,7 +229,7 @@ paper1.gen.residual.data <- function(obsdata, params, bc=NULL)
     ## obsdata:  observed data, labeled by type
     ## params:  model parameters
     ## bc:  bias correction factors (optional)
-    
+
     obsdata <- rename(obsdata,
                       rgn=GCAM_region_name,
                       Y=gdp_pcap_thous2005usd,
@@ -342,18 +342,18 @@ paper1.rmse.all <- function(obsdata, params)
 paper1.bc.plots <- function(params, obs.trn, obs.tst)
 {
     ## Make plots with bias corrected data.
-    
+
     ## NB: There is a lot of duplicated code here, but the existing
     ## functions don't do exactly what we want, and it's quicker to
     ## rewrite than to refactor.
-    
+
     bc <- compute.bias.corrections(params, obs.trn)
     obs.trn$obstype <- 'Training'
     obs.tst$obstype <- 'Testing'
     obs.trn$expt <- 'yr'                # Not used, but paper1.gen.residual.data needs it to exist.
     obs.tst$expt <- 'yr'
     data <- list(obs.trn, obs.tst)
-    
+
     pltdata <- mapply(paper1.gen.residual.data, data, list(params), list(bc), SIMPLIFY=FALSE) %>% do.call(rbind,.)
 
     scatter <- ggplot(data=pltdata, aes(x=obs, y=model, colour=demand)) +
@@ -396,7 +396,7 @@ paper1.bc.plots <- function(params, obs.trn, obs.tst)
 
     chi2.trn <- paper1.chisq(params, obs.trn, 9, bc)
     chi2.tst <- paper1.chisq(params, obs.tst, 0, bc)
-    
+
     list(scatter=scatter, ecdf=ecdf, hist.resid=resid.hist, den.resid=resid.density,
          hist.resid2=resid2.hist, den.resid2=resid2.density,
          chi2.trn=chi2.trn, chi2.tst=chi2.tst,
