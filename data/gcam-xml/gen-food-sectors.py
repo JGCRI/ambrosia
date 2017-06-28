@@ -241,4 +241,4 @@ def get_parent(root, node):
 
 if __name__ == "__main__":
     xmlrslt = buildxml('demand_input.xml')
-    xmlrslt.write('food_demand_input.xml', 'UTF-8', True)
+    xmlrslt.write('food-demand-input.xml', 'UTF-8', True)
