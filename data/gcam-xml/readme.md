@@ -20,12 +20,16 @@ used by the generator programs.
   "NonFoodDemand_Crops") are not changed.  
 * `food-demand-input.xml`: Creates the new food final demands and
   gives the food supply sectors nonzero logit exponents.
+* `fd-solver-config.xml`: Solver configuration that imposes relaxed
+  solver convergence requirements on food sectors that aren't actually
+  being produced (and therefore can't respond to price changes in the
+  solver).  
   
 **Original GCAM input files**
 
 * `demand_input.xml`: Original input for food demands.  This file is
   used to generate `food-demand-input.xml`.  The version included here
-  is from the GCAM-v4.3 release.
+  is from the GCAM-v4.3 release.  
   
 **Generator Programs**
 
