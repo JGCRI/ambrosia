@@ -63,6 +63,8 @@
 		<Value name = "solver">./food-demand/data/gcam-xml/fd-solver-config.xml</Value>
 		<Value name = "rm-old-food-dmnd">./food-demand/data/gcam-xml/delete-old-food-demand.xml</Value>
 		<Value name = "new-food-dmnd">./food-demand/data/gcam-xml/food-demand-input.xml</Value>
+		<Value name = "ag-cost-update">./food-demand/data/gcam-xml/ag_cost_update.xml</Value>
+		<Value name = "ag-bio-update">./food-demand/data/gcam-xml/ag_For_Past_bio_base_update.xml</Value>
 	</ScenarioComponents>
 	<Strings>
 		<Value name="scenarioName">NewFoodDemand</Value>
