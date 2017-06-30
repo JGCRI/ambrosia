@@ -49,7 +49,6 @@ region_bias_staple = {
     'EU-15' : 0.916,
     'Europe_Eastern' : 1.200,
     'European Free Trade Association' : 0.870,
-    'Europe_Non_EU' : 1.0,      # Bad data from these countries, so we didn't fit a coef.
     'HongKong_Macau' : 0.959,
     'India' : 0.984,
     'Indonesia' : 1.309,
@@ -85,7 +84,6 @@ region_bias_nonstaple = {
     'EU-15' : 1.066,
     'Europe_Eastern' : 1.157,
     'European Free Trade Association' : 0.987,
-    'Europe_Non_EU' : 1.0,      # no coef fit (see above)
     'HongKong_Macau' : 0.918,
     'India' : 1.041,
     'Indonesia' : 0.708,
@@ -213,13 +211,13 @@ def mkdmdsys(rgnname):
     ## Now create the region specific parameters
     ps = ET.Element(constants['param-tag'])
     ps.set('name', constants['rgn-bias-staple-param'])
-    ps.text = str(region_bias_staple[rgnname])
+    ps.text = str(region_bias_staple.get(rgnname, 1.0)) # default regional bias is 1
     ps.tail = '\n\t\t\t'
     dmndsys.append(ps)
     
     pn = ET.Element(constants['param-tag'])
     pn.set('name', constants['rgn-bias-nonstaple-param'])
-    pn.text = str(region_bias_nonstaple[rgnname])
+    pn.text = str(region_bias_nonstaple.get(rgnname, 1.0))
     ps.tail = '\n\t\t'
     dmndsys.append(pn)
 
