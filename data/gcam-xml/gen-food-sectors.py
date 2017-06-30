@@ -102,6 +102,7 @@ region_bias_nonstaple = {
     'USA' : 1.030
 }
 
+
 def buildxml(filename):
     demand_tree = ET.parse(filename)
     scenario = demand_tree.getroot()
@@ -118,12 +119,17 @@ def buildxml(filename):
     ##     old final demand sectors for this step
     ##   * Remove any remaining sub-elements of the regions (i.e. anything that is not
     ##     one of the new supply sectors or food final demand that we have created)
+    ##   * Also, we need to move several subsectors from the "crops" sector to "meat".
+    ##     ** this will require some adjustment of the base service demands.
 
     ## These will function as the staple and nonstaple food supply
     ## sectors, respectively.
     keepsectors = ['FoodDemand_Crops', 'FoodDemand_Meat']
     component_names = keepsectors
-
+    ## Most crops are staples, but a few crop types are considered nonstaples.
+    nonstaple_crops = ['FiberCrop', 'MiscCrop', 'OilCrop',
+                       'SugarCrop']
+    
     ## Drop the global technology database, as it won't have any changes.
     world.remove(world.find('global-technology-database'))
 
@@ -141,6 +147,19 @@ def buildxml(filename):
             stdout.write('Removing {} {} from {} {}\n'.format(sector.tag, sector.get('name'), parent.tag, parent.get('name')))
             parent.remove(sector)
 
+    ## Move the nonstaple crops into the nonstaple sector
+    for rgn in world.findall('region'):
+        ssec = rgn.find('.//supplysector[@name="FoodDemand_Crops"]')
+        nssec = rgn.find('.//supplysector[@name="FoodDemand_Meat"]')
+        for subsecname in nonstaple_crops:
+            subsec = ssec.find('./subsector[@name="{}"]'.format(subsecname))
+            if subsec is None:
+                stdout.write('Did not find subsector {} in crops sector for region {}\n'.format(subsecname, rgn.get('name')))
+            else:
+                stdout.write('Move subsector {} from crops to meat in region {}\n'.format(subsecname, rgn.get('name')))
+                ssec.remove(subsec)
+                nssec.append(subsec)
+            
     ## Now we need to create the new food demand sector in each region.  As we do so
     ## we'll grab the base-service values from the old final demand sectors 
     for rgn in world.findall('region'):
@@ -148,6 +167,11 @@ def buildxml(filename):
         fnldmnd = ET.Element('consumer-final-demand')
         fnldmnd.text = '\n\t\t'
         fnldmnd.tail = '\n\t'
+
+        ## Track base year demands.  This is a nested dictionary indexed as [sector][year]
+        base_demand = {}
+        for sector in keepsectors:  # initialize base demand.
+            base_demand[sector] = {} 
         
         ## add names of staple and nonstaple supply sectors before any other elements.
         for sectorname in component_names:
@@ -156,22 +180,42 @@ def buildxml(filename):
             supply.tail = '\n\t\t'
             fnldmnd.append(supply)
 
+            ## Calculate base service values for each sector
+            oldsector = rgn.find('./supplysector[@name="{}"]'.format(sectorname))
+            for subsec in oldsector.findall('subsector'):
+                for per in subsec.findall('.//period'):
+                    year = per.get('year')
+                    calval = per.find('.//calOutputValue')
+                    if calval is not None:
+                        val = float(calval.text)
+                        stdout.write('Adding cal output for subsector {} in year = {} val = {}\n'.format(subsec.get('name'), year, val))
+                        base_demand[sectorname][year] = base_demand[sectorname].get(year, 0.0) + val
+                        stdout.write('\tnew total = {}\n'.format(base_demand[sectorname][year]))
+                        
+
+        ## report the base year demands
+        for sectorname in base_demand:
+            stdout.write('Region = {}  Sector = {}\n'.format(rgn.get('name'),sectorname))
+            for year in sorted(base_demand[sectorname].keys()): 
+                stdout.write('\tyear = {} :  demand = {}\n'.format(year, base_demand[sectorname][year]))
+
         ## now construct the rest of the elements and add them.
         for sectorname in component_names:
             ## Grab the base service values from the old food demand
             ## sectors and add them to the new sector we are creating.
             bsvcs = rgn.findall('./energy-final-demand[@name="{}"]/base-service'.format(sectorname))
             for bsvc in bsvcs:
-                stdout.write('\tsetting component = {} for base service year {} \n'.format(sectorname, bsvc.get('year')))
+                year = bsvc.get('year')
+                stdout.write('\tsetting component = {} for base service year {} \n'.format(sectorname, year))
                 bsvc.set('component', sectorname) # sector these values pertain to.
+                ## Set the base service equal to the total calculated during
+                ## iteration.  This will be different from the value in the old
+                ## inputs because of the sectors we have reclassified.
+                bsvc.text = str(base_demand[sectorname][year])
+                stdout.write('\t\tbase service value = {}\n'.format(float(bsvc.text)))
                 
             fnldmnd.extend(bsvcs)
 
-            # ## We're done with the old final demand sector, so remove
-            # ## it from the region
-            # fdsec = rgn.find('./energy-final-demand[@name="{}"]'.format(sectorname))
-            # stdout.write('Removing {} {} from {} {}\n'.format(fdsec.tag, fdsec.get('name'), rgn.tag, rgn.get('name')))
-            # rgn.remove(fdsec)
 
         ## add demand system
         rname = rgn.get('name')
