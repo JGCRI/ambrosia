@@ -109,7 +109,6 @@ def buildxml(filename):
     world = scenario[0]             # world is the only tag under scenario
 
     ## We want to generate a new xml input starting in which we:
-    ##   * Drop global technology database (no need for changes here)
     ##   * Retain all FoodDemand_Crops supply sectors
     ##     ** Change subsector logit exponents to -1
     ##   * Retain all FoodDemand_Meat supply sectors
@@ -121,6 +120,7 @@ def buildxml(filename):
     ##     one of the new supply sectors or food final demand that we have created)
     ##   * Also, we need to move several subsectors from the "crops" sector to "meat".
     ##     ** this will require some adjustment of the base service demands.
+    ##     ** also requires adjustments to global tech database.
 
     ## These will function as the staple and nonstaple food supply
     ## sectors, respectively.
@@ -128,10 +128,21 @@ def buildxml(filename):
     component_names = keepsectors
     ## Most crops are staples, but a few crop types are considered nonstaples.
     nonstaple_crops = ['FiberCrop', 'MiscCrop', 'OilCrop',
-                       'SugarCrop']
+                       'SugarCrop', 'PalmFruit']
     
-    ## Drop the global technology database, as it won't have any changes.
-    world.remove(world.find('global-technology-database'))
+    ## Add the nonstaple crops to the global technology database.
+    gtdb = world.find('global-technology-database')
+    ## Loop over the elements and drop any that won't be changing.
+    ## Make the necessary changes to the rest.
+    for item in gtdb.findall('location-info'):
+        sector = item.get('sector-name')
+        subsector = item.get('subsector-name')
+        if subsector in nonstaple_crops:
+            ## move to nonstaple sector
+            item.set('sector-name', 'FoodDemand_Meat')
+        else:
+            ## nothing to change, so remove entirely
+            gtdb.remove(item)
 
     ## Rename the supply sectors we need to keep; drop the rest
     for sector in world.findall('.//supplysector'):
