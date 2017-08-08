@@ -4,8 +4,7 @@
 ### of the calculation because they don't change over the course of
 ### the calc, and passing data between C and R can be costly.
 
-path <- dirname(sys.frame(1)$ofile)
-source(paste(path,'/food-demand.R', sep=''))
+source('food-demand.R')
 
 mc.obsdata <- NULL
 mc.logfile <- NULL
@@ -121,11 +120,11 @@ mc.eval.fd.likelihood <- function(df,params)
     ##
     ##    df:  data frame containing the observed data inputs and outputs
     ## param:  model parameter data structure
-    
+
     L <- -9.99e9                        # Default value, if the calc. fails
     try({
     	dmnd <- food.dmnd(df$Ps, df$Pn, df$Y, params)
-        
+
         ## return the log likelihood.  dmnd$Q[sn] are the model
         ## outputs, df$Q[sn] are the observations, and df$sig2Q[sn]
         ## are the observational uncertainties.
@@ -142,7 +141,7 @@ mc.likelihood.1 <- function(x)
         ## We've broken the data up into chunks.  Since the
         ## log-likelihood function is additive, we can apply L to each
         ## chunk and sum them up
-        sum(sapply(mc.obsdata,mc.eval.fd.likelihood, params)) 
+        sum(sapply(mc.obsdata,mc.eval.fd.likelihood, params))
       }
     else {
         -9.99e9 * length(mc.obsdata)    # treat as if each chunk had returned the default value of -9.99e9
@@ -186,8 +185,8 @@ process.gcam.data <- function(gcam.data)
     ## low, so we set a floor of 0.01 for these values.
     sig2Qs = pmax(gcam.data$sig2Qs, 0.01)
     sig2Qn = pmax(gcam.data$sig2Qn, 0.01)
-    
-    ## construct the return data frame.  
+
+    ## construct the return data frame.
 
     data.frame(Ps=Ps, Pn=Pn, Y=Y, Qs=Qs, Qn=Qn, sig2Qs=sig2Qs, sig2Qn=sig2Qn,
                weight=gcam.data$weight)

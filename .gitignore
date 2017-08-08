@@ -2,6 +2,7 @@
 .Rproj.user
 .Rhistory
 .RData
+*_cache
 
 #Emacs autosave files
 *~
@@ -15,4 +16,8 @@ runs
 # plots 
 *.pdf
 *.png
+
+# processed documents
+*.md 
+*.docx
 

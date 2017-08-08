@@ -5,10 +5,9 @@ library('reshape2')
 library('ggthemes')
 library('dplyr')
 
-srcdir <- dirname(sys.frame(1)$ofile)
-source(file.path(srcdir,'food-demand.R'))
-source(file.path(srcdir,'food-demand-plots.R'))
-source(file.path(srcdir,'mcpar-analysis.R'))
+source('food-demand.R')
+source('food-demand-plots.R')
+source('mcpar-analysis.R')
 
 make.paper1.param.plots <- function(params, obsdata, y.vals=NULL, ps.vals=NULL, pn.vals=NULL)
 {

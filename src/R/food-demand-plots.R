@@ -4,8 +4,7 @@ library(reshape2)
 library('dplyr')
 library('RColorBrewer')
 
-path <- dirname(sys.frame(1)$ofile)
-source(file.path(path,'food-demand-mc.R'))
+source('food-demand-mc.R')
 
 make.demand.plot <- function(alldata,xdata,xlabel,max.yval)
 {
@@ -24,7 +23,7 @@ make.demand.plot <- function(alldata,xdata,xlabel,max.yval)
 make.byyear.plot <- function(byyear.data)
 {
     if(is.null(byyear.data$obstype))
-        select(byyear.data, rgn, year, Qs=Qs.Obs, Qn=Qn.Obs) %>% melt(id=c('year','rgn')) -> obsdata 
+        select(byyear.data, rgn, year, Qs=Qs.Obs, Qn=Qn.Obs) %>% melt(id=c('year','rgn')) -> obsdata
     else
         select(byyear.data, rgn, year, Qs=Qs.Obs, Qn=Qn.Obs, obstype) %>%
             melt(id=c('year','rgn','obstype')) -> obsdata
@@ -58,7 +57,7 @@ make.byyear.plot <- function(byyear.data)
         ## to make it a little more clear that the dots are
         ## observations and the lines are model output.
         obsdata$obstype <- 'obs'
-        baseplt + 
+        baseplt +
             geom_point(data=obsdata, aes(y=value, colour=variable, shape=obstype)) +
             scale_shape(guide=guide_legend(title='Observed Data', label=FALSE))
     }
