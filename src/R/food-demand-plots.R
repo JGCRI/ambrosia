@@ -20,7 +20,7 @@ make.demand.plot <- function(alldata,xdata,xlabel,max.yval)
 }
 
 
-make.byyear.plot <- function(byyear.data)
+make.byyear.plot <- function(byyear.data, pltrgn=NULL)
 {
     if(is.null(byyear.data$obstype))
         select(byyear.data, rgn, year, Qs=Qs.Obs, Qn=Qn.Obs) %>% melt(id=c('year','rgn')) -> obsdata
@@ -41,6 +41,14 @@ make.byyear.plot <- function(byyear.data)
         melt(id=c('year','rgn'))
     Qs.err <- select(perr.Qs, rgn, year, Qlo, Qhi)
     Qn.err <- select(perr.Qn, rgn, year, Qlo, Qhi)
+
+    if(!is.null(pltrgn)) {
+        ## filter the output to just the desired regions
+        obsdata <- dplyr::filter(obsdata, rgn %in% pltrgn)
+        modeldata <- dplyr::filter(modeldata, rgn %in% pltrgn)
+        Qs.err <- dplyr::filter(Qs.err, rgn %in% pltrgn)
+        Qn.err <- dplyr::filter(Qn.err, rgn %in% pltrgn)
+    }
 
     baseplt <- ggplot(data=modeldata, aes(x=year)) +
         facet_wrap(~rgn) +
@@ -80,7 +88,7 @@ make.byincome.plot <- function(obsdata, params, region=NULL)
 
 }
 
-mc.make.byyear.plot <- function(mc.data, obsdata, bias.correction=NULL, region=NULL, nsamp=30)
+mc.make.byyear.plot <- function(mc.data, obsdata, bias.correction=NULL, region=NULL, nsamp=30, pltrgn=NULL)
 {
     ## Make the by-year plot for a set of monte carlo results by
     ## sampling the distribution
@@ -106,7 +114,7 @@ mc.make.byyear.plot <- function(mc.data, obsdata, bias.correction=NULL, region=N
         do.call(rbind, .)
 
     ## Do we want to return the samples and whatnot here?  Not sure.
-    make.byyear.plot(fd.byyear)
+    make.byyear.plot(fd.byyear, pltrgn)
 
 }
 

@@ -115,6 +115,13 @@ make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
             xlab('year') + ylab('1000 Calories/person/day') +
             theme_minimal() + scale_color_ptol(name='Demand Type', labels=c('Staples', 'Nonstaples'))
 
+    ## Generate an alternate version of the byyear plot that just looks at certain regions with interesting behavior
+    focusrgns <- c('EU-15', 'India', 'Pakistan', 'South Korea')
+    plt.byyear.focus <- mc.make.byyear.plot(mcrslt.plt, obsdata.all, pltrgn=focusrgns) +
+        xlab('year') + ylab('1000 Calories/person/day') +
+        theme_minimal() + scale_color_ptol(name='Demand Type', labels=c('Staples', 'Nonstaples'))
+
+
     ## rename columns and transform values to match notation in paper
     mcrslt.notation.fix <- paper1.fix.notation(mcrslt.plt)
 
@@ -134,8 +141,7 @@ make.paper1.mc.plots <- function(mcrslt, obsdata.trn, obsdata.tst=NULL)
         sapply(function(x) {c(min(x), max(x))})
     row.names(ci.vals) <- c('ci.low', 'ci.high')
 
-
-    list(byyear=plt.byyear, density=plt.density, conf.intvl=ci.vals)
+    list(byyear=plt.byyear, byyear.focus=plt.byyear.focus, density=plt.density, conf.intvl=ci.vals)
 
 }
 
@@ -281,6 +287,12 @@ paper1.residual.analysis <- function(mcrslt.rgn, mcrslt.yr,
         scale_color_ptol(name='Demand Type') + geom_abline(slope=1, intercept=0, linetype=2, size=1, color='Dark Slate Grey') +
         facet_grid(obstype ~ expt) + theme_minimal()
 
+    ## Make a scatter plot that shows only the by-year experiment
+    pltdata.byyronly <- dplyr::filter(pltdata, expt=='Yearly cross-validation')
+    scatter.byyr <- ggplot(data=pltdata.byyronly, aes(x=obs, y=model, colour=demand)) +
+        geom_point(size=1.5) + xlab('Observation') + ylab('Model') +
+        scale_color_ptol(name='Demand Type') + geom_abline(slope=1, intercept=0, linetype=2, size=1, color='Dark Slate Grey') +
+        facet_wrap(~obstype) + theme_minimal()
 
     ## Not technically a scatter plot, but a histogram of the
     ## residuals shows a lot of what we want to get from this
@@ -320,7 +332,8 @@ paper1.residual.analysis <- function(mcrslt.rgn, mcrslt.yr,
     ks <- list(rgn=ks.test(resid.rgn.tst$resid2, resid.rgn.trn$resid2, alternative='less'),
                yr=ks.test(resid.yr.tst$resid2, resid.yr.trn$resid2, alternative='less'))
 
-    list(scatter=scatter, resid.hist=resid.hist, rmse=resid.rms, resid.conf=resid.conf, ks=ks)
+    list(scatter=scatter, scatter.xval.byyr=scatter.byyr,
+         resid.hist=resid.hist, rmse=resid.rms, resid.conf=resid.conf, ks=ks)
 
 }
 

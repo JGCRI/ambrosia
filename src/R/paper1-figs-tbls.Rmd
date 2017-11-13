@@ -84,7 +84,7 @@ procedure. For both staples and nonstaples the median value is roughly
 200 Calories/person/day.
 
 ## Figure 3
-```{r fig3}
+```{r fig3, fig.width=10, fig.height=10}
 ## As with figure 1, some of this will be used immediately, some later.
 plts.mc.all <- make.paper1.mc.plots(mcrslt.all, alldata)
 print(plts.mc.all$density)
@@ -99,6 +99,12 @@ print(plts.mc.all$byyear)
 Figure 4: Comparison between model outputs and observed consumption
 for model run "all-data".
 
+## Alternate Figure 4
+This version focuses on two regions where the model does well (before bias correction) and two where
+it doesn't do so well.
+```{r fig4a}
+print(plts.mc.all$byyear.focus)
+```
 ## Figure 5
 ```{r fig5}
 print(plts.param.all$elas.by.gdp)
@@ -119,6 +125,15 @@ Figure 6: Comparison between model output and observed data for the
 xval-rgn (left panels) and xval-year (right panels) cross-validation
 experiments. Units for both observation and model data are in
 thousands of Calories per person per day.
+
+## Alternate Figure 6
+This version of figure 6 shows only the residuals from the cross-validation by year  This is a better fit for talks where 
+we don't have time to go into the cross-validation by region or why it didn't turn out to be useful.
+
+```{r fig6a}
+print(resid.stats$scatter.xval.byyr)
+
+```
 
 ## Figure 7
 ```{r fig7}
