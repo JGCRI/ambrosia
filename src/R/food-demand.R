@@ -214,8 +214,9 @@ eta.s <- function(nu1, y0, mc.mode=FALSE) {
         }
         else {
             ifelse(Y>y1,
-                   lam*(1-log(k*Y))/Y,   # y1 is the value of Y for which this expression = 1
-                   1)
+                   lam*(1-log(k*Y))/Y,
+                   lam*(1-log(k*y1))/y1) # logarithmic derivative of the linear
+                                        # segment of Q.
         }
     }
 }
