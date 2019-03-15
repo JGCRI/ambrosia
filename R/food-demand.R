@@ -440,6 +440,10 @@ calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
 #' @export
 food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
 {
+    . <- GCAM_region_name <- s_usd_p1000cal <- ns_usd_p1000cal <-
+        gdp_pcap_thous2005usd <- s_cal_pcap_day_thous <- ns_cal_pcap_day_thous <-
+            NULL
+
     if(is.null(region)) {
         ## run this function for all regions and collect the results
         ## into a single table.
@@ -472,14 +476,21 @@ food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
 #' Tabulate food demand by per-capita-income
 #'
 #' Tabulate staple and nonstaple demand as a function of per-capita GDP.  This
-#' function uses observed prices to
+#' function uses observed prices for the comparison
 #'
 #' @param obsdata Data frame of observed prices and incomes.
 #' @param params Model parameter structure.  See notes in
 #' \code{\link{food.dmnd}}.
+#' @param region Name of a single region to tabulate.  If \code{NULL}, tabulate all
+#' regions and concatenate the tables.
 #' @export
 food.dmnd.byincome <- function(obsdata, params, region=NULL)
 {
+    . <- GCAM_region_name <- s_usd_p1000cal <- ns_usd_p1000cal <-
+        gdp_pcap_thous2005usd <- Ps <- Pn <- s_cal_pcap_day_thous <-
+            ns_cal_pcap_day_thous <- region <- Qs <- Qn <- pcGDP <- NULL
+    `Staple Residual` <- `Nonstaple Residual` <- NULL
+
     if(is.null(region)) {
         levels(obsdata$GCAM_region_name) %>% lapply(. %>% food.dmnd.byincome(obsdata, params, .)) %>%
             do.call(rbind, .)
@@ -538,7 +549,7 @@ lamks2nu1y0 <- function(df)
 #' @param obs.trn Data frame of observations in the training set.
 #' @param obs.tst Data frame of observations in the testing set.
 #' @export
-merge.trn.tst <- function(obs.trn, obs.tst)
+merge_trn_tst <- function(obs.trn, obs.tst)
 {
     obs.trn$obstype <- 'Training'
     obs.tst$obstype <- 'Testing'
@@ -555,6 +566,10 @@ merge.trn.tst <- function(obs.trn, obs.tst)
 #' @export
 prepare.obs <- function(obs)
 {
+    s_usd_p1000cal <- ns_usd_p1000cal <- GCAM_region_name <-
+        gdp_pcap_thous2005usd <- s_cal_pcap_day_thous <- ns_cal_pcap_day_thous <-
+            NULL
+
     ## Convert units on prices and rename certain columns so they
     ## aren't such a pain to work with.
     dplyr::mutate(obs,
@@ -568,6 +583,8 @@ prepare.obs <- function(obs)
 ## Helper function for compute.bias.corrections
 compute.bc.rgn <- function(obs, params)
 {
+    year <- NULL
+
     ## compute the bias corrections for an individual region.  Bias
     ## corrections are *multiplied* by model data to get adjusted
     ## data.
@@ -593,6 +610,8 @@ compute.bc.rgn <- function(obs, params)
 #' @export
 compute.bias.corrections <- function(params, obs.trn)
 {
+    . <- NULL
+
     obs <- prepare.obs(obs.trn)
     obs <- split(obs, obs$rgn)
     params$bc <- sapply(obs, . %>% compute.bc.rgn(params))
@@ -614,6 +633,7 @@ apply.bc.rgn <- function(mod, bc)
 #' @export
 apply.bias.corrections <- function(mod, bc)
 {
+    . <- NULL
     ## make this function work whether or not the column names have been converted.
     rgn <- if(is.null(mod$rgn))
         mod$GCAM_region_name

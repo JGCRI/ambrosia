@@ -15,7 +15,7 @@ source('paper-plots.R')
 
 ```{r data, include=FALSE}
 ## read the observational data
-datadir <- '../data'
+datadir <- './data'
 alldata <- read.csv(file.path(datadir, 'food-dmnd-price-allrgn.csv'))
 xval.rgn.trn <- read.csv(file.path(datadir, 'xval-byrgn-trn.csv'))
 xval.rgn.tst <- read.csv(file.path(datadir, 'xval-byrgn-tst.csv'))

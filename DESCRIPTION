@@ -1,22 +1,23 @@
 Package: gcamfd
 Title: Food demand model for the GCAM human-earth systems model
-Version: 0.0.0.9000
+Version: 1.1.5
 Authors@R: c(person(given='Robert', family='Link', email='robert.link@pnnl.gov', role=c('aut','cre','lyr','ard')),
     person(given='Stephanie', family='Waldhoff', email='stephanie.waldhoff@pnnl.gov', role=c('aut')),
     person(given='Ryna', family='Cui', email='yiyun.cui@pnnl.gov', role=c('aut')),
-    person(given='Jae', family='Edmonds', email='jae@pnnl.gov'))
+    person(given='Jae', family='Edmonds', email='jae@pnnl.gov', role=c('aut')))
 Description: The gcamfd package provides a stand-alone implementation of the food demand
     model used in the GCAM human-earth systems model.  In addition to allowing one to run
     food demand scenarios without setting up a full GCAM run, this code is used to calibrate
     the parameters used for food demand in GCAM.
 Depends: R (>= 3.3.0)
-License: ECL-2.0
+License: file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
     dplyr (>= 0.7),
     nleqslv (>= 3.2),
     reshape2 (>= 1.4.3),
+    ggplot2 (>= 2.2.1),
     cluster (>= 2.0)
 RoxygenNote: 6.1.1
 Suggests: 

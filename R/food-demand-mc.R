@@ -82,7 +82,7 @@ mc.setup <- function(obsdata_filename, logprior=NULL, logfile=NULL, chunksize=10
     }
     ## read observed data from input file.  Columns are:
     ##  Ps, Pn, Y, Qs, Qn, sigQs, sigQn
-    obs.data <- read.csv(obsdata_filename)
+    obs.data <- utils::read.csv(obsdata_filename)
     if('GCAM_region_name' %in% names(obs.data)) {
         ## The data set produced for GCAM needs some extra processing.
         obs.data <- process.gcam.data(obs.data)
@@ -100,7 +100,7 @@ mc.setup <- function(obsdata_filename, logprior=NULL, logfile=NULL, chunksize=10
     ## each data point can be solved independently.  Split the data
     ## set into manageable chunks to avoid this effect.
     n <- nrow(obs.data)
-    mc.splitvec <- seq(1,n) %% ceiling(n/mc.chunksize)
+    mc.splitvec <- seq(1,n) %% ceiling(n/chunksize)
     mc.obsdata <- split(obs.data, mc.splitvec)
 
     ## Helper function to evaluate the likelihood function for a single parameter set
@@ -226,7 +226,9 @@ process.gcam.data <- function(gcam.data)
 #' @export
 mc.food.dmnd.byyear <- function(obsdata, x, regions=NULL)
 {
-    vec2param(x) %>% food.dmnd.byyear(obsdata, . , region)
+    . <- NULL
+
+    vec2param(x) %>% food.dmnd.byyear(obsdata, . , regions)
 }
 
 

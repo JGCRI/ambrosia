@@ -11,8 +11,11 @@ food.dmnd.byincome(obsdata, params, region = NULL)
 
 \item{params}{Model parameter structure.  See notes in
 \code{\link{food.dmnd}}.}
+
+\item{region}{Name of a single region to tabulate.  If \code{NULL}, tabulate all
+regions and concatenate the tables.}
 }
 \description{
 Tabulate staple and nonstaple demand as a function of per-capita GDP.  This
-function uses observed prices to
+function uses observed prices for the comparison
 }

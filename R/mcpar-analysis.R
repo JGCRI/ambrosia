@@ -19,7 +19,7 @@ read.mc.data <- function(filename, varnames=namemc())
     ## This is just a thin wrapper around the read.table function.  If
     ## names are given, we assign them; if not, then we just tag the
     ## last column as the log likelihood value.
-    data <- read.table(filename)
+    data <- utils::read.table(filename)
 
     if(!is.null(varnames))
         names(data) <- varnames
@@ -35,6 +35,8 @@ read.mc.data <- function(filename, varnames=namemc())
 #' @export
 mcparam.density <- function(mc.data)
 {
+    value <- NULL
+
     data.m <- reshape2::melt(mc.data)
 
     ggplot2::ggplot(data.m, ggplot2::aes(x=value)) +
@@ -108,7 +110,7 @@ mcparam.ML <- function(mc.data)
 #' the distribution, \code{FAlSE} for those that aren't.
 mcparam.clip.tails <- function(mc.data, qlo=0.01, qhi=0.99)
 {
-    quants <- apply(mc.data, 2, function(x) {quantile(x,probs=c(qlo,qhi))})
+    quants <- apply(mc.data, 2, function(x) {stats::quantile(x,probs=c(qlo,qhi))})
     ## We want to make an exception for the log-likelihood.  Don't
     ## clip its upper end.  Log-likelihood is in the last column, and
     ## its theoretical maximum is zero.

@@ -69,15 +69,15 @@ xi.matrix.input <- function()
 {
     ## Draw the xi input boxes
 
-    fluidRow(
-        column(4,
-               numericInput(inputId="xiss", value=xidefault[1],label="\\(\\xi_{ss}\\)",
+    shiny::fluidRow(
+        shiny::column(4,
+               shiny::numericInput(inputId="xiss", value=xidefault[1],label="\\(\\xi_{ss}\\)",
                             min=elasmin, max=elasmax, step=elasstep)),
-        column(4,
-               numericInput(inputId="xinn", value=xidefault[2], label="\\(\\xi_{nn}\\)",
+        shiny::column(4,
+               shiny::numericInput(inputId="xinn", value=xidefault[2], label="\\(\\xi_{nn}\\)",
                             min=elasmin, max=elasmax, step=elasstep)),
-        column(4,
-               numericInput(inputId="xicross", value = xidefault[3], label='\\(\\xi_{\\text{cross}}\\)',
+        shiny::column(4,
+               shiny::numericInput(inputId="xicross", value = xidefault[3], label='\\(\\xi_{\\text{cross}}\\)',
                             min=elasmin, max=elasmax, step=elasstep))
         )
 }
@@ -87,11 +87,11 @@ xi.matrix.input <- function()
 #' @export
 y0.input.box <- function()
 {
-  tags$table(
-    tags$tr(
-      tags$td(
-        numericInput(inputId='y0val', label='Y\\(_0\\)',width='75px',
-               0.5, 0.1, 10, 0.1))))
+  shiny::tags$table(
+    shiny::tags$tr(
+      shiny::tags$td(
+          shiny::numericInput(inputId='y0val', label='Y\\(_0\\)',width='75px',
+                              0.5, 0.1, 10, 0.1))))
 }
 
 
@@ -105,21 +105,21 @@ y0.input.box <- function()
 #' @export
 column.input.table <- function(inputids, defvals, min, max, step, labels=c('Staple','Nonstaple'))
 {
-  ## Draw an input table with a single column of two values
-  ##  inputids and defvals are vectors
-  ##  min, max, and step are single values.
-  tags$table(
-    tags$tr(
-      tags$th(spacer),
-      tags$td(numericInput(inputId=inputids[1], value=defvals[1], label=labels[1],
-                           min=min, max=max, step=step))
-    ),
-    tags$tr(
-      tags$th(spacer),
-      tags$td(numericInput(inputId=inputids[2], value=defvals[2], label=labels[2],
-                           min=min, max=max, step=step))
-    )
-  )
+    ## Draw an input table with a single column of two values
+    ##  inputids and defvals are vectors
+    ##  min, max, and step are single values.
+    shiny::tags$table(
+        shiny::tags$tr(
+            shiny::tags$th(spacer),
+            shiny::tags$td(shiny::numericInput(inputId=inputids[1], value=defvals[1], label=labels[1],
+                                               min=min, max=max, step=step))
+            ),
+        shiny::tags$tr(
+            shiny::tags$th(spacer),
+            shiny::tags$td(shiny::numericInput(inputId=inputids[2], value=defvals[2], label=labels[2],
+                                               min=min, max=max, step=step))
+            )
+        )
 }
 
 
@@ -129,7 +129,7 @@ eta.selector <- function(id,label2='\\(\\eta=f(Y)\\)',sel=1)
 {
   eta.choices <- c(1,2)
   names(eta.choices) <- c('constant \\(\\eta\\)', label2)
-  radioButtons(inputId=id,label='',
-               choices= eta.choices, selected=sel,
-               inline=TRUE)
+  shiny::radioButtons(inputId=id,label='',
+                      choices= eta.choices, selected=sel,
+                      inline=TRUE)
 }

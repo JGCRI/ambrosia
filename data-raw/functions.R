@@ -218,3 +218,59 @@ isoReplace <- function( d )
 }
 
 # --------------------------------------------------------------------------------------
+
+
+#' Create and save validation data sets.
+#'
+#' We create two such sets:
+#' \enumerate{
+#'  \item{Split by year:  year > 2000 goes in the testing set.}
+#'  \item{Split by region:  10 randomly-selected regions go in the testing set.}
+#' }
+#'
+#' Data are returned in a list.  If outdir is specified, they will
+#' also be written to output files in that directory.
+#'
+#'
+#' The original code for randomly (but repeatably) selecting regions for the
+#' regional testing set was:
+#' \code{
+#'     set.seed(8675309)
+#'     test.rgns <- sample(unique(as.character(alldata$GCAM_region_name)), 10)
+#' }
+#' However, changes in certain library code (e.g. dplyr) have occasionally
+#' caused the order of region names to change in the output, which causes
+#' the regions selected for the test set to change.  Worse, these changes
+#' depend on the version of the library installed, meaning that two users
+#' running the same version of this code could get different results.  To
+#' prevent this, we now set the testing regions explicitly to the set that
+#' we got from the procedure above at the time we submitted the first paper.
+#'
+#' @param alldata Data frame of all food demand input data from FAO.
+#' @param outdir Directory to write output into.  If omitted, don't write output
+#' to files.
+#' @return List of lists of data frames.  The first list has two datasets:
+#' \code{xval.byyear} and \code{xval.byrgn}.  Each of those datasets has a
+#' \code{Testing} and a \code{Training} set.
+#' @export
+create.xval.data <- function(alldata, outdir=NULL)
+{
+
+    test.rgns <- c('Australia_NZ', 'European Free Trade Association',
+                   'South Africa', 'USA', 'Canada', 'Japan', 'South Asia',
+                   'Pakistan', 'Middle East', 'China')
+    cat('Test regions:',test.rgns, sep='\n\t')
+
+    xval.byyear <- split(alldata, ifelse(alldata$year > 2000, 'Testing', 'Training'))
+    xval.byrgn <- split(alldata, ifelse(alldata$GCAM_region_name %in% test.rgns,
+                                        'Testing', 'Training'))
+
+    if(!is.null(outdir)) {
+        write.csv(xval.byyear$Testing, file.path(outdir,'xval-byyear-tst.csv'), row.names=FALSE)
+        write.csv(xval.byyear$Training, file.path(outdir,'xval-byyear-trn.csv'), row.names=FALSE)
+        write.csv(xval.byrgn$Testing, file.path(outdir,'xval-byrgn-tst.csv'), row.names=FALSE)
+        write.csv(xval.byrgn$Training, file.path(outdir,'xval-byrgn-trn.csv'), row.names=FALSE)
+    }
+
+    c(xval.byyear=xval.byyear, xval.byrgn=xval.byrgn)
+}

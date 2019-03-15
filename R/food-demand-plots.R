@@ -14,6 +14,9 @@
 #' @export
 make.demand.plot <- function(alldata,xdata,xlabel,max.yval=NULL)
 {
+
+  xval <- value <- variable <- NULL
+
   totaldmnd <- alldata$Qs + alldata$Qn
   if(is.null(max.yval)) {
       max.yval <- max(totaldmnd)
@@ -37,6 +40,9 @@ make.demand.plot <- function(alldata,xdata,xlabel,max.yval=NULL)
 #' @export
 make.byyear.plot <- function(byyear.data, pltrgn=NULL)
 {
+    rgn <- year <- Qs.Obs <- Qn.Obs <- obstype <- Qlo <- Qhi <-
+        value <- variable <- Qs <- Qn <- NULL
+
     if(is.null(byyear.data$obstype))
         dplyr::select(byyear.data, rgn, year, Qs=Qs.Obs, Qn=Qn.Obs) %>%
           reshape2::melt(id=c('year','rgn')) -> obsdata
@@ -71,8 +77,8 @@ make.byyear.plot <- function(byyear.data, pltrgn=NULL)
         ggplot2::ylab('Q (1000 Cal pc/day)') +
         ggplot2::geom_line(ggplot2::aes(y=value, colour=variable), size=1.5) +
         ggplot2::geom_ribbon(data=Qs.err, ggplot2::aes(x=year, ymin=Qlo, ymax=Qhi), alpha=0.2) +
-        ggplot2::geom_ribbon(data=Qn.err, aes(x=year, ymin=Qlo, ymax=Qhi), alpha=0.2) +
-        ggplot2::theme(panel.margin=unit(1,'lines'))
+        ggplot2::geom_ribbon(data=Qn.err, ggplot2::aes(x=year, ymin=Qlo, ymax=Qhi), alpha=0.2) +
+        ggplot2::theme(panel.margin=ggplot2::unit(1,'lines'))
 
     ## Add the points for the observed data
     if(is.null(obsdata$obstype)) {
@@ -82,13 +88,13 @@ make.byyear.plot <- function(byyear.data, pltrgn=NULL)
         ## observations and the lines are model output.
         obsdata$obstype <- 'obs'
         baseplt +
-            ggplot2::geom_point(data=obsdata, aes(y=value, colour=variable, shape=obstype)) +
-            ggplot2::scale_shape(guide=guide_legend(title='Observed Data', label=FALSE))
+            ggplot2::geom_point(data=obsdata, ggplot2::aes(y=value, colour=variable, shape=obstype)) +
+            ggplot2::scale_shape(guide=ggplot2::guide_legend(title='Observed Data', label=FALSE))
     }
     else {
         baseplt +
-            ggplot2::geom_point(data=obsdata, aes(y=value, colour=variable, shape=obstype)) +
-            ggplot2::scale_shape(guide=guide_legend(title='Observed Data')) # This one includes labels for the obs types.
+            ggplot2::geom_point(data=obsdata, ggplot2::aes(y=value, colour=variable, shape=obstype)) +
+            ggplot2::scale_shape(guide=ggplot2::guide_legend(title='Observed Data')) # This one includes labels for the obs types.
     }
 }
 
@@ -101,6 +107,8 @@ make.byyear.plot <- function(byyear.data, pltrgn=NULL)
 #' @export
 make.byincome.plot <- function(obsdata, params, region=NULL)
 {
+    pcGDP <- value <- region <- variable <- NULL
+
     plotdata <- food.dmnd.byincome(obsdata, params, region)
 
     ggplot2::ggplot(data=plotdata, ggplot2::aes(x=pcGDP, y=value, color=region, variable)) +
@@ -117,10 +125,14 @@ make.byincome.plot <- function(obsdata, params, region=NULL)
 #' @param bias.correction Regional bias correction factors (default = none)
 #' @param region Vector of regions to plot (default = all)
 #' @param nsamp Number of samples to draw from the Monte Carlo distribution
+#' @param pltrgn Regions to include in the plot.  If \code{NULL}, include them
+#' all.
 #' @importFrom dplyr %>%
 #' @export
 mc.make.byyear.plot <- function(mc.data, obsdata, bias.correction=NULL, region=NULL, nsamp=30, pltrgn=NULL)
 {
+    . <- NULL
+
     mcsamp <- mcparam.sample(mc.data, nsamp=nsamp)
     ## drop likelihood values so we have just the parameter values
     mcsamp.xl <- mcsamp
@@ -138,7 +150,7 @@ mc.make.byyear.plot <- function(mc.data, obsdata, bias.correction=NULL, region=N
 ## Fit a curve through model outputs to display on plots.
 fit.with.err <- function(Qdata)
 {
-    rgn <- year <- Q.sig <- Q.predict <- Qlo <- Qhi <- NULL
+    rgn <- year <- Q.sig <- Q.predict <- Qlo <- Qhi <- sd <- Q <- NULL
 
     rslt <- dplyr::group_by(Qdata, rgn, year) %>% dplyr::summarise(Q.sig=sd(Q), Q.predict=mean(Q))
 

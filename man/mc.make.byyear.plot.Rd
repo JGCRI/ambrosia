@@ -17,6 +17,9 @@ mc.make.byyear.plot(mc.data, obsdata, bias.correction = NULL,
 \item{region}{Vector of regions to plot (default = all)}
 
 \item{nsamp}{Number of samples to draw from the Monte Carlo distribution}
+
+\item{pltrgn}{Regions to include in the plot.  If \code{NULL}, include them
+all.}
 }
 \description{
 Make the by-year plot for a set of monte carlo results by sampling the distribution
