@@ -9,7 +9,7 @@ NULL
 #' xidefault : Default xi values
 #' @rdname guiconst
 #' @export
-xidefault <- c(-0.21, -0.13, 0.18)
+xidefault <- c(-0.18, -0.33, 0.21)
 #' elasmin : Minimum elasticity for the slider bar
 #' @rdname guiconst
 #' @export
@@ -44,6 +44,13 @@ spacer <-
 ## eta <- c(-0.1, 1.5)
 ## y0 <- 0.5
 ## Q <- c(0.4,0.2)
+
+## Max likelihood params from paper
+## xi <- c(-0.18, 0.21, 0.21, -0.33)
+## etas :  y0 = 0.171, nu1 = -0.169
+## etan : nu1 = 0.49
+## A <- c(1.28, 1.14)
+## Pm <- 5.05
 
 ## Possibly interisting parameter set for the constant exponent model:
 ## xi <- c(-0.15, 0.1, 0.1, -0.6)

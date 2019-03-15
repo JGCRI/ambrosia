@@ -223,3 +223,21 @@ create.xval.data <- function(alldata, outdir=NULL)
 
     c(xval.byyear=xval.byyear, xval.byrgn=xval.byrgn)
 }
+
+
+#' Launch the interactive GCAM food demand model
+#'
+#' The interactive model allows users to adjust model parameters and see how
+#' they affect the model output.  To run the interactive model you must have the
+#' R "shiny" package installed.
+#'
+#' @export
+runapp <- function()
+{
+    if(!requireNamespace('shiny', quietly=TRUE)) {
+        stop('Running the interactive model requires the R "shiny" package')
+    }
+    appdir <- system.file('app', package='gcamfd', mustWork=TRUE)
+    shiny::runApp(appdir)
+}
+

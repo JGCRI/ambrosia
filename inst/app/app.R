@@ -2,8 +2,12 @@ library(shiny)
 library(ggplot2)
 library(gcamfd)
 
-etadefault <- c(-0.1,0.5)
-Adefault <- c(0.5, 0.35)
+etasdefault <- c(-0.17, 0.17)
+etandefault <- 0.49
+Adefault <- c(1.28, 1.14)
+Pmdefault <- 5.0
+Psdefault <- 0.1
+Pndefault <- 0.2
 
 ui <- fluidPage(
   headerPanel(h1("Food Demand Model",align='center'),windowTitle='Food Demand Model'),
@@ -16,19 +20,19 @@ ui <- fluidPage(
             xi.matrix.input(),
             fluidRow(h3("Income elasticity model")),
             fluidRow(column(8,h4("Staple demand"))),
-            fluidRow(column(8,eta.selector('eta.s.select','\\(\\eta = f_s(Y)\\)',1))),
+            fluidRow(column(8,eta.selector('eta.s.select','\\(\\eta = f_s(Y)\\)',2))),
             fluidRow(
                 column(4,
-                       numericInput(inputId='etas', value=etadefault[1], label='elasticity (Y=1)',
+                       numericInput(inputId='etas', value=etasdefault[1], label='elasticity (Y=1)',
                                     min=elasmin, max=elasmax, step=etastep)),
                 column(4,
                        conditionalPanel('input["eta.s.select"] == 2',
                                         numericInput(inputId='y0val', label='Y\\(_0\\)',
-                                                     value=0.5, min=0.1, max=10, step=0.1)))),
+                                                     value=etasdefault[2], min=0.1, max=10, step=0.1)))),
             fluidRow(column(8,h4('Non-staple demand'))),
             fluidRow(column(8,eta.selector('eta.n.select', '\\(\\eta = f_n(Y)\\)' ,2))),
             fluidRow(column(4,
-                            numericInput(inputId='etan', value=etadefault[2], label='elasticity (Y=1)',
+                            numericInput(inputId='etan', value=etandefault, label='elasticity (Y=1)',
                                          min=elasmin, max=elasmax, step=etastep))),
 
             fluidRow(h3('Q values')),
@@ -42,11 +46,11 @@ ui <- fluidPage(
                                          value=1)),
             conditionalPanel(condition='input.tab != 2 && input.tab != 4',
                              sliderInput(inputId='ps.val.slider', min=0, max=5.0, step=0.02, label='\\(P_s\\)',
-                                         value=1)),
+                                         value=Psdefault)),
             conditionalPanel(condition='input.tab != 3',
                              sliderInput(inputId='pn.val.slider', min=0, max=5.0, step=0.02, label='\\(P_n\\)',
-                                         value=1)),
-            numericInput(inputId='pm.val', value=1, label='\\(P_m\\)', min=0.1, max=10.0, step=0.1)
+                                         value=Pndefault)),
+            numericInput(inputId='pm.val', value=Pmdefault, label='\\(P_m\\)', min=0.1, max=10.0, step=0.1)
             ),
 
   ## Main Panel
@@ -100,6 +104,7 @@ set.model.params <-function(input)
   }
   eta.fns <- c(eta.s.fn, eta.n.fn)
 
+
   list(
     xi=matrix(c(input$xiss, input$xicross, input$xicross, input$xinn), nrow=2),
     yfunc=eta.fns,
@@ -122,7 +127,6 @@ server <- function(input, output) {
   model.data <- reactive({
     ## Compute results for income change
     params <- set.model.params(input)
-    maxplot <- input$As + input$An
     if(input$tab == 1) {
       ps <- rep(input$ps.val.slider, length(y.vals))
       pn <- rep(input$pn.val.slider, length(y.vals))
@@ -200,6 +204,7 @@ server <- function(input, output) {
                                 xins=exi$xi.ns, xisn=exi$xi.sn,
                                 xinswt=exi$xi.ns.wt, xisnwt=exi$xi.sn.wt)
     }
+    maxplot <- ceiling(max(ydata$Qs + ydata$Qn))
     ## return all of the above
     list(ydata=ydata, psdata=psdata, pndata=pndata, pcovdata=pcovdata, maxplot=maxplot, yelas=yelas, pselas=pselas, pnelas=pnelas, pcovelas=pcovelas)
 })
