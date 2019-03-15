@@ -6,18 +6,13 @@
 
 #Emacs autosave files
 *~
-
 # Mac cruft
 .DS_Store
-
 # Directory for output, test data, etc.
 runs
-
 # plots 
 *.pdf
 *.png
-
 # processed documents
 *.md 
 *.docx
-

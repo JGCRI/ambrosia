@@ -1,35 +1,68 @@
-library('nleqslv')
-library('dplyr')
 
+## Scale factors used in the food demand model below
 psscl <- 100
 pnscl <- 20
 
-food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL) {
-## Function for calculating food demand using the new model
-## Arguments: Ps, Pn, and Y (staple price, normal price, and pcGDP), params structure.  Ps, Pn, Y may be vectors but must all be
-##            the same length
-##
-##     params structure:
-##        params$xi    : 2x2 array of the xi elasticities
-##        params$A     : Leading coefficients in the quantity calculations
-##        params$yfunc : length-2 vector of functions giving Y^eta(Y) (see note below)
-##
-##     Note that we don't need elasticity parameters for the materials
-##     component because we calculate Qm as a residual
-##
-## Output: list with the following elements:
-##        Qs:  vector of quantity for S
-##        Qn:  vector of quantity for N
-##        Qm:  vector of quantity for M
-##   alpha.s:  vector of budget fraction for S
-##   alpha.n:  vector of budget fraction for N
-##   alpha.m:  vector of budget fraction for M
-
-## Note on eta functions:  For one of the functional forms I was considering for
-## eta(Y), eta blows up, but Y^(eta(Y)) is well behaved.  Therefore, the eta functions
-## need to be able to calculate not just eta(Y), but Y^(eta(Y)), so they can handle the
-## limiting cases.
-
+#' Calculate food demand using the Edmonds, et al. model.
+#'
+#' The Edmonds model divides food consumption into two categories,
+#' \emph{staples}, which represent basic foodstuffs, and \emph{nonstaples},
+#' which represent higher-quality foods.  Demand for staples increases at low
+#' income, but eventually peaks and begins to decline with higher income.
+#' Demand for nonstaples increases with income over all income ranges; however,
+#' total (staple + nonstaple) demand saturates asymptotically at high income.
+#'
+#' @section Arguments:
+#'
+#' Ps and Pn are food prices (staple food price and nonstaple price) in
+#' international dollars per 1000 (dietary) calories.  Y is per-capita GDP in
+#' international dollars. Ps, Pn, Y may be vectors but must all be the same
+#' length.
+#'
+#' Params is a structure:
+#' \describe{
+#' \item{xi}{2x2 array of the xi elasticities}
+#' \item{A}{Leading coefficients in the quantity calculations}
+#' \item{yfunc}{Length-2 list of functions giving Y^eta(Y) (see note below)}
+#' \item{Pm}{Price of ``materials''. Loosely speaking, this parameter controls
+#' how valuable food is relative to everything else in the economy.}
+#' }
+#'
+#' Note that we don't need elasticity parameters for the materials component
+#' because we calculate Qm as a residual.  That is, whatever portion of
+#' household budgets is not spent on food is by definition spent on materials.
+#'
+#' @section Output:
+#'
+#' The return value is a data frame with the following elements.
+#' \describe{
+#'  \item{Qs}{Quantity for staple foods (S)}
+#'  \item{Qn}{Quantity for nonstaple foods (N)}
+#'  \item{Qm}{Quantity for ``materials'' (M).  This quantity
+#' represents an aggregate of everything else besides food that consumers buy.}
+#'  \item{alpha.s}{Budget fraction for S}
+#'  \item{alpha.n}{Budget fraction for N}
+#'  \item{alpha.m}{Budget fraction for M}
+#' }
+#' Demand for staple and nonstaple foods are given in thousands of dietary
+#' calories per person per day.  Units for materials demand are unspecified.
+#'
+#' @section Income Elasticity Functions:
+#'
+#' For one of the functional forms used for the income behavior, eta(Y), eta
+#' blows up, but Y^(eta(Y)) is well behaved.  Therefore, the eta functions need
+#' to be able to calculate not just eta(Y), but Y^(eta(Y)), so they can handle
+#' the limiting cases.
+#'
+#' @param Ps Vector of staple food prices.
+#' @param Pn Vector of nonstaple food prices.
+#' @param Y Vector of per capita income.
+#' @param params Model parameters structure (see details)
+#' @param rgn Optional name for this calculation. If provided, the region will
+#' be included as an extra column in the output data frame.
+#' @export
+food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL)
+{
     Pm <- params$Pm
 
     ## Normalize income and prices to Pm
@@ -67,7 +100,7 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL) {
   ## Now, use a nonlinear equation solver to find a consistent set of alpha values.
   alphatest <- matrix(0.01, nrow=2, ncol=length(Y))
   ## Solve for alpha
-  rslt <- nleqslv(alphatest, falpha, method='Broyden', control=list(maxit=500))
+  rslt <- nleqslv::nleqslv(alphatest, falpha, method='Broyden', control=list(maxit=500))
 
   ## calculate resulting Q values
   alpharslt <- matrix(rslt$x, nrow=2)
@@ -87,11 +120,18 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL) {
         data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m, rgn=rgn)
 }
 
+#' Calculate the exponents in the demand equation.
+#'
+#' This is an approximation to the Slutsky equations, inasmuch as we use these
+#' as the exponents directly, instead of solving for exponents that produce
+#' these values as the elasticities.
+#'
+#' @param alpha.s Budget fraction for staple foods.
+#' @param alpha.n Budget fraction for nonstaple foods.
+#' @param eta.s Income elasticity for staple foods.
+#' @param eta.n Income elasticity for nonstaple foods.
+#' @param xi Matrix of Hicks elasticities
 calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
-    ## calculate the exponents in the demand equation.  This is an
-    ## approximation to the Slutsky equations, inasmuch as we use
-    ## these as the exponents directly, instead of solving for
-    ## exponents that produce these values as the elasticities.
 
     ## First apply symmetry condition.  This means that the xi.sn
     ## value will be ignored.  Also, set a floor on the terms to
@@ -106,6 +146,19 @@ calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
       xi[4] - alpha.n * eta.n)   # enn
 }
 
+
+#' Calculate demand quantities for a single set of inputs
+#'
+#' This is a helper function for the \code{mapply} calls in
+#' \code{\link{food.dmnd}}
+#'
+#' @param Ps Price of staple foods
+#' @param Pn Price of nonstaple foods
+#' @param Y Per-capita income
+#' @param eps Matrix of Marshall elasticities
+#' @param Ysterm Income term in the demand equation for staples
+#' @param Ynterm Income term in the demand equation for nonstaples
+#' @param Acoef Leading multiplier parameter.
 calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef) {
   ## not vectorized:  use mapply
   Qs <- Acoef[1] * Ps^eps[1] * Pn^eps[3] * Ysterm
@@ -134,6 +187,25 @@ calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef) {
   c(Qs, Qn)
 }
 
+#' Generate an income elasticity function with constant income elasticity.
+#'
+#' These functions generate a function that can be used as the income elasticity
+#' functions for staple or nonstaple foods.  Staple and nonstaple foods each
+#' have their own functional forms, given by \code{eta.s} and \code{eta.n}.
+#' There is also a constant elasticity function that can be used for testing,
+#' though it is not formally part of the model design.
+#'
+#' #' Income elasticity functions have the following signature:
+#' \itemize{
+#'  \item{\code{function(Y, calcQ)}}
+#' }
+#' where Y is the per-capita GDP, and calcQ is a flag indicating whether the
+#' function should calcluate the income quantity term or the income elasticity.
+#'
+#' @param eta0 Value of the constant elasticity.
+#' @return A function suitable for use as either \code{eta.s} or \code{eta.n} in
+#' the food demand model.
+#' @export
 eta.constant <- function(eta0) {
   ## Return an eta function where eta is constant with a specified value.  This still
   ## uses the calcQ interface described below
@@ -148,20 +220,18 @@ eta.constant <- function(eta0) {
 }
 
 
-## eta.s and eta.n are alternative models for eta that vary as a function
-## of Y, with eta_s and eta_n having two different models.
+#' @describeIn eta.constant Generate an income elasticity function for staple foods.
+#'
+#' @param nu1 Income elasticity at Y=1
+#' @param y0 Value of Y for which elasticity = 0 (this is generally the peak of
+#' the curve).
+#' @param mc.mode If true, then treat the first two parameters not as nu1 and
+#' y0, but as direct specifications of k and lambda.  This flag is necessary
+#' becaue nu1 and y0, while more intuitive to work with, are not a complete
+#' specification of the parameter space. (That is, there are valid models that can only
+#' be specified in terms of k and lambda.)
+#' @export
 eta.s <- function(nu1, y0, mc.mode=FALSE) {
-    ## Return a function for calculating eta_s or Y^eta_s.  Which one
-    ## gets calculated is controlled by the parameter 'calcQ'
-    ## nu1: elasticity at Y=1.
-    ## y0:  value of Y for which elasticity = 0
-    ## mc.mode: Monte Carlo mode.  If true, then treat the first two
-    ##          parameters as a direct specification of lambda and k
-    ##          (respectively).  Because parts of the parameter space
-    ##          are not accessible in the nu1-y0 formulation, when
-    ##          running monte carlo calcs we specify the coefficients
-    ##          directly.
-
     if(mc.mode) {
         lam <- nu1
         k <- y0
@@ -221,6 +291,8 @@ eta.s <- function(nu1, y0, mc.mode=FALSE) {
     }
 }
 
+#' @describeIn eta.constant Generate an income elasticity function for nonstaple foods.
+#' @export
 eta.n <- function(nu1) {
     ## Return a function for calculating eta_n or Y^eta_n.  Which one
     ## gets calculated is controlled by the parameter 'calcQ'.
@@ -252,12 +324,23 @@ eta.n <- function(nu1) {
 }
 
 
+#' Calculate actual elasticities using numerical derivatives.
+#'
+#' Given a set of prices and incomes, and model parameters,calculate the
+#' elasticities using numerical derivatives.  Optionally, you can pass the model
+#' results for the base values, if you've already calculated them.
+#'
+#' The inputs Ps, Pn, and Y can be vectors, but if they are, they must all be
+#' the same length
+#'
+#' @param Ps Staple food prices
+#' @param Pn Nonstaple food prices
+#' @param Y Per-capita income
+#' @param params Model parameters.  See description in \code{\link{food.dmnd}}.
+#' @param basedata Model results for the base values of Ps, Pn, and Y.
+#' @export
 calc.elas.actual <- function(Ps,Pn,Y, params, basedata=NULL)
 {
-    ## Given a set of prices and incomes, and model
-    ## parameters,calculate the elasticities using numerical
-    ## derivatives.  Optionally, you can pass the model results for
-    ## the base values, if you've already calculated them.
     if(is.null(basedata)) {
         basedata <- food.dmnd(Ps, Pn, Y, params)
     }
@@ -306,14 +389,19 @@ calc.elas.actual <- function(Ps,Pn,Y, params, basedata=NULL)
 
 }
 
+
+#' Calculate the actual Hicks elasticities using the Slutsky equation.
+#'
+#' Given actual price and income elasticities (i.e., calculated using finite
+#' difference derivatives), compute the corresponding Hicks elasticities.
+#'
+#' @param eps Elasticity values calculated by \code{\link{calc.elas.actual}}
+#' @param alpha.s Budget fraction for staples
+#' @param alpha.n Budget fraction for nonstaples
+#' @param alpha.m Budget fraction for materials
+#' @export
 calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
 {
-    ## Calculate the actual Hicks elasticities using the Slutsky equation.
-    ## Arguments:
-    ##   eps   - elasticity values calculated by calc.elas.actual
-    ## alpha.s - budget fraction for staples
-    ## alpha.n - budget fraction for nonstaples
-    ## alpha.m - budget fraction for materials
     xi.ss <- eps$ess + alpha.s * eps$etas
     rslt <- data.frame(xi.ss=xi.ss)
     rslt$xi.sn <- eps$esn + alpha.n * eps$etas
@@ -334,11 +422,24 @@ calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
 }
 
 
+#' Tabulate food demand by year for a model.
+#'
+#' Tabulate food demand by year for in input model using the observed prices and
+#' incomes for a given region.  If \code{region} is \code{NULL}, do it for all
+#' regions and concatenate the result.
+#'
+#' This function is intended to generate model predictions that can be compared
+#' to observed consumption.
+#'
+#' @param obsdata Table of observed prices and incomes.
+#' @param params Model parameter structure, as described in
+#' \code{\link{food.dmnd}}
+#' @param bc Vector of regional bias correction factors.  Optional. If
+#' omitted, no bias correction will be applied.
+#' @param region Region to apply the analysis to.
+#' @export
 food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
 {
-    ## Plot food demand by year for in input model using the observed
-    ## prices and incomes for a given region.  If region == NULL, do
-    ## it for all regions and concatenate the result
     if(is.null(region)) {
         ## run this function for all regions and collect the results
         ## into a single table.
@@ -351,10 +452,10 @@ food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
         selcols <- c('year', 'Ps', 'Pn', 'Y', 'Qs.Obs', 'Qn.Obs')
         if(!is.null(obsdata$obstype))
             selcols <- c(selcols, 'obstype')
-        filter(obsdata, GCAM_region_name==region) %>%
-            mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal, Y=gdp_pcap_thous2005usd,
+        dplyr::filter(obsdata, GCAM_region_name==region) %>%
+            dplyr::mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal, Y=gdp_pcap_thous2005usd,
                    Qs.Obs=s_cal_pcap_day_thous, Qn.Obs=ns_cal_pcap_day_thous) %>%
-            select_(.dots=selcols) -> indata
+            dplyr::select_(.dots=selcols) -> indata
         rslt <- as.data.frame(food.dmnd(indata$Ps, indata$Pn, indata$Y, params))
         if(!is.null(bc))
             apply.bias.corrections(rslt, bc)
@@ -368,7 +469,15 @@ food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
     }
 }
 
-
+#' Tabulate food demand by per-capita-income
+#'
+#' Tabulate staple and nonstaple demand as a function of per-capita GDP.  This
+#' function uses observed prices to
+#'
+#' @param obsdata Data frame of observed prices and incomes.
+#' @param params Model parameter structure.  See notes in
+#' \code{\link{food.dmnd}}.
+#' @export
 food.dmnd.byincome <- function(obsdata, params, region=NULL)
 {
     if(is.null(region)) {
@@ -376,22 +485,33 @@ food.dmnd.byincome <- function(obsdata, params, region=NULL)
             do.call(rbind, .)
     }
     else {
-        od <- filter(obsdata, GCAM_region_name == region) %>%
-            mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal) %>%
-                select(Y=gdp_pcap_thous2005usd, Ps, Pn,
+        od <- dplyr::filter(obsdata, GCAM_region_name == region) %>%
+            dplyr::mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal) %>%
+                dplyr::select(Y=gdp_pcap_thous2005usd, Ps, Pn,
                        obs.qs=s_cal_pcap_day_thous,obs.qn=ns_cal_pcap_day_thous)
         food.dmnd(od$Ps, od$Pn, od$Y, params) %>%
-            mutate(region=simplify.region(region), pcGDP=od$Y,
+            dplyr::mutate(region=simplify.region(region), pcGDP=od$Y,
                    `Staple Residual`=Qs-od$obs.qs,
                    `Nonstaple Residual`=Qn-od$obs.qn) %>%
-            select(region, pcGDP, `Staple Quantity`=Qs, `Nonstaple Quantity`=Qn,
+            dplyr::select(region, pcGDP, `Staple Quantity`=Qs, `Nonstaple Quantity`=Qn,
                    `Staple Residual`, `Nonstaple Residual`) %>%
-            melt(id=c('region','pcGDP'))
+            reshape2::melt(id=c('region','pcGDP'))
     }
-
 }
 
-lamks2epsy0 <- function(df)
+#' Convert the lambda and ks parameters to nu1 and y0
+#'
+#' The staple income elasticity has two formulations of its parameters.  The one
+#' that uses nu1 (income elasticity at Y==1) and y0 (value of Y for which the
+#' elasticity is zero) is more intuitive, but it is incomplete.  That is, theere
+#' are some valid models that simply cannot be expressed this way.  The model
+#' can alternatively be expressed in terms of the lambda and ks parameters in
+#' its equations.  This function allows an easy conversion from the latter
+#' representation to the former.
+#'
+#' @param df Data frame of lambda and ks parameters.
+#' @export
+lamks2nu1y0 <- function(df)
 {
     ## convert the eta.s k and lambda parameters to nu1 and y0
     if(!('lambda' %in% names(df)) || !('ks' %in% names(df))) {
@@ -413,26 +533,39 @@ lamks2epsy0 <- function(df)
 }
 
 
+#' Create a merged dataset with training and test data, each labeled accordingly
+#'
+#' @param obs.trn Data frame of observations in the training set.
+#' @param obs.tst Data frame of observations in the testing set.
+#' @export
 merge.trn.tst <- function(obs.trn, obs.tst)
 {
-    ## create a merged dataset with training and test data, each labeled accordingly
     obs.trn$obstype <- 'Training'
     obs.tst$obstype <- 'Testing'
     rbind(obs.trn, obs.tst)
 }
 
 
+#' Prepare observations for use in the model.
+#'
+#' Convert units on prices and rename columns with long, wordy names to make
+#' them easier to work with.
+#'
+#' @param obs Data frame of observed data.
+#' @export
 prepare.obs <- function(obs)
 {
     ## Convert units on prices and rename certain columns so they
     ## aren't such a pain to work with.
-    mutate(obs,
+    dplyr::mutate(obs,
            Ps=0.365*s_usd_p1000cal, # convert daily cost in dollars to annual cost in thousands of dollars.
            Pn=0.365*ns_usd_p1000cal) %>%
-        rename(rgn=GCAM_region_name, Y=gdp_pcap_thous2005usd,
+      dplyr::rename(rgn=GCAM_region_name, Y=gdp_pcap_thous2005usd,
                Qs=s_cal_pcap_day_thous, Qn=ns_cal_pcap_day_thous)
 }
 
+
+## Helper function for compute.bias.corrections
 compute.bc.rgn <- function(obs, params)
 {
     ## compute the bias corrections for an individual region.  Bias
@@ -440,7 +573,7 @@ compute.bc.rgn <- function(obs, params)
     ## data.
     yrmax <- max(obs$year)
     yrmin <- yrmax-10
-    obs <- filter(obs, year > yrmin)
+    obs <- dplyr::filter(obs, year > yrmin)
 
     mod <- food.dmnd(obs$Ps, obs$Pn, obs$Y, params)
 
@@ -448,16 +581,24 @@ compute.bc.rgn <- function(obs, params)
 
 }
 
+#' Compute regional bias corrections.
+#'
+#' Compute regional bias correction for a set of parameters and a training set of observations.
+#' Bias correction factors are \emph{multiplied} by model data to get bias
+#' corrected model output.
+#'
+#' @param params Model parameter structure (described in
+#' \code{\link{food.dmnd}})
+#' @param obs.trn Data frame of training observations.
 compute.bias.corrections <- function(params, obs.trn)
 {
-    ## compute regional bias correction for a set of parameters and a
-    ## training set of observations.
     obs <- prepare.obs(obs.trn)
     obs <- split(obs, obs$rgn)
     params$bc <- sapply(obs, . %>% compute.bc.rgn(params))
 }
 
 
+## Helper function for apply.bias.corrections
 apply.bc.rgn <- function(mod, bc)
 {
     mod$Qs <- mod$Qs * bc['s',mod$rgn]
@@ -465,6 +606,11 @@ apply.bc.rgn <- function(mod, bc)
     mod
 }
 
+#' Apply bias corrections to model outputs
+#'
+#' @param mod Data frame of model outputs
+#' @param bc Vector of regional bias correction factors
+#' @export
 apply.bias.corrections <- function(mod, bc)
 {
     ## make this function work whether or not the column names have been converted.
@@ -477,26 +623,64 @@ apply.bias.corrections <- function(mod, bc)
     mod
 }
 
-## Set up some vectors of test values.  These can be used for exercising the
-## demand function.
+#' Sample values for the demand model.
+#'
+#' These variables give examples of the data structures used in the model, as
+#' well as baseline price, GDP and parameter values that should produce
+#' reasonable results.
+#'
+#' @name testdata
+NULL
 
-## logarithmically-spaced pcGDP values
+#' y.vals: Logarithmically-spaced pcGDP values
+#'
+#' y.vals: Logarithmically-spaced pcGDP values
+#' @rdname testdata
+#' @export
 y.vals <- 10^seq(-1,log10(50), length.out=20)
 
-## evenly spaced P values
+#' Ps.vals: Evenly spaced Ps values
+#'
+#' Ps.vals: Evenly spaced Ps values
+#' @rdname testdata
+#' @export
 Ps.vals <- 10^seq(-2,log10(2.5),length.out=20)
+#' Pn.vals: Evenly spaced Pn values
+#'
+#' Pn.vals: Evenly spaced Pn values
+#' @rdname testdata
+#' @export
 Pn.vals <- 10^seq(-2, log10(2.5), length.out=20)
+#' Pm.vals: Evenly spaced Pm values
+#'
+#' Pm.vals: Evenly spaced Pm values
+#' @rdname testdata
+#' @export
 Pm.vals <- rep(1.0, length(Ps.vals))
 
 
-## a sample parameter structure
+#' samp.params: Example model parameter structure
+#'
+#' samp.params: Example model parameter structure
+#' @rdname testdata
+#' @export
 samp.params <- list(A=c(0.3, 0.1),
                     yfunc=c(eta.s(-0.15,0.6), eta.n(1.0)),
                     xi=matrix(c(-0.05, 0.1, 0.1, -0.5), nrow=2),
                     Pm=1
                     )
-## Sample parameters in Monte Carlo representation
-## same as samp.params above:
+
+#' x1: Monte carlo parameter vector
+#'
+#' x1: Monte carlo parameter vector.  This vector encodes the same model as
+#' \code{samp.params}, but using the Monte Carlo version of the parameter
+#' formulation for the staple income elasticity model.
+#' @rdname testdata
+#' @export
 x1 <- c(0.3, 0.1, -0.05, 0.1, -0.5, 1.0, 0.2936423, 4.5304697, 1)
-## parameters used to generate the test data:
+#' x0: Parameters used to generate the test data
+#'
+#' x0: Parameters used to generate the test data
+#' @rdname testdata
+#' @export
 x0 <- c(0.5, 0.35, -0.03, 0.01, -0.4, 0.5, 0.1442695, 5.436564, 1)

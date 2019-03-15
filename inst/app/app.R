@@ -1,10 +1,9 @@
 library(shiny)
 library(ggplot2)
+library(gcamfd)
 
 etadefault <- c(-0.1,0.5)
 Adefault <- c(0.5, 0.35)
-
-source('ui-fcns.R')
 
 ui <- fluidPage(
   headerPanel(h1("Food Demand Model",align='center'),windowTitle='Food Demand Model'),
@@ -14,7 +13,7 @@ ui <- fluidPage(
             fluidRow(
                 column(width=8, withMathJax(h3("Price elasticity model")))
                 ),
-            xi.matrix.input(), 
+            xi.matrix.input(),
             fluidRow(h3("Income elasticity model")),
             fluidRow(column(8,h4("Staple demand"))),
             fluidRow(column(8,eta.selector('eta.s.select','\\(\\eta = f_s(Y)\\)',1))),
@@ -83,9 +82,6 @@ ui <- fluidPage(
         )  # end of sidebar layout
     ) # end of fluid page
 
-
-source('food-demand.R')
-source('food-demand-plots.R')
 
 set.model.params <-function(input)
 {
