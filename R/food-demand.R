@@ -590,6 +590,7 @@ compute.bc.rgn <- function(obs, params)
 #' @param params Model parameter structure (described in
 #' \code{\link{food.dmnd}})
 #' @param obs.trn Data frame of training observations.
+#' @export
 compute.bias.corrections <- function(params, obs.trn)
 {
     obs <- prepare.obs(obs.trn)
