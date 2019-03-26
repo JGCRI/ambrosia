@@ -14,5 +14,4 @@ runs
 *.pdf
 *.png
 # processed documents
-*.md 
 *.docx
