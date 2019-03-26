@@ -10,4 +10,6 @@ bibentry('Article',
          number = '4',
          pages = '1750012',
          year = '2017',
-         publisher = "World Scientific")
+         publisher = "World Scientific",
+         footer =
+           'Development of this model was supported by the US Department of Energy, Office of Science, as part of research in the Multi-Sector Dynamics, Earth and Environmental System Modeling Program. The Pacific Northwest National Laboratory is operated for DOE by Battelle Memorial Institute under contract DE-AC05-76RL01830.')
