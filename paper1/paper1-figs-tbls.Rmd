@@ -1,0 +1,220 @@
+---
+title: "Paper1-figs-tables"
+author: "Robert Link"
+date: "August 7, 2017"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+source('paper-plots.R')
+```
+
+```{r data, include=FALSE}
+## read the observational data
+datadir <- './data'
+alldata <- read.csv(file.path(datadir, 'food-dmnd-price-allrgn.csv'))
+xval.rgn.trn <- read.csv(file.path(datadir, 'xval-byrgn-trn.csv'))
+xval.rgn.tst <- read.csv(file.path(datadir, 'xval-byrgn-tst.csv'))
+xval.yr.trn <- read.csv(file.path(datadir, 'xval-byyear-trn.csv'))
+xval.yr.tst <- read.csv(file.path(datadir, 'xval-byyear-tst.csv'))
+
+## read the mc results:  we assume that the data has all been gzipped
+mcdir <- '../runs'
+mcrslt.all <- read.mc.data(file.path(mcdir, 'mc-food-dmnd.allrgn.dat.gz'))
+mcrslt.rgn <- read.mc.data(file.path(mcdir, 'mc-food-dmnd.xval-byrgn.dat.gz'))
+mcrslt.yr <- read.mc.data(file.path(mcdir, 'mc-food-dmnd.xval-byyear.dat.gz'))
+```
+
+## Maximum Likelihood Parameter Sets
+```{r ML}
+pv.all <- mcparam.ML(mcrslt.all)        # vector for passing to mc.likelihood 
+p.all <- vec2param(pv.all)               # parameter struct for passing to food.dmnd
+pp.all <- mcrslt.all[which.max(mcrslt.all$LL),] # data frame for pretty-printing
+ 
+pv.rgn <- mcparam.ML(mcrslt.rgn)
+p.rgn <- vec2param(pv.rgn)
+pp.rgn <- mcrslt.rgn[which.max(mcrslt.rgn$LL),] # data frame for pretty-printing
+ 
+pv.yr <- mcparam.ML(mcrslt.yr)
+p.yr <- vec2param(pv.yr)
+pp.yr <- mcrslt.yr[which.max(mcrslt.yr$LL),] # data frame for pretty-printing
+```
+All data:
+```{r MLall}
+ml.all <- paper1.fix.notation(pp.all) %>% tidyr::gather('var', 'MLval')
+print(ml.all %>% mutate(MLval = signif(MLval, 2)))
+```
+
+Cross-validation by region:
+```{r MLrgn}
+ml.rgn <- paper1.fix.notation(pp.rgn) %>% tidyr::gather('var', 'MLval')
+print(ml.rgn %>% mutate(MLval = signif(MLval, 2)))
+```
+
+Cross-validation by year:
+```{r MLyr}
+ml.yr <- paper1.fix.notation(pp.yr) %>% tidyr::gather('var', 'MLval')
+print(ml.yr %>% mutate(MLval = signif(MLval, 2)))
+```
+
+## Figure 1
+
+```{r fig1}
+## we will se one of these plots now, and some of the others further down.
+plts.param.all <- make.paper1.param.plots(p.all, alldata)
+print(plts.param.all$qty.by.gdp)
+```
+Figure 1: Mapping between income and demands for staples and
+nonstaples using model parameters set to their maximum likelihood
+values obtained using pooled cross-sectional-time-series observations
+and Metropolis Monte Carlo estimation procedure discussed later in
+this paper. Staple and nonstaple food prices in this plot are fixed at
+the median value of the full observational data set.
+
+## Figure 2
+```{r fig2}
+hist.sigma <- make.paper1.obs.plots(alldata)
+print(hist.sigma)
+```
+Figure 2: Histogram of sigma values imputed by the clustering
+procedure. For both staples and nonstaples the median value is roughly
+200 Calories/person/day.
+
+## Figure 3
+```{r fig3, fig.width=10, fig.height=10}
+## As with figure 1, some of this will be used immediately, some later.
+plts.mc.all <- make.paper1.mc.plots(mcrslt.all, alldata)
+print(plts.mc.all$density)
+```
+Figure 3: Marginal distributions of model parameters and likelihood
+function (LL). The parameters are described in section 2.
+
+## Figure 4
+```{r fig4}
+print(plts.mc.all$byyear)
+```
+Figure 4: Comparison between model outputs and observed consumption
+for model run "all-data".
+
+## Alternate Figure 4
+This version focuses on two regions where the model does well (before bias correction) and two where
+it doesn't do so well.
+```{r fig4a}
+print(plts.mc.all$byyear.focus)
+```
+## Figure 5
+```{r fig5}
+print(plts.param.all$elas.by.gdp)
+```
+Figure 5: Income and own-price elasticities for the model, as a
+function of per-capita GDP. Model parameters are set to their maximum
+likelihood values. Staple and nonstaple food prices are fixed at their
+median values for the full observational data set.
+
+## Figure 6
+```{r fig6}
+## Again, some stuff for use now, some for later
+resid.stats <- paper1.residual.analysis(mcrslt.rgn, mcrslt.yr,
+                                         xval.rgn.trn, xval.rgn.tst, xval.yr.trn, xval.yr.tst)
+print(resid.stats$scatter)
+```
+Figure 6: Comparison between model output and observed data for the
+xval-rgn (left panels) and xval-year (right panels) cross-validation
+experiments. Units for both observation and model data are in
+thousands of Calories per person per day.
+
+## Alternate Figure 6
+This version of figure 6 shows only the residuals from the cross-validation by year  This is a better fit for talks where 
+we don't have time to go into the cross-validation by region or why it didn't turn out to be useful.
+
+```{r fig6a}
+print(resid.stats$scatter.xval.byyr)
+
+```
+
+## Figure 7
+```{r fig7}
+## This structure contains all of the bias corrected results
+rslts.bc <- paper1.bc.plots(p.yr, xval.yr.trn, xval.yr.tst)
+print(rslts.bc$scatter)
+```
+Figure 7: Scatter plot of model vs. observations for the xval-year
+run, after applying the regional bias correction. Model agreement with
+observations is dramatically improved as compared to the uncorrected
+data in the previous figure.
+
+## Table 3
+(Tables 1 and 2 summarize the model design and therefore don't use any
+results or data.)
+
+Table 3: Maximum likelihood values and confidence intervals for model
+parameters, as derived from "all-data" run.
+```{r tbl3}
+conf.intvl <- as.data.frame(plts.mc.all$conf.intvl)
+cilow.all <- conf.intvl[1,] %>% tidyr::gather('var', 'ci.low')
+cihigh.all <- conf.intvl[2,] %>% tidyr::gather('var', 'ci.high')
+dplyr::left_join(ml.all, cilow.all, by='var') %>% 
+    dplyr::left_join(cihigh.all, by='var') %>% print
+```
+
+## Table 4
+
+Table 4: Maximum likelihood values for parameters in the
+cross-validation runs.
+```{r tbl4}
+dplyr::left_join(
+                 dplyr::rename(ml.yr, xval.yr = MLval),
+                 dplyr::rename(ml.rgn, xval.rgn = MLval),
+                 by = 'var') %>%
+    print
+```
+
+## Table 5
+Table 5: Figures of merit for each of the three experiments. For each
+data set we report the root mean-squared error and the chi-squared per
+degree of freedom. For the cross-validation experiments, the p-value
+is for a Kolmogorov-Smirnov test of the null hypothesis, “The CDF of
+squared residuals for the testing set is not less than that of the
+training set.”
+```{r chi2}
+### Calculate the chi-squared values.  Use testing set only for xval
+### experiments.
+chisq.all <- paper1.chisq(p.all, alldata, 9)
+chisq.rgn <- paper1.chisq(p.rgn, xval.rgn.tst)
+chisq.yr <- paper1.chisq(p.yr, xval.yr.tst)
+
+### Add chi-squared values for training set too
+chisq.yr.trn <- paper1.chisq(p.yr, xval.yr.trn, 9)
+chisq.rgn.trn <- paper1.chisq(p.rgn, xval.rgn.trn, 9)
+
+## RMSE for alldata.  xval expts. are in resid.stats$rmse
+rmse.all <- paper1.rmse.all(alldata, p.all)
+
+### Put these into a table.
+rslts <- matrix(nrow = 3, ncol = 6)
+colnames(rslts) <- c('run', 'RMSE.trn', 'x2n.trn', 'RMSE.tst', 'x2n.tst', 'KS.pval')
+
+rslts[1,1] <- 'all-data'
+rslts[1,2] <- rmse.all %>% signif(2)
+rslts[1,3] <- chisq.all$x2df %>% signif(2)
+
+rslts[2,1] <- 'xval-rgn'
+rslts[2,2] <- resid.stats$rmse[2] %>% signif(2)
+rslts[2,4] <- resid.stats$rmse[1] %>% signif(2)
+rslts[2,3] <- chisq.rgn.trn$x2df %>% signif(2)
+rslts[2,5] <- chisq.rgn$x2df %>% signif(2)
+rslts[2,6] <- resid.stats$ks$rgn$p.value %>% signif(2)
+
+rslts[3,1] <- 'xval-rgn'
+rslts[3,2] <- resid.stats$rmse[4] %>% signif(2)
+rslts[3,4] <- resid.stats$rmse[3] %>% signif(2)
+rslts[3,3] <- chisq.yr.trn$x2df %>% signif(2)
+rslts[3,5] <- chisq.yr$x2df %>% signif(2)
+rslts[3,6] <- resid.stats$ks$yr$p.value %>% signif(2)
+
+print(rslts)
+```

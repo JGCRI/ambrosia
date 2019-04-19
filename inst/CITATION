@@ -1,0 +1,15 @@
+bibentry('Article',
+         header =
+           'To cite the GCAM food demand model in publications, please use:',
+         key = 'edmonds2017global',
+         title = 'A global food demand model for the assessment of complex human-earth systems',
+         author =
+           'James A Edmonds and Robert Link and Stephanie T Waldhoff and Ryna Cui',
+         journal = 'Climate Change Economics',
+         volume = '8',
+         number = '4',
+         pages = '1750012',
+         year = '2017',
+         publisher = "World Scientific",
+         footer =
+           'Development of this model was supported by the US Department of Energy, Office of Science, as part of research in the Multi-Sector Dynamics, Earth and Environmental System Modeling Program. The Pacific Northwest National Laboratory is operated for DOE by Battelle Memorial Institute under contract DE-AC05-76RL01830.')
