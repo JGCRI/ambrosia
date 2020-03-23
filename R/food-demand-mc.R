@@ -91,8 +91,8 @@ mc.setup <- function(obsdata_filename, logprior=NULL, logfile=NULL, chunksize=10
         ## reformat slightly:
         obs.data <- data.frame(Ps=obs.data$Ps, Pn=obs.data$Pn, Y=obs.data$Y,
                                Qs=obs.data$Qs, Qn=obs.data$Qn,
-                               sig2Qs=obs.data$sigQs^2, sig2Qn=obs.data$sigQn^2,
-                               weight=1.0)
+                               sig2Qs=obs.data$sig2Qs, sig2Qn=obs.data$sig2Qn,
+                               weight=obs.data$weight)
     }
 
     ## Using nleqslv to solve the "system" causes the run time to
@@ -111,7 +111,7 @@ mc.setup <- function(obsdata_filename, logprior=NULL, logfile=NULL, chunksize=10
             ## We've broken the data up into chunks.  Since the
             ## log-likelihood function is additive, we can apply L to each
             ## chunk and sum them up
-            sum(sapply(mc.obsdata,mc.eval.fd.likelihood, params)) + logprior(params)
+            sum(sapply(mc.obsdata,mc.eval.fd.likelihood, params))
         }
         else {
             -9.99e9 * length(mc.obsdata)    # treat as if each chunk had returned the default value of -9.99e9

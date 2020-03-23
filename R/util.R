@@ -169,6 +169,7 @@ assign.sigma.Q <- function(input.data, min.group=5)
 #'
 #' @param input.data Data frame of food demand input data from FAO
 #' @return Data frame of input data with a population weight column added.
+#' @export
 calc.pop.weight <- function(input.data)
 {
     pop_thous <- NULL
