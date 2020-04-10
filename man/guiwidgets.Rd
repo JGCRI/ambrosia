@@ -12,8 +12,14 @@ xi.matrix.input()
 
 y0.input.box()
 
-column.input.table(inputids, defvals, min, max, step,
-  labels = c("Staple", "Nonstaple"))
+column.input.table(
+  inputids,
+  defvals,
+  min,
+  max,
+  step,
+  labels = c("Staple", "Nonstaple")
+)
 
 eta.selector(id, label2 = "\\\\(\\\\eta=f(Y)\\\\)", sel = 1)
 }

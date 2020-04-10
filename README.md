@@ -26,4 +26,9 @@ ps <- 0.2
 pn <- 0.5
 y <- seq(0.2, 10.0, 0.2)
 rslt <- food.dmnd(ps, pn, y, samp.params)
+
 ```
+Note that the  are parameters available in the folder parameter_data/parameter_data.csv
+
+The parameters can be re-calculated using the Calcute_parameters.R script. 
+The input data can be recalculated using the script Process_Demand_Data.R

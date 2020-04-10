@@ -4,7 +4,7 @@ library(ggplot2)
 library(gcamfd)
 
 #Constant for diagnostics. Set this to true to view diagnostics.
-diagnostics<-"TRUE"
+diagnostics<-"FALSE"
 
 #Load utility functions, mc functions
 source("R/util.R")
