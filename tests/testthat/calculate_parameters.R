@@ -1,9 +1,10 @@
 library(dplyr)
 library(testthat)
 library(ggplot2)
+library(gcamfd)
 
 #Constant for diagnostics. Set this to true to view diagnostics.
-diagnostics<-"FALSE"
+diagnostics<-"TRUE"
 
 #Load utility functions, mc functions
 source("R/util.R")
@@ -12,8 +13,12 @@ source("R/food-demand.R")
 
 #Step 1: Read in raw data
 #Currently adding a status column to be transparent about the observations that we are including and excluding.
-Raw_Data<-read.csv("paper1/Latest_Iteration/Food_Demand_Data.csv") %>%
-          filter(Status=="Include")
+Raw_Data<-read.csv("paper1/Latest_Iteration/Training_Data.csv") %>%
+          #Only keep prices less than 20 dollars per 1000 USD
+          filter(ns_usd_p1000cal<20) %>%
+          #Minimum calories = 1700
+          filter(Tot_cal>1.7)
+
 
 
 #Calculate population weights
@@ -25,8 +30,8 @@ Raw_Data<-assign.sigma.Q(Raw_Data)
 #Check number of observational errors. Anything under 20 means that there are a few observations skewing the distribution.
 test_that("Number of clusters for observational errors are reasonable",{
 
-    expect(length(unique(Raw_Data$sig2Qn))>20,"Number of clusters for observational errors for non-staples are under 20. Please revisit data.")
-    expect(length(unique(Raw_Data$sig2Qs))>20,"Number of clusters for observational errors for staples are under 20. Please revisit data.")
+    expect(length(unique(Raw_Data$sig2Qn))>300,"Number of clusters for observational errors for non-staples are under 20. Please revisit data.")
+    expect(length(unique(Raw_Data$sig2Qs))>300,"Number of clusters for observational errors for staples are under 20. Please revisit data.")
 })
 
 #Some processing for data.
@@ -48,11 +53,11 @@ if(diagnostics=="TRUE"){
     b
     #sig2Qn
     c<-ggplot(data=Processed_Data_for_MC,mapping=aes(sig2Qn))+
-        geom_histogram(bins=15)
+        geom_histogram(bins=10)
     c
     #sig2Qs
     d<-ggplot(data=Processed_Data_for_MC,mapping=aes(sig2Qs))+
-        geom_histogram(bins=15)
+        geom_histogram(bins=10)
     d
 }
 
@@ -95,7 +100,7 @@ if(params_vector$convergence != 0){
 func_MC_Original(params_vector$par)->New_probability_density
 
 test_that("New probability density for original function is unreasonable.",{
-    expect(abs(New_probability_density)-abs(Original_prob_density)<100,"New likelihood probability density is too different
+    expect(abs(New_probability_density)-abs(Original_prob_density)<1000,"New likelihood probability density is too different
            from original.")
 })
 
@@ -125,4 +130,4 @@ Food_Demand_Original %>%
     rename(Qs_original=Qs, Qn_original=Qn, Qm_original=Qm) %>%
     left_join(Food_Demand %>% select(Qs,Qn,Qm,Y),by=c("Y"))->Food_Demand_Consolidated
 
-write.csv(Food_Demand_Consolidated,paste0("parameter_data/Test_Demand_Output",Sys.Date(),".csv"))
+write.csv(Food_Demand_Consolidated,paste0("parameter_data/Test_Demand_Output_3",Sys.Date(),".csv"))
