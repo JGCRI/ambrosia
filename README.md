@@ -1,6 +1,8 @@
 # gcamfd: Calculate food demand using the Edmonds et. al. model
 [![Travis build status](https://travis-ci.org/JGCRI/food-demand.svg?branch=master)](https://travis-ci.org/JGCRI/food-demand)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/JGCRI/food-demand?branch=master&svg=true)](https://ci.appveyor.com/project/JGCRI/food-demand) 
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/JGCRI/food-demand?branch=master&svg=true)](https://ci.appveyor.com/project/JGCRI/food-demand)
+[![DOI](https://zenodo.org/badge/69679416.svg)](https://zenodo.org/badge/latestdoi/69679416)
+
 
 The Edmonds model divides food consumption into two categories,
 _staples_, which represent basic foodstuffs, and _nonstaples_,
@@ -30,5 +32,5 @@ rslt <- food.dmnd(ps, pn, y, samp.params)
 ```
 Note that the  are parameters available in the folder parameter_data/parameter_data.csv
 
-The parameters can be re-calculated using the Calcute_parameters.R script. 
+The parameters can be re-calculated using the Calcute_parameters.R script.
 The input data can be recalculated using the script Process_Demand_Data.R
