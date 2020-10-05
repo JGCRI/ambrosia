@@ -57,6 +57,8 @@ calculate_ambrosia_params <- function(
     # Note that the method used here as BFGS since it solves better than the Nelder-Mead simplex. Don't
     #let the errors throw you. rpl mentioned that this might happen, its not an error,Only a warning. I need to fix the
     #ifelse in this function at some point.
+
+    print("Fitting parameters by maximizing log likelihood")
     params_vector<-optim(original_param_vector, func_MC, control=list(fnscale=-1),method = optim_method)
 
     #If the optimizer does not work, or runs out of iterations, try again. It works in the first try.
@@ -70,7 +72,7 @@ calculate_ambrosia_params <- function(
     func_MC(params_vector$par)->New_probability_density
 
     print(paste0("Maximum value of log likelihood function is ",params_vector$value))
-    print(paste0("Total iterations run are ",params_vector$counts))
+
 
     parameter_names<-c('A_s', 'A_n', 'xi_ss', 'xi_cross', 'xi_nn', 'nu1_n',
                        'lambda_s', 'k_s', 'Pm','psscl','pnscl')
