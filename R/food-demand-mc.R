@@ -160,22 +160,24 @@ mc.setup <- function(obsdata_filename, logprior=NULL, logfile=NULL, chunksize=10
 vec2param <- function(x)
 {
 
-    if(length(x) == 9) {
+    if(length(x) == 11) {
         etas <- eta.s(x[7],x[8],mc.mode=TRUE)
         Pm <- x[9]
+        psscl <- x[10]
+        pnscl <- x[11]
     }
     else if(length(x) == 8) {
         etas <- eta.constant(x[7])
         Pm <- x[8]
     }
     else {
-        msg <- paste('Invalid parameter vector.  Length must be 8 or 9.  length(x) == ', length(x))
+        msg <- paste('Invalid parameter vector.  Length must be 11 or 8.  length(x) == ', length(x))
         stop(msg)
     }
 
     xivals <- c(x[3], x[4], x[4], x[5])
     ## construct the parameter structure
-    list(A=x[1:2], yfunc=c(etas, eta.n(x[6])), xi=matrix(xivals, nrow=2), Pm=Pm)
+    list(A=x[1:2], yfunc=c(etas, eta.n(x[6])), xi=matrix(xivals, nrow=2), Pm=Pm, psscl=psscl,pnscl=pnscl)
 }
 
 ## Convert units and column names in the food demand data prepared for GCAM to
@@ -235,8 +237,8 @@ mc.food.dmnd.byyear <- function(obsdata, x, regions=NULL)
 #### Helper functions and data for the code in this module.
 
 ## minimum and maximum value for parameters:  outside of this range the model may blow up.
-pmin9 <- c(0.0, 0.0, -Inf, -Inf, -Inf, 0.0, 0.0, 1e-8, 1e-6)
-pmax9 <- c(Inf, Inf,  0.0,  Inf,  0.0, Inf, Inf, Inf, Inf)
+pmin11 <- c(0.0, 0.0, -Inf, -Inf, -Inf, 0.0, 0.0, 1e-8, 1e-6,0,0)
+pmax11 <- c(Inf, Inf,  0.0,  Inf,  0.0, Inf, Inf, Inf, Inf,Inf,Inf)
 ## 8-parameter version
 pmin8 <- c(0.0, 0.0, -Inf, -Inf, -Inf, 0.0, -Inf, 1e-6)
 pmax8 <- c(Inf, Inf,  0.0,  Inf,  0.0, Inf,  Inf, Inf)
@@ -246,9 +248,9 @@ validate.params <- function(x)
     ## Return FALSE if the parameters are outside of allowed limits
     if(length(x)==8 && (any(x<pmin8) || any(x>pmax8)))
         FALSE
-    else if(length(x)==9 && (any(x<pmin9) || any(x>pmax9)))
+    else if(length(x)==11 && (any(x<pmin11) || any(x>pmax11)))
         FALSE
-    else if(length(x) < 8 || length(x) > 9)
+    else if(length(x) < 8 || length(x) > 11)
         FALSE
     else
         TRUE

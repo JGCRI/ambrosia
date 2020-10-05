@@ -1,7 +1,6 @@
 
 ## Scale factors used in the food demand model below
-psscl <- 100
-pnscl <- 20
+
 
 #' Calculate food demand using the Edmonds, et al. model.
 #'
@@ -64,7 +63,8 @@ pnscl <- 20
 food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL)
 {
     Pm <- params$Pm
-
+    psscl <- params$psscl
+    pnscl <- params$pnscl
     ## Normalize income and prices to Pm
     Ps <- Ps/Pm * psscl
     Pn <- Pn/Pm * pnscl
@@ -87,7 +87,7 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL)
     eps <- mapply(calc1eps, alpha[1,], alpha[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi),
                   SIMPLIFY=FALSE)
     ## Calculate quantities Q[1,] is Qs and Q[2,] is Qn
-    Q <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
+    Q <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A),psscl,pnscl)
     ## alpha.out = P*Q/Y
     alpha.out <- alpha
     alpha.out[1,] <- Ps*Q[1,]/Y / psscl
@@ -106,7 +106,7 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL)
   alpharslt <- matrix(rslt$x, nrow=2)
   eps <- mapply(calc1eps, alpharslt[1,], alpharslt[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi),
                 SIMPLIFY=FALSE)
-  qvals <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
+  qvals <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A),psscl,pnscl)
   qs <- qvals[1,]
   qn <- qvals[2,]
   ## calculate Qm as the budget residual.
@@ -159,7 +159,7 @@ calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
 #' @param Ysterm Income term in the demand equation for staples
 #' @param Ynterm Income term in the demand equation for nonstaples
 #' @param Acoef Leading multiplier parameter.
-calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef) {
+calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef,psscl,pnscl) {
   ## not vectorized:  use mapply
   Qs <- Acoef[1] * Ps^eps[1] * Pn^eps[3] * Ysterm
   Qn <- Acoef[2] * Ps^eps[2] * Pn^eps[4] * Ynterm

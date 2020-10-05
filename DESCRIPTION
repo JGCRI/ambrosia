@@ -1,4 +1,4 @@
-Package: gcamfd
+Package: ambrosia
 Title: Food demand model for the GCAM human-earth systems model
 Version: 1.1.5
 Authors@R: c(person(given='Robert', family='Link', email='robert.link@pnnl.gov', role=c('aut','cre','lyr','ard')),
