@@ -1,12 +1,7 @@
-"parameter_names","params_vector.par"
-"A_s",1.13217130568543
-"A_n",1.24072428578209
-"xi_ss",-0.0240391003173636
-"xi_cross",-0.00975701805871849
-"xi_nn",-0.143203449251061
-"nu1_n",0.499789016829065
-"lambda_s",0.0475534289172866
-"k_s",16.0039928087792
-"Pm",5.13305869477827
-"psscl",99.9997525844035
-"pnscl",20.0966034407874
+Category,Function name,Description
+parameter estimation,mc.eval.fd.likelihood(),This function is used to set up the log likelihood function for any dataset. The function will return the log likelihood value for a set of parameters and a given set of observational data.
+parameter estimation,mc.setup(),Returns a function for a specific dataset using mc.eval.fd.likelihood(). Function returned by mc.setup() is used to fit parameters using the maximization approach 
+Data processing,recursive.partition(),A function that is used for clustering in coordance with the DIANA approach using any criteria variables described in the data set up section
+Data processing,assign.sigma.Q(),Computes observational errors within clusters for staple and non staple food demand
+Data processing,calc.pop.weight(),Calculates weights used in equation (7) for the least squares log likelihood function 
+Food demand functions,calc.elas.actual(),Calculates elasticities using numerical derivatives for given prices and incomes.

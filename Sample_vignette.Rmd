@@ -57,6 +57,79 @@ g<-ggplot()+
 
 g
 ```
+```{r}
+budget_shares <- Food_Demand %>% 
+                 mutate(share_of_staples=alpha.s*100,
+                        share_of_non_staples=alpha.n*100,
+                        share_of_materials=alpha.m*100)
+
+budget_shares$Y<-seq(0.1,30, by=0.1)
+
+g<-ggplot()+
+  geom_line(data=budget_shares,aes(x=Y,y=share_of_staples,color="Staple share"))+
+  geom_line(data=budget_shares,aes(x=Y,y=share_of_non_staples,color="Non Staple share"))+
+  #geom_line(data=budget_shares,aes(x=Y,y=share_of_materials,color="Materials share"))+
+    xlab("GDP per capita in thousand USD" )+
+    ylab("Percent of Income")+
+    ggtitle("Calculated budget shares using food demand parameters")+
+    labs(subtitle="Prices are set to 0.1 for Staples and 0.2 for Non-staples")
+   
+g 
+
+
+
+```
+```{r}
+#Calculate income elasticities
+
+Food_Demand$eta.s <- tmp_param$yfunc[[1]](Y=Food_Demand$Y,FALSE)
+Food_Demand$eta.n <- tmp_param$yfunc[[2]](Y=Food_Demand$Y,FALSE)
+
+g<-ggplot()+
+  geom_line(data=Food_Demand,aes(x=Y,y=eta.s,color="Income elasticities for staples"))+
+  geom_line(data=Food_Demand,aes(x=Y,y=eta.n,color="Income elasticities for non-staples"))+
+  #geom_line(data=budget_shares,aes(x=Y,y=share_of_materials,color="Materials share"))+
+    xlab("GDP per capita in thousand USD" )+
+    ylab("Ealsticity value")+
+    ggtitle("Calculated income elasticities for each level of income")+
+    labs(subtitle=paste0("Income elasticity parameter value for staples and non-staples are ",original_param_vector[7]," ,",original_param_vector[6]," respectively"))
+    
+   
+g 
+
+
+
+```
+
+```{r}
+
+#Calculate price elasticities
+
+Food_Demand$staple_price_elasticity <- calc1eps(Food_Demand$alpha.s,Food_Demand$alpha.n,Food_Demand$eta.s,Food_Demand$eta.n,tmp_param$xi)[1:300]
+Food_Demand$eta.n <- tmp_param$yfunc[[2]](Y=Food_Demand$Y,FALSE)
+
+Food_Demand$non_staple_price_elasticity <- calc1eps(Food_Demand$alpha.s,Food_Demand$alpha.n,Food_Demand$eta.s,Food_Demand$eta.n,tmp_param$xi)[901:1200]
+Food_Demand$eta.n <- tmp_param$yfunc[[2]](Y=Food_Demand$Y,FALSE)
+
+g<-ggplot()+
+  geom_line(data=Food_Demand,aes(x=Y,y=staple_price_elasticity,color="Staple price elasticity"))+
+  geom_line(data=Food_Demand,aes(x=Y,y=non_staple_price_elasticity,color="Non staple price elasticity"))+
+  #geom_line(data=budget_shares,aes(x=Y,y=share_of_materials,color="Materials share"))+
+    xlab("GDP per capita in thousand USD" )+
+    ylab("Ealsticity value")+
+    ggtitle("Calculated price elasticities for each level of income")+
+    labs(subtitle=paste0("price elasticity parameter value for staples and non-staples are ",original_param_vector[3]," ,",original_param_vector[5]," respectively"))
+    
+   
+g 
+
+
+
+
+```
+
+
+
 
 ```{r}
 #Now let's calculate some model parameters
