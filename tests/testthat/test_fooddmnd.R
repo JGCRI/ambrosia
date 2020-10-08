@@ -12,7 +12,7 @@ test_that('Food demand model runs and produces the expected result with old para
 
 
 test_that('New food demand budget shares are not unreasonable', {
-    parameter_data <- read.csv("../../outputs/parameter_data.csv")
+    parameter_data <- read.csv("test_outputs/parameter_data.csv")
     params <- vec2param(c(parameter_data$params_vector.par))
     ps <- 0.1
     pn <- 0.5
