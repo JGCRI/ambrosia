@@ -131,6 +131,7 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL)
 #' @param eta.s Income elasticity for staple foods.
 #' @param eta.n Income elasticity for nonstaple foods.
 #' @param xi Matrix of Hicks elasticities
+#' @export
 calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
 
     ## First apply symmetry condition.  This means that the xi.sn
