@@ -1,5 +1,5 @@
 # gcamfd: Calculate food demand using the Edmonds et. al. model
-[![Travis build status]((https://travis-ci.org/JGCRI/ambrosia.svg?branch=master)](https://travis-ci.com/github/JGCRI/ambrosia))]
+[![Travis build status](https://travis-ci.org/JGCRI/ambrosia.svg?branch=master)](https://travis-ci.org/JGCRI/ambrosia)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/JGCRI/food-demand?branch=master&svg=true)](https://ci.appveyor.com/project/JGCRI/food-demand) 
 
 The Edmonds model divides food consumption into two categories,
