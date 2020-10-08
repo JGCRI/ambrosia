@@ -4,7 +4,9 @@
 \name{plohi}
 \alias{plohi}
 \title{Recommended parameter limits for the model.}
-\format{An object of class \code{matrix} with 2 rows and 9 columns.}
+\format{
+An object of class \code{matrix} with 2 rows and 9 columns.
+}
 \usage{
 plohi
 }

@@ -4,8 +4,7 @@
 \alias{mc.setup}
 \title{Create a posterior log-pdf function for monte carlo sampling the model parameters.}
 \usage{
-mc.setup(obsdata_filename, logprior = NULL, logfile = NULL,
-  chunksize = 10)
+mc.setup(obsdata_filename, logprior = NULL, logfile = NULL, chunksize = 10)
 }
 \arguments{
 \item{obsdata_filename}{File name for the oberved data.}
