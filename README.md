@@ -1,27 +1,21 @@
-# gcamfd: Calculate food demand using the Edmonds et. al. model
-[![Travis build status](https://travis-ci.org/JGCRI/ambrosia.svg?branch=master)](https://travis-ci.org/JGCRI/ambrosia)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/JGCRI/food-demand?branch=master&svg=true)](https://ci.appveyor.com/project/JGCRI/food-demand) 
+![R-CMD](https://github.com/JGCRI/ambrosia/workflows/R-CMD/badge.svg) ![build](https://github.com/JGCRI/ambrosia/workflows/build/badge.svg) [![codecov](https://codecov.io/gh/JGCRI/ambrosia/branch/master/graph/badge.svg)](https://codecov.io/gh/JGCRI/ambrosia)
 
-The Edmonds model divides food consumption into two categories,
-_staples_, which represent basic foodstuffs, and _nonstaples_,
-which represent higher-quality foods.  Demand for staples increases at low
-income, but eventually peaks and begins to decline with higher income.
-Demand for nonstaples increases with income over all income ranges; however,
-total (staple + nonstaple) demand saturates asymptotically at high income.
 
-## Usage
+# `ambrosia`: An R package for calculating and analyzing food demand and in accordance with the Edmonds et al. food demand model
 
-To run the interactive version of the model, run the `runapp`
-function.  This will start the interactive version of the model, which you
-can use to explore different parameter settings.
+## Summary
+The `ambrosia` R package was developed to calculate food demand for staples and non-staple commodities that is responsive to changing levels of incomes and prices. Ambrosia implements the framework to quantify food demand as established by Edmonds et al. (2017) and allows the user to explore and estimate different variables related to the food demand system. Currently `ambrosia` provides three main functions:
+1. calculation of food demand for any given set of parameters including income levels and prices,
+2. estimation of parameters within a given a dataset.  Note:  `ambrosia` is used to calculate parameters for the food demand model implemented in the Global Change Analysis Model (GCAM; Calvin et al. 2019)
+3. exploration and preparation of raw data before starting a parameter estimation.
 
-The API function for running the model is `food.dmnd`.  This
-function allows you to pass in a parameters structure along with vectors of
-prices and GDP and to get back a table of quantities and budget fractions.
 
-## Example
+## Getting Started with `ambrosia`
+...
 
-```R
+
+## Examples
+```r
 ps <- 0.2
 pn <- 0.5
 y <- seq(0.2, 10.0, 0.2)
@@ -32,3 +26,6 @@ Note that the  are parameters available in the folder parameter_data/parameter_d
 
 The parameters can be re-calculated using the Calcute_parameters.R script. 
 The input data can be recalculated using the script Process_Demand_Data.R
+
+## Contributing to `ambrosia`
+We welcome contributions to `ambrosia` from the development community. Please contact us if you want to collaborate! The `ambrosia` GitHub repository is accessible here: [GitHub Repository](https://github.com/JGCRI/ambrosia)

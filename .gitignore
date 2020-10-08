@@ -1,12 +1,11 @@
-
+# pkgdown docs
+docs/
 
 #Emacs autosave files
 *~
 
 # Directory for output, test data, etc.
 runs
-# plots 
-*.png
 
 # processed documents
 *.docx

@@ -1,16 +1,13 @@
 Package: ambrosia
-Title: Food demand model for the GCAM human-earth systems model
-Version: 1.1.5
+Title: An R package for calculating and analyzing food demand and in accordance with the Edmonds et al food demand model
+Version: 1.3.0
 Authors@R: c(person(given='Robert', family='Link', email='robert.link@pnnl.gov', role=c('aut','cre','lyr','ard')),
     person(given='Stephanie', family='Waldhoff', email='stephanie.waldhoff@pnnl.gov', role=c('aut')),
     person(given='Ryna', family='Cui', email='yiyun.cui@pnnl.gov', role=c('aut')),
     person(given='Jae', family='Edmonds', email='jae@pnnl.gov', role=c('aut')))
-Description: The gcamfd package provides a stand-alone implementation of the food demand
-    model used in the GCAM human-earth systems model.  In addition to allowing one to run
-    food demand scenarios without setting up a full GCAM run, this code is used to calibrate
-    the parameters used for food demand in GCAM.
-Depends: R (>= 3.3.0)
-License: file LICENSE
+Description: The `ambrosia` R package was developed to calculate food demand for staples and non-staple commodities that is responsive to changing levels of incomes and prices. Ambrosia implements the framework to quantify food demand as established by Edmonds et al. (2017) and allows the user to explore and estimate different variables related to the food demand system.
+Depends: R (>= 3.5.0)
+License: BSD2
 Encoding: UTF-8
 LazyData: true
 Imports: 
@@ -19,8 +16,12 @@ Imports:
     reshape2 (>= 1.4.3),
     ggplot2 (>= 2.2.1),
     cluster (>= 2.0),
-    tidyr  (>= 0.7.1)
-RoxygenNote: 7.1.0
+    tidyr  (>= 0.7.1),
+    rmarkdown
+RoxygenNote: 7.1.1
 Suggests: 
     shiny (>= 1.0),
-    testthat
+    testthat,
+    knitr,
+    pkgdown
+VignetteBuilder: knitr
