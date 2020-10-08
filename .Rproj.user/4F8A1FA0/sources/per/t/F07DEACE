@@ -1,0 +1,24 @@
+{
+    "id": "F07DEACE",
+    "path": "~/repos/github/ambrosia/.github/workflows/test_coverage.yml",
+    "project_path": ".github/workflows/test_coverage.yml",
+    "type": "yaml",
+    "hash": "2712200414",
+    "contents": "",
+    "dirty": false,
+    "created": 1602191367396.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "cursorPosition": "13,0",
+        "scrollLine": "5"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1602186860,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1602186860,
+    "read_only": false,
+    "read_only_alternatives": []
+}

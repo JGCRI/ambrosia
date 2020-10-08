@@ -1,0 +1,24 @@
+{
+    "id": "50325626",
+    "path": "~/repos/github/ambrosia/.github/workflows/rcmd.yml",
+    "project_path": ".github/workflows/rcmd.yml",
+    "type": "yaml",
+    "hash": "1212475281",
+    "contents": "",
+    "dirty": false,
+    "created": 1602190973964.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "cursorPosition": "13,0",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1602186860,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1602186860,
+    "read_only": false,
+    "read_only_alternatives": []
+}
