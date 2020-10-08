@@ -33,13 +33,14 @@
 #' @param original_param_vector Original parameter vector to be used as the starting point for the optimization.These parameters are taken from Edmonds et al 2017
 #' @param optim_method The optimization method to be used for maximization of the log likelihood. The default is set to BFGS
 #' @param datadir Directory to the data calculated by process_food_demand_data()
+#' @param trace_results Setting this to 1 will trace the log-likelihood values of optim() for the user. This is turned off by default and is set to -1.
 #' @author KBN 2020
 #' @export
 calculate_ambrosia_params <- function(
                                      optim_method = "BFGS",
-                                     data = df,
                                      original_param_vector= c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20),
-                                     datadir= "outputs/Processed_Data_for_MC.csv"){
+                                     datadir= "outputs/Processed_Data_for_MC.csv",
+                                     trace_results= -1){
 
     #Step 1: Read in raw data
 
@@ -59,11 +60,11 @@ calculate_ambrosia_params <- function(
     #ifelse in this function at some point.
 
     print("Fitting parameters by maximizing log likelihood")
-    params_vector<-optim(original_param_vector, func_MC, control=list(fnscale=-1),method = optim_method)
+    params_vector<-optim(original_param_vector, func_MC, control=list(fnscale=-1,trace=-1),method = optim_method)
 
     #If the optimizer does not work, or runs out of iterations, try again. It works in the first try.
     if(params_vector$convergence != 0){
-        params_vector<-optim(x0, func_MC, control=list(fnscale=-1),method = "BFGS")
+        params_vector<-optim(x0, func_MC, control=list(fnscale=-1,trace=-1),method = "BFGS")
 
     }
 
@@ -77,7 +78,7 @@ calculate_ambrosia_params <- function(
     parameter_names<-c('A_s', 'A_n', 'xi_ss', 'xi_cross', 'xi_nn', 'nu1_n',
                        'lambda_s', 'k_s', 'Pm','psscl','pnscl')
     parameter_data<-data.frame(parameter_names,params_vector$par)
-    write.csv(parameter_data,"parameter_data/parameter_data.csv",row.names = FALSE)
+    write.csv(parameter_data,"outputs/parameter_data.csv",row.names = FALSE)
 
     return(params_vector$par)
 
@@ -118,16 +119,19 @@ create_dataset_for_parameter_fit <- function(min_price_pd = 20,
                                              data=NULL){
     `%notin%` <- Negate(`%in%`)
     data<-as.data.frame(data)
-    req_colnames<-c("s_cal_pcap_day_thous","ns_cal_pcap_day_thous","gdp_pcap_thous","s_usd_p1000cal","ns_usd_p1000cal")
+    req_colnames<-c("s_cal_pcap_day_thous","ns_cal_pcap_day_thous","gdp_pcap_thous","s_usd_p1000cal","ns_usd_p1000cal","pop_thous")
 
     #Always check that we have the required columns
     for (i in req_colnames){
     if(i %notin% c(colnames(data))){
 
-        stop("Error: Required columns s_cal_pcap_day_thous, ns_cal_pcap_day_thous, gdp_pcap_thous,s_usd_p1000cal,ns_usd_p1000cal are not in the dataset.")
+        stop("Error: Required columns s_cal_pcap_day_thous, ns_cal_pcap_day_thous, gdp_pcap_thous,s_usd_p1000cal,ns_usd_p1000cal,pop_thous are not in the dataset.")
 
     }}
 
+    if(any(data$gdp_pcap_thous<0.1)){
+        stop("Income levels for some observations are below 0.1 USD. This will cause a crash on the final food demand calculations.")
+    }
 
     #Currently adding a status column to be transparent about the observations that we are including and excluding.
     Raw_Data<-data %>%
@@ -137,7 +141,8 @@ create_dataset_for_parameter_fit <- function(min_price_pd = 20,
         filter(ns_usd_p1000cal< min_price_pd) %>%
         #Minimum calories = 1700
         filter(Tot_cal>min_cal_fd/1000) %>%
-        rename(gdp_pcap_thous2005usd= gdp_pcap_thous)
+        rename(gdp_pcap_thous2005usd= gdp_pcap_thous) %>%
+        mutate(gdp_pcap_thous2005usd=gdp_pcap_thous2005usd/1000)
 
 
     #Calculate population weights

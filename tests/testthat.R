@@ -1,4 +1,7 @@
 library(testthat)
-library(gcamfd)
+library(ambrosia)
+library(dplyr)
+library(tidyr)
 
-test_check("gcamfd")
+
+test_check("ambrosia")

@@ -4,9 +4,10 @@
 \alias{calculate_ambrosia_params}
 \title{Calculate the 11 parameters for ambrosia using data calculated by process_food_demand_data() by maximizing log likelihood}
 \usage{
-calculate_ambrosia_params(optim_method = "BFGS", data = df,
+calculate_ambrosia_params(optim_method = "BFGS",
   original_param_vector = c(1.28, 1.14, -0.19, 0.21, -0.33, 0.5, 0.1, 16,
-  5.06, 100, 20), datadir = "outputs/Processed_Data_for_MC.csv")
+  5.06, 100, 20), datadir = "outputs/Processed_Data_for_MC.csv",
+  trace_results = -1)
 }
 \arguments{
 \item{optim_method}{The optimization method to be used for maximization of the log likelihood. The default is set to BFGS}
@@ -14,6 +15,8 @@ calculate_ambrosia_params(optim_method = "BFGS", data = df,
 \item{original_param_vector}{Original parameter vector to be used as the starting point for the optimization.These parameters are taken from Edmonds et al 2017}
 
 \item{datadir}{Directory to the data calculated by process_food_demand_data()}
+
+\item{trace_results}{Setting this to 1 will trace the log-likelihood values of optim() for the user. This is turned off by default and is set to -1.}
 
 \item{min_price_fd}{Highest possible price of staples and non-staples}
 
