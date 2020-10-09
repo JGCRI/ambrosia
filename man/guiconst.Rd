@@ -10,19 +10,7 @@
 \alias{etastep}
 \alias{spacer}
 \title{Constants used in the GUI}
-\format{
-An object of class \code{numeric} of length 3.
-
-An object of class \code{numeric} of length 1.
-
-An object of class \code{numeric} of length 1.
-
-An object of class \code{numeric} of length 1.
-
-An object of class \code{numeric} of length 1.
-
-An object of class \code{html} (inherits from \code{character}) of length 1.
-}
+\format{An object of class \code{numeric} of length 3.}
 \usage{
 xidefault
 

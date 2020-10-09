@@ -4,14 +4,8 @@
 \alias{mc.make.byyear.plot}
 \title{Make the by-year plot for a set of monte carlo results by sampling the distribution}
 \usage{
-mc.make.byyear.plot(
-  mc.data,
-  obsdata,
-  bias.correction = NULL,
-  region = NULL,
-  nsamp = 30,
-  pltrgn = NULL
-)
+mc.make.byyear.plot(mc.data, obsdata, bias.correction = NULL,
+  region = NULL, nsamp = 30, pltrgn = NULL)
 }
 \arguments{
 \item{mc.data}{Monte Carlo results data}

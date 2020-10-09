@@ -4,13 +4,10 @@
 \alias{calculate_ambrosia_params}
 \title{Calculate the 11 parameters for ambrosia using data calculated by process_food_demand_data() by maximizing log likelihood}
 \usage{
-calculate_ambrosia_params(
-  optim_method = "BFGS",
-  original_param_vector = c(1.28, 1.14, -0.19, 0.21, -0.33, 0.5, 0.1, 16, 5.06, 100,
-    20),
-  datadir = "outputs/Processed_Data_for_MC.csv",
-  trace_results = -1
-)
+calculate_ambrosia_params(optim_method = "BFGS",
+  original_param_vector = c(1.28, 1.14, -0.19, 0.21, -0.33, 0.5, 0.1, 16,
+  5.06, 100, 20), datadir = "outputs/Processed_Data_for_MC.csv",
+  outdir = "tests/testthat/test_outputs/", max_iterations = 100)
 }
 \arguments{
 \item{optim_method}{The optimization method to be used for maximization of the log likelihood. The default is set to BFGS}
@@ -19,7 +16,9 @@ calculate_ambrosia_params(
 
 \item{datadir}{Directory to the data calculated by process_food_demand_data()}
 
-\item{trace_results}{Setting this to 1 will trace the log-likelihood values of optim() for the user. This is turned off by default and is set to -1.}
+\item{outdir}{Directory to store output csv. Default is set to test_output folder.}
+
+\item{max_iterations}{A maximum number of iterations that can be passed to optim. This is largely meant for testing purposes.Default is set to 100 for BFGS.}
 
 \item{min_price_fd}{Highest possible price of staples and non-staples}
 

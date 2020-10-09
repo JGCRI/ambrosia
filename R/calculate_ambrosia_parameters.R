@@ -33,14 +33,16 @@
 #' @param original_param_vector Original parameter vector to be used as the starting point for the optimization.These parameters are taken from Edmonds et al 2017
 #' @param optim_method The optimization method to be used for maximization of the log likelihood. The default is set to BFGS
 #' @param datadir Directory to the data calculated by process_food_demand_data()
-#' @param trace_results Setting this to 1 will trace the log-likelihood values of optim() for the user. This is turned off by default and is set to -1.
+#' @param outdir Directory to store output csv. Default is set to test_output folder.
+#' @param max_iterations A maximum number of iterations that can be passed to optim. This is largely meant for testing purposes.Default is set to 100 for BFGS.
 #' @author KBN 2020
 #' @export
 calculate_ambrosia_params <- function(
                                      optim_method = "BFGS",
                                      original_param_vector= c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20),
                                      datadir= "outputs/Processed_Data_for_MC.csv",
-                                     trace_results= -1){
+                                     outdir="tests/testthat/test_outputs/",
+                                     max_iterations= 100){
 
     #Step 1: Read in raw data
 
@@ -55,16 +57,13 @@ calculate_ambrosia_params <- function(
 
 
     #Now calculate new parameters
-    # Note that the method used here as BFGS since it solves better than the Nelder-Mead simplex. Don't
-    #let the errors throw you. rpl mentioned that this might happen, its not an error,Only a warning. I need to fix the
-    #ifelse in this function at some point.
 
     print("Fitting parameters by maximizing log likelihood")
-    params_vector<-optim(original_param_vector, func_MC, control=list(fnscale=-1,trace=-1),method = optim_method)
+    params_vector<-optim(original_param_vector, func_MC, control=list(fnscale=-1,maxit=max_iterations),method = optim_method)
 
     #If the optimizer does not work, or runs out of iterations, try again. It works in the first try.
     if(params_vector$convergence != 0){
-        params_vector<-optim(x0, func_MC, control=list(fnscale=-1,trace=-1),method = "BFGS")
+        params_vector<-optim(c(params_vector$par), func_MC, control=list(fnscale=-1,maxit=max_iterations),method = "BFGS")
 
     }
 
@@ -78,7 +77,7 @@ calculate_ambrosia_params <- function(
     parameter_names<-c('A_s', 'A_n', 'xi_ss', 'xi_cross', 'xi_nn', 'nu1_n',
                        'lambda_s', 'k_s', 'Pm','psscl','pnscl')
     parameter_data<-data.frame(parameter_names,params_vector$par)
-    write.csv(parameter_data,"outputs/parameter_data.csv",row.names = FALSE)
+    write.csv(parameter_data,paste0(outdir,"parameter_data.csv"),row.names = FALSE)
 
     return(params_vector$par)
 
@@ -110,13 +109,15 @@ calculate_ambrosia_params <- function(
 #'
 #' ns_usd_p1000cal (Price of 1000 calories for non-staples per person per day)
 #'
+#' @param outdir Directory to store output csv. Default is set to test_output folder.
 #' @author KBN 2020
 #' @export
 create_dataset_for_parameter_fit <- function(min_price_pd = 20,
                                              min_cal_fd = 1000,
                                              min_clusters = 300,
                                              lower_limit_sigma = 0.01,
-                                             data=NULL){
+                                             data=NULL,
+                                             outdir="tests/testthat/test_outputs/"){
     `%notin%` <- Negate(`%in%`)
     data<-as.data.frame(data)
     req_colnames<-c("s_cal_pcap_day_thous","ns_cal_pcap_day_thous","gdp_pcap_thous","s_usd_p1000cal","ns_usd_p1000cal","pop_thous")
@@ -165,7 +166,7 @@ create_dataset_for_parameter_fit <- function(min_price_pd = 20,
 
 
     #Write to a csv. We need this for calculating the likelihood function.
-    write.csv(Processed_Data_for_MC,"outputs/Processed_Data_for_MC.csv",row.names = FALSE)
+    write.csv(Processed_Data_for_MC,paste0(outdir,"Processed_Data_for_MC.csv"),row.names = FALSE)
 
     print("Completed processing raw data and created clusters. Check output folder for Processed_Data_for_MC.csv")
     return(Processed_Data_for_MC)

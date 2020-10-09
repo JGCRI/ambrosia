@@ -11,21 +11,7 @@
 \alias{x1}
 \alias{x0}
 \title{Sample values for the demand model.}
-\format{
-An object of class \code{numeric} of length 20.
-
-An object of class \code{numeric} of length 20.
-
-An object of class \code{numeric} of length 20.
-
-An object of class \code{numeric} of length 20.
-
-An object of class \code{list} of length 4.
-
-An object of class \code{numeric} of length 9.
-
-An object of class \code{numeric} of length 9.
-}
+\format{An object of class \code{numeric} of length 20.}
 \usage{
 y.vals
 

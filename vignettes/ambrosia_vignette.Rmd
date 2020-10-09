@@ -64,9 +64,9 @@ g<-ggplot()+
     geom_line(data=Food_Demand,aes(x=Y,y=Qs,color="Staple Demand"))+
     geom_line(data=Food_Demand,aes(x=Y,y=Qn,color="Non Staple Demand"))+
     xlab("GDP per capita in thousand USD" )+
-    ylab("Thousand calories")
-    # ggtitle("Calculated values of food demand using model parameters")+
-    # labs(subtitle="Prices are set to 0.1 for Staples and 0.2 for Non-staples. This is the same as fig 1 from Edmonds et al")
+    ylab("Thousand calories")+
+    ggtitle("Calculated values of food demand using model parameters")+
+    labs(subtitle="Prices are set to 0.1 for Staples and 0.2 for Non-staples. This is the same as fig 1 from Edmonds et al")
 ```
 ![](example_3.png){width=50% height=50%} 
 
@@ -142,8 +142,8 @@ temp_data <- create_dataset_for_parameter_fit(data=Sample_Data,min_clusters = 30
 ```r
 g<-ggplot()+
    geom_histogram(data=temp_data,aes(x=sig2Qn),bins = 40)+
-   xlab("Observational error within clusters for non-staples")
-   # ggtitle("Distribution of observational error for non-staples for selected sample dataset")
+   xlab("Observational error within clusters for non-staples")+
+   ggtitle("Distribution of observational error for non-staples for selected sample dataset")
 ```
 ![](example_7.png){width=50% height=50%} 
 
@@ -153,7 +153,7 @@ g<-ggplot()+
 g<-ggplot()+
    geom_histogram(data=temp_data,aes(x=sig2Qs),bins = 40)+
    xlab("Observational error within clusters for staples")
-   #ggtitle("Distribution of observational error for staples for selected sample dataset")
+   ggtitle("Distribution of observational error for staples for selected sample dataset")
 ```
 ![](example_8.png){width=50% height=50%} 
 
