@@ -13,21 +13,38 @@ The `ambrosia` R package was developed to calculate food demand for staples and 
 
 
 ## Getting Started with `ambrosia`
-...
 
+`ambrosia` can be directly installed from its GitHub repository using the R `devtools` package. From an R prompt, run the command,
+
+```r
+devtools::install_github('JGCRI/ambrosia')
+
+```
+
+...
 
 ## Examples
 ```r
-ps <- 0.2
-pn <- 0.5
-y <- seq(0.2, 10.0, 0.2)
-rslt <- food.dmnd(ps, pn, y, samp.params)
+
+# A list of examples describing the different features in `ambrosia`are described in the ambrosia_vignette.rmd in the vignettes folder. The example below shows how a user can get an estimate of demand using some sample parameters.  
+
+
+#Get a sample data set
+Test_Data <- data.frame(Y=seq(0.1,30, by=0.1))
+
+#Add sample values of Ps and Pn
+Test_Data %>% mutate(Ps=0.1,Pn=0.2)->Test_Data
+
+#Add some sample parameters
+sample_parameters <- c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20)
+
+#Now calculate food demand
+Food_Demand<-food.dmnd(Test_Data$Ps,Test_Data$Pn,Test_Data$Y,params=vec2param(sample_parameters))
 
 ```
-Note that the  are parameters available in the folder parameter_data/parameter_data.csv
+The code from the example can be used to visualize the food demand for staples and non-staples as follows,
 
-The parameters can be re-calculated using the Calcute_parameters.R script. 
-The input data can be recalculated using the script Process_Demand_Data.R
+![A simple plot of food demand for staples and non-staples for changing incomes and constant prices.](https://github.com/JGCRI/ambrosia/vignettes/example_3.png)
 
 ## Contributing to `ambrosia`
 We welcome contributions to `ambrosia` from the development community. Please contact us if you want to collaborate! The `ambrosia` GitHub repository is accessible here: [GitHub Repository](https://github.com/JGCRI/ambrosia)

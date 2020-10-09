@@ -21,10 +21,12 @@ Try executing this chunk by clicking the *Run* button within the chunk or by pla
 ```{r}
 #load libraries
 library(ambrosia)
-library(dplyr)
-library(ggplot2)
-library(knitr)
+suppressMessages(library(dplyr))
+suppressMessages(library(ggplot2))
+suppressMessages(library(knitr))
 ```
+# Part 1: Calculating food demand, exploring demand side variables for a given set of parameters 
+
 
 ## Example 1: Get parameters
 ```{r}
@@ -43,15 +45,17 @@ kable(parameter_data ,col.names = c("parameter_name","value"),format = "pandoc")
 
 ## Example 2: Calculate food demand
 ```{r}
+#Get a sample data set
+Test_Data <- data.frame(Y=seq(0.1,30, by=0.1))
 
-Test_Data<-data.frame(Y=seq(0.1,30, by=0.1))
-#Add sample values of Ps and Pn. These are in accordance with Robert's original samp,e
+#Add sample values of Ps and Pn
 Test_Data %>% mutate(Ps=0.1,Pn=0.2)->Test_Data
 
+#Add some sample parameters
+sample_parameters <- c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20)
 
-
-
-Food_Demand<-food.dmnd(Test_Data$Ps,Test_Data$Pn,Test_Data$Y,params=tmp_param)
+#Calculate food demand
+Food_Demand<-food.dmnd(Test_Data$Ps,Test_Data$Pn,Test_Data$Y,params=vec2param(sample_parameters))
 ```
 
 ## Example 3: Visualize food demand
@@ -92,8 +96,10 @@ g<-ggplot()+
 ```
 ![](example_4.png){width=50% height=50%} 
 
-## Calculate income elasticities
+## Example 4:Calculate income elasticities
 ```r
+
+#Note that setting the second argument to "TRUE" in the functions below would return the Y term (Y^elas) as opposed to the elasticity.
 Food_Demand$eta.s <- tmp_param$yfunc[[1]](Y=Food_Demand$Y,FALSE)
 Food_Demand$eta.n <- tmp_param$yfunc[[2]](Y=Food_Demand$Y,FALSE)
 
@@ -109,8 +115,12 @@ g<-ggplot()+
 ```
 ![](example_5.png){width=50% height=50%} 
 
-## Calculate price elasticities
+## Example 5:Calculate price elasticities
 ```r
+
+#calc1eps returns a matrix of elasticities where the matrices are elasticities for staples(matrix 1), cross price elasticities(matrix 2,3),non_staple elasticities(matrix 4))
+
+
 Food_Demand$staple_price_elasticity <- calc1eps(Food_Demand$alpha.s,Food_Demand$alpha.n,Food_Demand$eta.s,Food_Demand$eta.n,tmp_param$xi)[1:300]
 Food_Demand$eta.n <- tmp_param$yfunc[[2]](Y=Food_Demand$Y,FALSE)
 
@@ -130,7 +140,10 @@ g<-ggplot()+
 ![](example_6.png){width=50% height=50%} 
 
 
-## Now let's calculate some model parameters
+# Part 2: Calculating model parameters from raw data
+
+## Example 6: Get a dataset for parameter fitting from a sample training dataset
+
 ### Warning: This might take a long time to run since we are using the entire training dataset
 ```r
 Sample_Data <- read.csv("Training_Data.csv") 
@@ -138,7 +151,7 @@ Sample_Data <- read.csv("Training_Data.csv")
 temp_data <- create_dataset_for_parameter_fit(data=Sample_Data,min_clusters = 300,min_price_pd = 20,min_cal_fd = 1700) 
 ```
 
-## Analyze distribution of observational error for non-staples
+## Example 7: Analyze distribution of observational error for non-staples
 ```r
 g<-ggplot()+
    geom_histogram(data=temp_data,aes(x=sig2Qn),bins = 40)+
@@ -147,8 +160,7 @@ g<-ggplot()+
 ```
 ![](example_7.png){width=50% height=50%} 
 
-## Analyze distribution of observational error for staples
-
+## Example 8:Analyze distribution of observational error for staples
 ```r
 g<-ggplot()+
    geom_histogram(data=temp_data,aes(x=sig2Qs),bins = 40)+
@@ -156,4 +168,19 @@ g<-ggplot()+
    ggtitle("Distribution of observational error for staples for selected sample dataset")
 ```
 ![](example_8.png){width=50% height=50%} 
+
+## Example 9:Calculate actual parameters
+
+### Warning: Calculating parameters takes a long time (around 25 minutes)
+
+```r
+new_parameters <- calculate_ambrosia_params(datadir="outputs/Processed_Data_for_MC.csv",
+                                            optim_method = "BFGS",
+                                            original_param_vector= c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20))
+```
+
+
+
+
+
 
