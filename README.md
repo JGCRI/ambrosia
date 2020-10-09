@@ -44,7 +44,7 @@ Food_Demand<-food.dmnd(Test_Data$Ps,Test_Data$Pn,Test_Data$Y,params=vec2param(sa
 ```
 The code from the example can be used to visualize the food demand for staples and non-staples as follows,
 
-![A simple plot of food demand for staples and non-staples for changing incomes and constant prices.](https://github.com/JGCRI/ambrosia/vignettes/example_3.png)
+![A simple plot of food demand for staples and non-staples for changing incomes and constant prices.](vignettes/example_3.png)
 
 ## Contributing to `ambrosia`
 We welcome contributions to `ambrosia` from the development community. Please contact us if you want to collaborate! The `ambrosia` GitHub repository is accessible here: [GitHub Repository](https://github.com/JGCRI/ambrosia)
