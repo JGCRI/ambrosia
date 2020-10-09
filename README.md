@@ -1,4 +1,6 @@
 ![R-CMD](https://github.com/JGCRI/ambrosia/workflows/R-CMD/badge.svg) ![build](https://github.com/JGCRI/ambrosia/workflows/build/badge.svg) [![codecov](https://codecov.io/gh/JGCRI/ambrosia/branch/master/graph/badge.svg)](https://codecov.io/gh/JGCRI/ambrosia)
+[![DOI](https://zenodo.org/badge/69679416.svg)](https://zenodo.org/badge/latestdoi/69679416)
+
 
 
 # `ambrosia`: An R package for calculating and analyzing food demand and in accordance with the Edmonds et al. food demand model
