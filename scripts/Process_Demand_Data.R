@@ -224,70 +224,70 @@ if (diagnostics== TRUE){
 # Shares of exports, imports to calculate world prices (export-weighted average of domestic producer prices) and "consumer" prices (consumption-weighted average of domestic  and  world prices)
 # Calculate shares of global exports (Exp_iso / Sum(Exp_iso)) to calculate world price (weighted avg of domestic producer prices)
 # Calculate shares of domestic and imported consumption (import_iso / consumption_iso) to calculate price in each country
- d.trade = bind_rows(filter(d.cons.archive, Element %in% c("Production", "Export Quantity", "Import Quantity", "Domestic supply quantity")),
-                     filter(d.cons.new, Element %in% c("Production", "Export Quantity", "Import Quantity", "Domestic supply quantity"))) %>%
-   #Some simple data cleaning.
-   select(-Area.Code, -Item.Code, -Element.Code) %>%
-   gather(Year, thous_t, -Area, -Item, -Unit, -Element) %>%
-   rename(ctry_name = Area, item = Item, unit = Unit, variable = Element) %>%
-   distinct() %>%
-   filter(!is.na(thous_t)) %>%
-   mutate(Year = gsub("Y","",Year)) %>%
-    mutate(year = as.numeric(Year),
-          thous_t = as.numeric(thous_t)) %>%
-   left_join(d.iso, by = "ctry_name") %>%
-   filter(!is.na(iso)) %>%
-   select(iso, variable, item, year, thous_t) %>%
-   #Prices are unreliable for these items. Drop them.
-   filter(item %notin% c("Olives (including preserved)","Olive Oil")) %>%
-   # Keep only the same commodities as used for calculating consumption
-   left_join(d.cal, by = "item") %>%
-   filter(!is.na(Mcal_t), Mcal_t != 0) %>%
-   select(-Mcal_t) %>%
-   unique() %>%
-   mutate(variable = ifelse(variable == "Production", "prod", variable),
-          variable = ifelse(variable == "Export Quantity", "exp", variable),
-          variable = ifelse(variable == "Import Quantity", "imp", variable),
-          variable = ifelse(variable == "Consumption", "cons", variable),
-          variable = ifelse(variable == "Domestic supply quantity", "cons", variable)) %>%
-   arrange(iso, year, variable, item) %>%
-   spread(variable, thous_t) %>%
-   #We need to make sure all holes in the balance sheets are filled. Hence filling NA's with 0.
-   mutate(cons= ifelse(is.na(cons),0,cons)) %>%
-   mutate(exp= ifelse(is.na(exp),0,exp)) %>%
-   mutate(imp= ifelse(is.na(imp),0,imp)) %>%
-   mutate(prod= ifelse(is.na(prod),0,prod)) %>%
-   #Ensure that there are no negative values anywhere
-   mutate(cons= ifelse(cons < 0,0,cons)) %>%
-   mutate(exp= ifelse(exp < 0,0,exp)) %>%
-   mutate(imp= ifelse(imp < 0,0,imp)) %>%
-   mutate(prod= ifelse(prod < 0 ,0,prod)) %>%
-   mutate(imp_share = (imp /cons)) %>%
-   #Make sure that imports shares are capped at 100%
-   mutate(imp_share= if_else(imp_share>1, 1,imp_share) ) %>%
-   mutate(dom_share= (prod-exp)/cons) %>%
-   #Make sure that domestic shares don't go negative and don't go higher than 1
-   mutate(dom_share= ifelse(dom_share< 0, 0, dom_share)) %>%
-   mutate(dom_share= ifelse(dom_share> 1, 1, dom_share)) %>%
-   #left_join_items here to bring in commodity names to match commodity names in producer prices.
-   left_join(d.commod.map %>% rename(item=cons_commod) %>% select(-GCAM_commodity),by=c("item")) %>%
-   group_by(item,year) %>%
-   mutate(sum_exp= sum(exp)) %>%
-   ungroup() %>%
-   #Calculate export share for each commodity in each year
-   mutate(exp_share = exp/sum_exp) %>%
-   group_by(iso, item, year) %>%
-   #Compute total consumption within country for each commodity
-   mutate(tot_cons=sum(cons)) %>%
-   ungroup()
+d.trade = bind_rows(filter(d.cons.archive, Element %in% c("Production", "Export Quantity", "Import Quantity", "Domestic supply quantity")),
+                    filter(d.cons.new, Element %in% c("Production", "Export Quantity", "Import Quantity", "Domestic supply quantity"))) %>%
+  #Some simple data cleaning.
+  select(-Area.Code, -Item.Code, -Element.Code) %>%
+  gather(Year, thous_t, -Area, -Item, -Unit, -Element) %>%
+  rename(ctry_name = Area, item = Item, unit = Unit, variable = Element) %>%
+  distinct() %>%
+  filter(!is.na(thous_t)) %>%
+  mutate(Year = gsub("Y","",Year)) %>%
+  mutate(year = as.numeric(Year),
+         thous_t = as.numeric(thous_t)) %>%
+  left_join(d.iso, by = "ctry_name") %>%
+  filter(!is.na(iso)) %>%
+  select(iso, variable, item, year, thous_t) %>%
+  #Prices are unreliable for these items. Drop them.
+  filter(item %notin% c("Olives (including preserved)","Olive Oil")) %>%
+  # Keep only the same commodities as used for calculating consumption
+  left_join(d.cal, by = "item") %>%
+  filter(!is.na(Mcal_t), Mcal_t != 0) %>%
+  select(-Mcal_t) %>%
+  unique() %>%
+  mutate(variable = ifelse(variable == "Production", "prod", variable),
+         variable = ifelse(variable == "Export Quantity", "exp", variable),
+         variable = ifelse(variable == "Import Quantity", "imp", variable),
+         variable = ifelse(variable == "Consumption", "cons", variable),
+         variable = ifelse(variable == "Domestic supply quantity", "cons", variable)) %>%
+  arrange(iso, year, variable, item) %>%
+  spread(variable, thous_t) %>%
+  #We need to make sure all holes in the balance sheets are filled. Hence filling NA's with 0.
+  mutate(cons= ifelse(is.na(cons),0,cons)) %>%
+  mutate(exp= ifelse(is.na(exp),0,exp)) %>%
+  mutate(imp= ifelse(is.na(imp),0,imp)) %>%
+  mutate(prod= ifelse(is.na(prod),0,prod)) %>%
+  #Ensure that there are no negative values anywhere
+  mutate(cons= ifelse(cons < 0,0,cons)) %>%
+  mutate(exp= ifelse(exp < 0,0,exp)) %>%
+  mutate(imp= ifelse(imp < 0,0,imp)) %>%
+  mutate(prod= ifelse(prod < 0 ,0,prod)) %>%
+  mutate(imp_share = (imp /cons)) %>%
+  #Make sure that imports shares are capped at 100%
+  mutate(imp_share= if_else(imp_share>1, 1,imp_share) ) %>%
+  mutate(dom_share= (prod-exp)/cons) %>%
+  #Make sure that domestic shares don't go negative and don't go higher than 1
+  mutate(dom_share= ifelse(dom_share< 0, 0, dom_share)) %>%
+  mutate(dom_share= ifelse(dom_share> 1, 1, dom_share)) %>%
+  #left_join_items here to bring in commodity names to match commodity names in producer prices.
+  left_join(d.commod.map %>% rename(item=cons_commod) %>% select(-GCAM_commodity),by=c("item")) %>%
+  group_by(item,year) %>%
+  mutate(sum_exp= sum(exp)) %>%
+  ungroup() %>%
+  #Calculate export share for each commodity in each year
+  mutate(exp_share = exp/sum_exp) %>%
+  group_by(iso, item, year) %>%
+  #Compute total consumption within country for each commodity
+  mutate(tot_cons=sum(cons)) %>%
+  ungroup()
 
 
-  #Check the number of commoditties here. Breaking code into separate chunk for debugging
-  print (paste0("The number of crops in trade dataset are- ", length(c(unique(d.trade$pp_commod)))))
+#Check the number of commoditties here. Breaking code into separate chunk for debugging
+print (paste0("The number of crops in trade dataset are- ", length(c(unique(d.trade$pp_commod)))))
 
-   d.trade %>%
-   #Join in producer prices
-   left_join(d.pp,by=c("pp_commod","iso","year")) %>%
+d.trade %>%
+  #Join in producer prices
+  left_join(d.pp,by=c("pp_commod","iso","year")) %>%
   #If we don't have producer prices, use a 0
   mutate(pp_2010usd_t =if_else(is.na(pp_2010usd_t),0,pp_2010usd_t)) %>%
   #Make sure we don't have NAs in dom_share, imp_share
@@ -295,21 +295,21 @@ if (diagnostics== TRUE){
   mutate(imp_share =if_else(is.na(imp_share),0,imp_share)) %>%
   na.omit() ->d.trade_temp
 
-   #This will compute median prices for commoditties
-   d.trade_temp %>%
-     filter(pp_2010usd_t !=0) %>%
-     #Get consumption codes here now.
-     rename(cons_commod= item) %>%
-     group_by(cons_commod,year) %>%
-     #adding code to get median global producer price by commod, year
-     mutate(pp_world_median = median(pp_2010usd_t)) %>%
-     ungroup() %>%
-     select(cons_commod,year,pp_world_median) %>%
-     distinct()->pp_world_median
+#This will compute median prices for commoditties
+d.trade_temp %>%
+  filter(pp_2010usd_t !=0) %>%
+  #Get consumption codes here now.
+  rename(cons_commod= item) %>%
+  group_by(cons_commod,year) %>%
+  #adding code to get median global producer price by commod, year
+  mutate(pp_world_median = median(pp_2010usd_t)) %>%
+  ungroup() %>%
+  select(cons_commod,year,pp_world_median) %>%
+  distinct()->pp_world_median
 
 
-   d.trade_temp %>%
-   #Get consumption codes here now.
+d.trade_temp %>%
+  #Get consumption codes here now.
   rename(cons_commod= item) %>%
   #Join median prices
   left_join(pp_world_median, by= c("cons_commod","year")) %>%
@@ -320,92 +320,92 @@ if (diagnostics== TRUE){
   #note that p_world here is the share of a country's price in the global price. Later, this becomes the global price when we aggregate.
   mutate(p_world= if_else((p_world/pp_world_median)>1.5, pp_world_median*exp_share,p_world)) %>%
   group_by(cons_commod,year) %>%
-   #Compute total world price for each commodity in each year
-   mutate(p_world=sum(p_world)) %>%
-   #If global price is higher than twice the global_median, setting to global median for 2 commoditties, namely Coffee and Oranges
-   mutate(p_world=if_else(pp_commod %in% c("Coffee, green","Oranges") & p_world> 2*pp_world_median,pp_world_median,p_world)) %>%
-   ungroup() %>%
-   #Compute consumption price using world price for imports and domestic price for domestic consumption.
-   mutate(cons_price= (((dom_share*cons)/tot_cons)*pp_2010usd_t)+(((imp_share*cons)/tot_cons)*p_world)) %>%
-    #filter for consumption prices greater than 0
-    filter(cons_price>0)->d.trade2
+  #Compute total world price for each commodity in each year
+  mutate(p_world=sum(p_world)) %>%
+  #If global price is higher than twice the global_median, setting to global median for 2 commoditties, namely Coffee and Oranges
+  mutate(p_world=if_else(pp_commod %in% c("Coffee, green","Oranges") & p_world> 2*pp_world_median,pp_world_median,p_world)) %>%
+  ungroup() %>%
+  #Compute consumption price using world price for imports and domestic price for domestic consumption.
+  mutate(cons_price= (((dom_share*cons)/tot_cons)*pp_2010usd_t)+(((imp_share*cons)/tot_cons)*p_world)) %>%
+  #filter for consumption prices greater than 0
+  filter(cons_price>0)->d.trade2
 
-   #Check global prices here
-   if (diagnostics== TRUE){
-     VizData2<-d.trade2 %>% select(pp_commod,year,p_world)  %>%  distinct()
-     ggplot(data=VizData2 ,mapping=aes(x=year,y=p_world))+
-       geom_line()+
-       ylab("Computed Global Price")+
-       ggtitle("Checking global prices in USD/tonne for non staples")+
-       facet_wrap(~pp_commod,scales="free_y")->g2
-     g2
+#Check global prices here
+if (diagnostics== TRUE){
+  VizData2<-d.trade2 %>% select(pp_commod,year,p_world)  %>%  distinct()
+  ggplot(data=VizData2 ,mapping=aes(x=year,y=p_world))+
+    geom_line()+
+    ylab("Computed Global Price")+
+    ggtitle("Checking global prices in USD/tonne for non staples")+
+    facet_wrap(~pp_commod,scales="free_y")->g2
+  g2
 
-   }
+}
 
-   #Check computed consumption prices here
-   if (diagnostics== TRUE){
-     VizData2<-d.trade2 %>% select(iso,cons_commod,year,p_world) %>% distinct() %>% filter(iso=="usa")
-     ggplot(data=VizData2 ,mapping=aes(x=year,y=p_world))+
-       geom_line()+
-       ylab("Absolute consumption in tons")+
-       ggtitle("Comparing consumption in the USA on staples and non-staples")+
-       facet_wrap(~cons_commod+iso)->g2
-     g2
+#Check computed consumption prices here
+if (diagnostics== TRUE){
+  VizData2<-d.trade2 %>% select(iso,cons_commod,year,p_world) %>% distinct() %>% filter(iso=="usa")
+  ggplot(data=VizData2 ,mapping=aes(x=year,y=p_world))+
+    geom_line()+
+    ylab("Absolute consumption in tons")+
+    ggtitle("Comparing consumption in the USA on staples and non-staples")+
+    facet_wrap(~cons_commod+iso)->g2
+  g2
 
-   }
-
-
-
-
- #Part 3: Now aggregate all variables to staples and non-staples
-
-
- #Aggregate it all into 1 dataset
- d.agg_data_s_ns <- d.trade2 %>%
-                    #Get GCAM_commoditty names
-                    left_join(d.commod.map %>% select(cons_commod,GCAM_commodity) %>% distinct(),by=c("cons_commod")) %>%
-                    na.omit() %>%
-                   #Make sure only unique values exist
-                   distinct() %>%
-                   #Classify into staples and non-staples
-                    mutate(cat= if_else(GCAM_commodity %in% Staples, "Staples","Non-Staples" )) %>%
-                    group_by(iso,year) %>%
-                    mutate(total_cons_by_iso=sum(cons)) %>%
-                    ungroup() %>%
-                    #Bring in population
-                    inner_join(d.pop, by=c("iso","year")) %>%
-                    #Bring in GDP
-                    inner_join(d.gdp.pcap, by=c("iso","year")) %>%
-                    #Bring in calories per capita
-                    inner_join(d.cons, by=c("iso","year","cons_commod")) %>%
-                    #Check for unique values after join
-                    distinct() %>%
-                    group_by(iso,year) %>%
-                    #Compute total calories by iso year
-                    mutate(tot_cal_pcap_day=sum(cal_cap_day)) %>%
-                    #Compute total consumption by iso year
-                    mutate(tot_cons_thous_t= sum(cons_thous_t)) %>%
-                    ungroup() %>%
-                    group_by(iso, cat, year ) %>%
-                    #Compute consumption price per tonne for staples and non-staples weighted by caloric consumption
-                    mutate(cons_price_by_cal= sum(cal_cap_day*cons_price)) %>%
-                    mutate(cons_price_s_ns=cons_price_by_cal/tot_cal_pcap_day) %>%
-                    #Compute share of consumption of staples, non-staples
-                    mutate(cons_thous_t_s_ns =sum(cons_thous_t)/tot_cons_thous_t) %>%
-                    #Compute total expenditure on staples and non-staples
-                    mutate(cons_exp_s_ns= sum(cons_thous_t*cons_price)) %>%
-                    #Compute expenditure per 1000 calorie by staples and non-staples
-                    mutate(usd_1000cal_s_ns=(cons_exp_s_ns/sum(cal_cap_day*pop_thous*365))*1000) %>%
-                    #Compute 1000 calories per capita per day
-                    mutate(cal_cap_day_s_ns_1000= sum(cal_cap_day)/1000) %>%
-                    #Compute shares
-                    mutate(share_s_ns = sum(cal_cap_day)/tot_cal_pcap_day) %>%
-                    ungroup()
+}
 
 
 
- #Finally just keep relevant columns.
- d.agg_data_s_ns %>% select(iso,year,pop_thous,gdp_pcap_2010usd,cat,cons_price_s_ns,usd_1000cal_s_ns,share_s_ns,cons_exp_s_ns,cal_cap_day_s_ns_1000,cons_thous_t_s_ns) %>% distinct()->d.aggregated
+
+#Part 3: Now aggregate all variables to staples and non-staples
+
+
+#Aggregate it all into 1 dataset
+d.agg_data_s_ns <- d.trade2 %>%
+  #Get GCAM_commoditty names
+  left_join(d.commod.map %>% select(cons_commod,GCAM_commodity) %>% distinct(),by=c("cons_commod")) %>%
+  na.omit() %>%
+  #Make sure only unique values exist
+  distinct() %>%
+  #Classify into staples and non-staples
+  mutate(cat= if_else(GCAM_commodity %in% Staples, "Staples","Non-Staples" )) %>%
+  group_by(iso,year) %>%
+  mutate(total_cons_by_iso=sum(cons)) %>%
+  ungroup() %>%
+  #Bring in population
+  inner_join(d.pop, by=c("iso","year")) %>%
+  #Bring in GDP
+  inner_join(d.gdp.pcap, by=c("iso","year")) %>%
+  #Bring in calories per capita
+  inner_join(d.cons, by=c("iso","year","cons_commod")) %>%
+  #Check for unique values after join
+  distinct() %>%
+  group_by(iso,year) %>%
+  #Compute total calories by iso year
+  mutate(tot_cal_pcap_day=sum(cal_cap_day)) %>%
+  #Compute total consumption by iso year
+  mutate(tot_cons_thous_t= sum(cons_thous_t)) %>%
+  ungroup() %>%
+  group_by(iso, cat, year ) %>%
+  #Compute consumption price per tonne for staples and non-staples weighted by caloric consumption
+  mutate(cons_price_by_cal= sum(cal_cap_day*cons_price)) %>%
+  mutate(cons_price_s_ns=cons_price_by_cal/tot_cal_pcap_day) %>%
+  #Compute share of consumption of staples, non-staples
+  mutate(cons_thous_t_s_ns =sum(cons_thous_t)/tot_cons_thous_t) %>%
+  #Compute total expenditure on staples and non-staples
+  mutate(cons_exp_s_ns= sum(cons_thous_t*cons_price)) %>%
+  #Compute expenditure per 1000 calorie by staples and non-staples
+  mutate(usd_1000cal_s_ns=(cons_exp_s_ns/sum(cal_cap_day*pop_thous*365))*1000) %>%
+  #Compute 1000 calories per capita per day
+  mutate(cal_cap_day_s_ns_1000= sum(cal_cap_day)/1000) %>%
+  #Compute shares
+  mutate(share_s_ns = sum(cal_cap_day)/tot_cal_pcap_day) %>%
+  ungroup()
+
+
+
+#Finally just keep relevant columns.
+d.agg_data_s_ns %>% select(iso,year,pop_thous,gdp_pcap_2010usd,cat,cons_price_s_ns,usd_1000cal_s_ns,share_s_ns,cons_exp_s_ns,cal_cap_day_s_ns_1000,cons_thous_t_s_ns) %>% distinct()->d.aggregated
 
 #Check price per tonne for staples, non-staples by iso
 if (diagnostics==TRUE){
@@ -423,67 +423,25 @@ if (diagnostics==TRUE){
 d.aggregated <-split(d.aggregated,d.aggregated$cat)
 
 staples_data <- as.data.frame(d.aggregated$Staples) %>%
-                select(-cat,-pop_thous,-gdp_pcap_2010usd) %>%
-                filter(cons_price_s_ns != 0, usd_1000cal_s_ns != 0 , cons_exp_s_ns !=0 ) %>%
-                rename(cons_price_s = cons_price_s_ns, s_usd_p1000cal = usd_1000cal_s_ns,
-                       s_cal_pcap_day_thous=cal_cap_day_s_ns_1000,cons_exp_s=cons_exp_s_ns,s_cons_thous_t= cons_thous_t_s_ns)
+  select(-cat,-pop_thous,-gdp_pcap_2010usd) %>%
+  filter(cons_price_s_ns != 0, usd_1000cal_s_ns != 0 , cons_exp_s_ns !=0 ) %>%
+  rename(cons_price_s = cons_price_s_ns, s_usd_p1000cal = usd_1000cal_s_ns,
+         s_cal_pcap_day_thous=cal_cap_day_s_ns_1000,cons_exp_s=cons_exp_s_ns,s_cons_thous_t= cons_thous_t_s_ns)
 
 non_staples_data <- as.data.frame(d.aggregated$`Non-Staples`) %>%
   select(-cat) %>%
   filter(cons_price_s_ns != 0, usd_1000cal_s_ns != 0 , cons_exp_s_ns !=0 ) %>%
   rename(cons_price_ns = cons_price_s_ns, ns_usd_p1000cal = usd_1000cal_s_ns,
          ns_cal_pcap_day_thous=cal_cap_day_s_ns_1000,cons_exp_ns=cons_exp_s_ns ,ns_cons_thous_t= cons_thous_t_s_ns)
-  #join staples data
+#join staples data
 non_staples_data %>%
- inner_join(staples_data, by=c("iso","year")) %>%
+  inner_join(staples_data, by=c("iso","year")) %>%
   mutate(gdp_pcap = gdp_pcap_2010usd/1000)->Training_Dataset
 
 
 write.csv(Training_Dataset,paste0("paper1/Latest_Iteration/Training_Data.csv"))
 
-#---------------------END---------------------------------------------------
 
-
-#Dead code below- Delete at some point. Preserving for reference
-
-# # Put it all together in one data set, calculate total shares of consumption and prices per calorie for staples and non-staples by country
-# d.full <- full_join(d.cons, d.commod.map, by = "cons_commod") %>%
-#   full_join(d.pp, by = c("iso", "year", "pp_commod"))
-
-
-
-
-
-#
-#   # Divide expenditures by cons/day to get price
-#   mutate(ns_usd_p1000cal = ns_commod_exp_2005usd_day / ns_food_supply_thous_cal_day) %>%
-#   mutate(s_usd_p1000cal = s_commod_exp_2005usd_day / s_food_supply_thous_cal_day) %>%
-#   select(-ns_commod_exp_2005usd_day, -s_commod_exp_2005usd_day) %>%
-#   # Divide cons/day by pop to get cons/cap/day
-#   full_join(d.pop.reg, by = c("GCAM_region_name", "year")) %>%
-#   mutate(ns_cal_pcap_day_thous = ns_food_supply_thous_cal_day / (pop_thous * 1000)) %>%
-#   mutate(s_cal_pcap_day_thous = s_food_supply_thous_cal_day / (pop_thous * 1000)) %>%
-#   # Consumption shares
-#   mutate(s_share = s_cal_pcap_day_thous / (s_cal_pcap_day_thous + ns_cal_pcap_day_thous)) %>%
-#   mutate(ns_share = ns_cal_pcap_day_thous / (s_cal_pcap_day_thous + ns_cal_pcap_day_thous)) %>%
-#   # Bind with GDP data
-#   full_join(d.gdp.reg, by = c("GCAM_region_name", "year")) %>%
-#   select(GCAM_region_name, year, pop_thous, gdp_pcap_thous2005usd, ns_cal_pcap_day_thous, ns_usd_p1000cal,
-#           s_cal_pcap_day_thous, s_usd_p1000cal, s_share, ns_share)
-
-# create final data set.  Drop the Europe_Non_EU region because the data there is suspect
-# # source(file.path(path,'../R/util.R'))
-# # allrgn.data <- filter(d.cons.reg, GCAM_region_name != 'Europe_Non_EU', !(GCAM_region_name=='Central Asia' & year <= 1990)) %>% assign.sigma.Q()  %>%
-#   calc.pop.weight()
-# write.csv(allrgn.data, "../food-dmnd-price-allrgn.csv", row.names = FALSE)
-# create.xval.data(allrgn.data, '..')
-#
-# rm(d.commod.map, d.cons, d.conv, d.deflator, d.gdp, d.gdp.reg, d.iso, d.pop, d.pop.reg, d.pp, d.pp.archive)
-#
-#
-#
-# rm(d, d.cons.reg, d.fig)
-#
 
 
 
