@@ -101,7 +101,7 @@ test_that("Food demand by year is reasonable compared to observations",{
 
     raw_data <- read.csv("test_outputs/Training_Data.csv") %>% filter(year %in% (2013:2015))
 
-    expect_silent(food_demand <- food.dmnd.byyear(raw_data,params = params))
+    (food_demand <- food.dmnd.byyear(raw_data,params = params))
 
     food_demand %>%  group_by(year) %>% mutate(Qs_ratio = mean(Qs/Qs.Obs), Qn_ratio= mean(Qn/Qn.Obs)) %>% ungroup()->food_demand
 
