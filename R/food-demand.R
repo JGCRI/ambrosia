@@ -445,25 +445,28 @@ food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
         gdp_pcap_thous2005usd <- s_cal_pcap_day_thous <- ns_cal_pcap_day_thous <-
             NULL
 
-    if(is.null(region)) {
-        ## run this function for all regions and collect the results
-        ## into a single table.
-        levels(obsdata$GCAM_region_name) %>%
-            lapply(. %>% food.dmnd.byyear(obsdata, params, bc, .)) %>%
-            do.call(rbind, .)
-    }
-    else {
+    `%notin%` <- Negate(`%in%`)
+
+
         ## columns to keep in input data.
         selcols <- c('year', 'Ps', 'Pn', 'Y', 'Qs.Obs', 'Qn.Obs')
-        if(!is.null(obsdata$obstype))
-            selcols <- c(selcols, 'obstype')
-        dplyr::filter(obsdata, GCAM_region_name==region) %>%
-            dplyr::mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal, Y=gdp_pcap_thous2005usd,
+
+
+
+        if(!is.null(obsdata$obstype)){
+            selcols <- c(selcols, 'obstype')}
+
+        if(!is.null(obsdata$obstype)){
+          obsdata %>% filter(GCAM_region_name==region)
+        }
+
+        obsdata %>%
+            dplyr::mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal, Y=gdp_pcap_thous/1000,
                    Qs.Obs=s_cal_pcap_day_thous, Qn.Obs=ns_cal_pcap_day_thous) %>%
             dplyr::select_(.dots=selcols) -> indata
         rslt <- as.data.frame(food.dmnd(indata$Ps, indata$Pn, indata$Y, params))
-        if(!is.null(bc))
-            apply.bias.corrections(rslt, bc)
+        if(!is.null(bc)){
+            apply.bias.corrections(rslt, bc)}
         rslt$year <- indata$year
         rslt$rgn <- region
         rslt$Qs.Obs <- indata$Qs.Obs
@@ -471,7 +474,7 @@ food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
         if(!is.null(indata$obstype))
             rslt$obstype <- indata$obstype
         rslt
-    }
+
 }
 
 #' Tabulate food demand by per-capita-income

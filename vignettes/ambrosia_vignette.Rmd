@@ -96,7 +96,7 @@ g<-ggplot()+
 ```
 ![](example_4.png){width=50% height=50%} 
 
-## Example 4:Calculate income elasticities
+## Example 5:Calculate income elasticities
 ```r
 
 #Note that setting the second argument to "TRUE" in the functions below would return the Y term (Y^elas) as opposed to the elasticity.
@@ -115,7 +115,7 @@ g<-ggplot()+
 ```
 ![](example_5.png){width=50% height=50%} 
 
-## Example 5:Calculate price elasticities
+## Example 6:Calculate price elasticities
 ```r
 
 #calc1eps returns a matrix of elasticities where the matrices are elasticities for staples(matrix 1), cross price elasticities(matrix 2,3),non_staple elasticities(matrix 4))
@@ -142,7 +142,7 @@ g<-ggplot()+
 
 # Part 2: Calculating model parameters from raw data
 
-## Example 6: Get a dataset for parameter fitting from a sample training dataset
+## Example 7: Get a dataset for parameter fitting from a sample training dataset
 
 ### Warning: This might take a long time to run since we are using the entire training dataset
 ```r
@@ -151,7 +151,7 @@ Sample_Data <- read.csv("Training_Data.csv")
 temp_data <- create_dataset_for_parameter_fit(data=Sample_Data,min_clusters = 300,min_price_pd = 20,min_cal_fd = 1700) 
 ```
 
-## Example 7: Analyze distribution of observational error for non-staples
+## Example 8: Analyze distribution of observational error for non-staples
 ```r
 g<-ggplot()+
    geom_histogram(data=temp_data,aes(x=sig2Qn),bins = 40)+
@@ -160,7 +160,7 @@ g<-ggplot()+
 ```
 ![](example_7.png){width=50% height=50%} 
 
-## Example 8:Analyze distribution of observational error for staples
+## Example 9:Analyze distribution of observational error for staples
 ```r
 g<-ggplot()+
    geom_histogram(data=temp_data,aes(x=sig2Qs),bins = 40)+
@@ -169,7 +169,7 @@ g<-ggplot()+
 ```
 ![](example_8.png){width=50% height=50%} 
 
-## Example 9:Calculate actual parameters
+## Example 10:Calculate actual parameters
 
 ### Warning: Calculating parameters takes a long time (around 25 minutes)
 
@@ -183,7 +183,7 @@ new_parameters <- calculate_ambrosia_params(datadir="outputs/Processed_Data_for_
 # Part 3: Running the interactive version of the model
 
 
-## Example 10: Run the interactive version of the model
+## Example 11: Run the interactive version of the model
 
 ```r
 

@@ -93,3 +93,27 @@ test_that("Actual elasticities calculated are valid ",{
 
 
 })
+
+test_that("Food demand by year is reasonable compared to observations",{
+
+    parameter_data <- read.csv("test_outputs/parameter_data.csv")
+    params <- vec2param(c(parameter_data$params_vector.par))
+
+    raw_data <- read.csv("test_outputs/Training_Data.csv") %>% filter(year %in% (2013:2015))
+
+    expect_silent(food_demand <- food.dmnd.byyear(raw_data,params = params))
+
+    food_demand %>%  group_by(year) %>% mutate(Qs_ratio = mean(Qs/Qs.Obs), Qn_ratio= mean(Qn/Qn.Obs)) %>% ungroup()->food_demand
+
+    food_demand$rgn <- raw_data$iso
+    food_demand$income <- raw_data$gdp_pcap_thous/1000
+
+    tmpna <- food_demand %>%
+             filter(Qs_ratio>1.5  | Qn_ratio>1.5)
+
+
+   expect(nrow(tmpna)==0,"The estimated values are unreasonably higher than actual values by a ratio higher than 1.5 globally for a single year. ")
+
+
+
+})
