@@ -114,6 +114,26 @@ test_that("Food demand by year is reasonable compared to observations",{
 
    expect(nrow(tmpna)==0,"The estimated values are unreasonably higher than actual values by a ratio higher than 1.5 globally for a single year. ")
 
+})
+
+test_that("Constant elasticities returned are valid ",{
+
+    expect_silent(elas_func <- eta.constant(0.39))
+
+    expect_equal(elas_func(Y=10),elas_func(Y=20),tolerance=0.01,info=("Constant elasticities functions are valid for non-staples"))
+
+    expect_equal(elas_func(Y=10,calcQ = TRUE),elas_func(Y=11,calcQ=TRUE),tolerance=0.05,info=(" Y terms returned by constant elasticities functions are valid for non-staples"))
+
+    expect_silent(staples_elasticity <- eta.s(0.39,9.7))
+    expect_silent(staples_elasticity <- eta.s(0.39,9.7,mc.mode = TRUE))
+
+    expect_equal(staples_elasticity(Y=10),staples_elasticity(Y=11),tolerance=0.01,info=("Constant elasticities functions are valid for staples"))
+
+    expect_equal(staples_elasticity(Y=10,calcQ = TRUE),staples_elasticity(Y=12,calcQ=TRUE),tolerance=0.05,info=(" Y terms returned by constant elasticities functions are valid for staples"))
+
 
 
 })
+
+
+
