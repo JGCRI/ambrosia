@@ -174,6 +174,7 @@ g<-ggplot()+
 ### Warning: Calculating parameters takes a long time (around 25 minutes)
 
 ```r
+
 new_parameters <- calculate_ambrosia_params(datadir="outputs/Processed_Data_for_MC.csv",
                                             optim_method = "BFGS",
                                             original_param_vector= c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20))
@@ -185,7 +186,9 @@ new_parameters <- calculate_ambrosia_params(datadir="outputs/Processed_Data_for_
 ## Example 10: Run the interactive version of the model
 
 ```r
+
 runapp()
+
 ```
 
 
