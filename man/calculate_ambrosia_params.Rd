@@ -7,7 +7,8 @@
 calculate_ambrosia_params(optim_method = "BFGS",
   original_param_vector = c(1.28, 1.14, -0.19, 0.21, -0.33, 0.5, 0.1, 16,
   5.06, 100, 20), datadir = "outputs/Processed_Data_for_MC.csv",
-  outdir = "tests/testthat/test_outputs/", max_iterations = 100)
+  outdir = "tests/testthat/test_outputs/", max_iterations = 100,
+  print_progress = FALSE)
 }
 \arguments{
 \item{optim_method}{The optimization method to be used for maximization of the log likelihood. The default is set to BFGS}
@@ -19,6 +20,8 @@ calculate_ambrosia_params(optim_method = "BFGS",
 \item{outdir}{Directory to store output csv. Default is set to test_output folder.}
 
 \item{max_iterations}{A maximum number of iterations that can be passed to optim. This is largely meant for testing purposes.Default is set to 100 for BFGS.}
+
+\item{print_progress}{A parameter that allows the user to track progress of function.}
 
 \item{min_price_fd}{Highest possible price of staples and non-staples}
 
