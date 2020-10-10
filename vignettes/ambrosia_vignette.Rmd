@@ -180,10 +180,28 @@ new_parameters <- calculate_ambrosia_params(datadir="outputs/Processed_Data_for_
                                             original_param_vector= c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20))
 ```
 
+## Example 11: Set up a log likelihood function based on observational data
+
+```r
+
+#The log likelihood function set up below can be used to fit parameters either using the maximization function or any other # approach like a Markov Chain Monte Carlo
+
+func_MC <- mc.setup("outputs/Processed_Data_for_MC.csv")
+
+```
+## Example 12: Calculate the log likelihood score based on the parameters (vector) calculated in Example 10 and the log likelihood function calculated in Example 11
+
+```r
+
+
+likelihood_score <- func_MC(c(new_parameters))
+
+```
+
 # Part 3: Running the interactive version of the model
 
 
-## Example 11: Run the interactive version of the model
+## Example 13: Run the interactive version of the model
 
 ```r
 
@@ -191,5 +209,35 @@ runapp()
 
 ```
 
+# Part 4: Exploring data from a MCMC calculation 
 
 
+## Example 14: Read in mc.data and create density plots
+
+```r
+
+#nparam is set to 9 since the original MCMC was implemented for 9 parameters
+
+mc_example <- read.mc.data("test_outputs/mc_data_example.dat",varnames = namemc(nparam = 9))
+
+mcparam.density(mc_example)
+```
+![](example_9.png){width=50% height=50%}
+
+## Example 15: Re-create maximum probability density
+
+```r
+
+#The function  below will return a vector of parameters which yield the highest log likelihood score
+
+mcparam.ML(mc_example) -> ml_parameters
+
+#Now, set up the log likelihood function with the dataset 
+
+func_MC <- mc.setup("outputs/Processed_Data_for_MC.csv")
+
+#Now calculate the probability density. Add in the price scaling parameters (which were held constant during the MCMC)
+
+probability_density <- func_MC(c(ml_parameters,100,20))
+
+```
