@@ -75,3 +75,21 @@ test_that('Price elasticities calculated are valid',{
     expect_equal(epsilon_matrix_old,epsilon_matrix_new,tolerance=0.001,info=paste("New price elasticities are not equal to old price elasticities."))
 })
 
+test_that("Actual elasticities calculated are valid ",{
+
+    ps <- 0.1
+    pn <- 0.5
+    y <- seq(0.1, 10, 0.1)
+    samp.params <- vec2param(c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20))
+
+    expect_silent(tmp <- calc.elas.actual(ps,pn,y,params = samp.params ))
+
+    columns <- colnames(tmp)
+
+    for (i in columns){
+        tmpna <- tmp[is.na(toString(i)),]
+        expect((nrow(tmpna))==0,"There are NA values in actual elasticity values calculated.")
+    }
+
+
+})
