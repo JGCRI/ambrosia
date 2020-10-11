@@ -21,8 +21,6 @@ devtools::install_github('JGCRI/ambrosia')
 
 ```
 
-...
-
 ## Examples
 ```r
 
