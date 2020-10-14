@@ -30,13 +30,13 @@ A list of examples describing the different features in `ambrosia`are described 
 Test_Data <- data.frame(Y=seq(0.1,30, by=0.1))
 
 #Add sample values of Ps and Pn
-Test_Data %>% mutate(Ps=0.1,Pn=0.2)->Test_Data
+Test_Data %>% mutate(Ps=0.1,Pn=0.2) -> Test_Data
 
 #Add some sample parameters
 sample_parameters <- c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20)
 
 #Now calculate food demand
-Food_Demand<-food.dmnd(Test_Data$Ps,Test_Data$Pn,Test_Data$Y,params=vec2param(sample_parameters))
+Food_Demand <- food.dmnd(Test_Data$Ps,Test_Data$Pn,Test_Data$Y,params=vec2param(sample_parameters))
 
 ```
 The code from the example can be used to visualize the food demand for staples and non-staples as follows,
