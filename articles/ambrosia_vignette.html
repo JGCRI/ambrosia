@@ -138,7 +138,6 @@
 <h2 class="hasAnchor">
 <a href="#example-1-3-visualize-food-demand" class="anchor"></a>Example 1.3: Visualize food demand</h2>
 <div class="sourceCode" id="cb4"><pre class="downlit">
-
 <span class="co">#Add income and total demand to the data frame created in example 1.2 and create a plot.  </span>
 
 <span class="va">Food_Demand</span><span class="op">$</span><span class="va">Total_Demand</span> <span class="op">&lt;-</span> <span class="va">Food_Demand</span><span class="op">$</span><span class="va">Qs</span><span class="op">+</span><span class="va">Food_Demand</span><span class="op">$</span><span class="va">Qn</span>
@@ -155,11 +154,7 @@
 
 <span class="co">#Plot</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span>    </pre></div>
-<p><img src="example_3.png" style="width:50.0%;height:50.0%"></p>
-</div>
-<div id="example-1-4-visualize-budget-shares" class="section level2">
-<h2 class="hasAnchor">
-<a href="#example-1-4-visualize-budget-shares" class="anchor"></a>Example 1.4: Visualize budget shares</h2>
+<p><img src="example_3.png" style="width:50.0%;height:50.0%"> ## Example 1.4: Visualize budget shares</p>
 <div class="sourceCode" id="cb5"><pre class="downlit">
 <span class="co">#Rename the budget shares columns</span>
 <span class="va">budget_shares</span> <span class="op">&lt;-</span> <span class="va">Food_Demand</span> <span class="op">%&gt;%</span> 
@@ -184,7 +179,6 @@
 <a href="#example-1-5-calculate-income-elasticities" class="anchor"></a>Example 1.5: Calculate income elasticities</h2>
 <div class="sourceCode" id="cb6"><pre class="downlit">
 <span class="co">#Note that setting the second argument to "TRUE" in the functions below would return the Y term (Y^elas) as opposed to the elasticity.</span>
-
 <span class="va">Food_Demand</span><span class="op">$</span><span class="va">eta.s</span> <span class="op">&lt;-</span> <span class="va">tmp_param</span><span class="op">$</span><span class="va">yfunc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">(</span>Y<span class="op">=</span><span class="va">Food_Demand</span><span class="op">$</span><span class="va">Y</span>,<span class="cn">FALSE</span><span class="op">)</span>
 <span class="va">Food_Demand</span><span class="op">$</span><span class="va">eta.n</span> <span class="op">&lt;-</span> <span class="va">tmp_param</span><span class="op">$</span><span class="va">yfunc</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">(</span>Y<span class="op">=</span><span class="va">Food_Demand</span><span class="op">$</span><span class="va">Y</span>,<span class="cn">FALSE</span><span class="op">)</span>
 
@@ -278,7 +272,6 @@
 <h3 class="hasAnchor">
 <a href="#warning-calculating-parameters-takes-a-long-time-around-25-minutes" class="anchor"></a>Warning: Calculating parameters takes a long time (around 25 minutes)</h3>
 <div class="sourceCode" id="cb11"><pre class="downlit">
-
 <span class="co">#load sample data</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"processed_data_example"</span><span class="op">)</span>
 
@@ -330,7 +323,6 @@
 <h2 class="hasAnchor">
 <a href="#example-3-1-run-the-interactive-version-of-the-model" class="anchor"></a>Example 3.1: Run the interactive version of the model</h2>
 <div class="sourceCode" id="cb14"><pre class="downlit">
-
 <span class="fu"><a href="../reference/runapp.html">runapp</a></span><span class="op">(</span><span class="op">)</span></pre></div>
 </div>
 </div>
@@ -372,15 +364,14 @@
 <span class="fu"><a href="../reference/mcparam.ML.html">mcparam.ML</a></span><span class="op">(</span><span class="va">mc_example</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">ml_parameters</span>
 
 <span class="co">#Now, set up the log likelihood function with the dataset used to calculate original parameters </span>
-
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"data_used_for_original_param"</span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.csv</a></span><span class="op">(</span><span class="va">data_used_for_original_param</span>, <span class="st">"original_data.csv"</span><span class="op">)</span>
 
+<span class="co">#Set up the log-likelihood function</span>
 <span class="va">func_MC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mc.setup.html">mc.setup</a></span><span class="op">(</span><span class="st">"original_data.csv"</span><span class="op">)</span>
 
 <span class="co">#Now calculate the probability density. Add in the price scaling parameters (which were held constant during the MCMC). The value should be -195</span>
-
 <span class="va">probability_density</span> <span class="op">&lt;-</span> <span class="fu">func_MC</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">ml_parameters</span>,<span class="fl">100</span>,<span class="fl">20</span><span class="op">)</span><span class="op">)</span></pre></div>
 </div>
 </div>
