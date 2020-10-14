@@ -22,7 +22,6 @@ output:
   html_document:
     df_print: paged
   pdf_document:
-    extra_dependencies: "float"
     fig_caption: yes
   word_document: default
 bibliography: paper.bib
