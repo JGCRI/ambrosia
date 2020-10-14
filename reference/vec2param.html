@@ -8,11 +8,13 @@
 
 <title>Convert a vector of parameters into a params structure. — vec2param • ambrosia</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
@@ -36,14 +38,13 @@
 
 
 
-<meta property="og:title" content="Convert a vector of parameters into a params structure. — vec2param" />
 
+<meta property="og:title" content="Convert a vector of parameters into a params structure. — vec2param" />
 <meta property="og:description" content="We assume that if you're using this you are doing an Monte Carlo calculation,
 so we set the parameters of eta.s accordingly.  We also look at the number of
 parameters passed in.  If it is 8, we assume you want etas = constant.  If
 it's 9, we assume you want etas = eta.s(lambda, k).  If it's anything else,
 we throw an error." />
-
 
 
 
@@ -103,7 +104,6 @@ we throw an error." />
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         
       </ul>
@@ -125,17 +125,15 @@ we throw an error." />
     </div>
 
     <div class="ref-description">
-    
     <p>We assume that if you're using this you are doing an Monte Carlo calculation,
 so we set the parameters of eta.s accordingly.  We also look at the number of
 parameters passed in.  If it is 8, we assume you want etas = constant.  If
 it's 9, we assume you want etas = eta.s(lambda, k).  If it's anything else,
 we throw an error.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>vec2param</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span></pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -144,11 +142,10 @@ we throw an error.</p>
       <td><p>Vector of model parameters, using the Monte Carlo formulation.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>Parameter structure suitable for use in <code><a href='food.dmnd.html'>food.dmnd</a></code>.</p>
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The parameters in the vector are:
@@ -156,7 +153,6 @@ we throw an error.</p>
 xi_cross is used for both xi_sn and xi_ns, forcing them to be equal.</p>
 <p>If there are only 8 parameters, then the first 6 are as above,
 and the next to last is eta_s.</p>
-    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -169,7 +165,7 @@ and the next to last is eta_s.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Robert Link, Stephanie Waldhoff, Ryna Cui, Jae Edmonds.</p>
+  <p>Developed by Kanishka Narayan, Chris Vernon, Stephanie Waldhoff, Jae Edmonds, Ryna Cui.</p>
 </div>
 
 <div class="pkgdown">

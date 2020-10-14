@@ -8,11 +8,13 @@
 
 <title>Create a posterior log-pdf function for monte carlo sampling the model parameters. — mc.setup • ambrosia</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
@@ -36,15 +38,14 @@
 
 
 
-<meta property="og:title" content="Create a posterior log-pdf function for monte carlo sampling the model parameters. — mc.setup" />
 
+<meta property="og:title" content="Create a posterior log-pdf function for monte carlo sampling the model parameters. — mc.setup" />
 <meta property="og:description" content="The function returned takes a vector of parameter values as an argument and
 returns a the log of the posterior pdf calculated by comparing this data to
 the supplied observed data.  There is an optional second argument that is
 described further below.  The log-post function should be usable in any MC
 sampler.  It will also work in an optimizer, provided you configure it to
 look for a maximum rather than a minimum." />
-
 
 
 
@@ -104,7 +105,6 @@ look for a maximum rather than a minimum." />
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         
       </ul>
@@ -126,18 +126,16 @@ look for a maximum rather than a minimum." />
     </div>
 
     <div class="ref-description">
-    
     <p>The function returned takes a vector of parameter values as an argument and
 returns a the log of the posterior pdf calculated by comparing this data to
 the supplied observed data.  There is an optional second argument that is
 described further below.  The log-post function should be usable in any MC
 sampler.  It will also work in an optimizer, provided you configure it to
 look for a maximum rather than a minimum.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>mc.setup</span><span class='op'>(</span><span class='va'>obsdata_filename</span>, logprior <span class='op'>=</span> <span class='cn'>NULL</span>, logfile <span class='op'>=</span> <span class='cn'>NULL</span>, chunksize <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span></pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -161,12 +159,11 @@ log-posterior function's optional argument described in the details section.</p>
 needed.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A function that computes the log-posterior probability density for an
 input vector of parameters.</p>
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The observed data should have the following columns: Ps, Pn, Y, Qs, Qn,
@@ -184,7 +181,6 @@ single vector.  This capability is supplied to make life easier back when we
 were calling these functions from a C code that used SSE/AVX instructions to
 vectorize the sampler.  Samplers written in R can and should pretend that
 this argument doesn't exist.</p>
-    
     <h2 class="hasAnchor" id="todo"><a class="anchor" href="#todo"></a>TODO</h2>
 
     
@@ -196,7 +192,6 @@ this argument doesn't exist.</p>
 What was I thinking?</p></li>
 </ul>
 
-    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -209,7 +204,7 @@ What was I thinking?</p></li>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Robert Link, Stephanie Waldhoff, Ryna Cui, Jae Edmonds.</p>
+  <p>Developed by Kanishka Narayan, Chris Vernon, Stephanie Waldhoff, Jae Edmonds, Ryna Cui.</p>
 </div>
 
 <div class="pkgdown">

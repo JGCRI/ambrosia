@@ -8,11 +8,13 @@
 
 <title>Generate an income elasticity function with constant income elasticity. — eta.constant • ambrosia</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
@@ -36,14 +38,13 @@
 
 
 
-<meta property="og:title" content="Generate an income elasticity function with constant income elasticity. — eta.constant" />
 
+<meta property="og:title" content="Generate an income elasticity function with constant income elasticity. — eta.constant" />
 <meta property="og:description" content="These functions generate a function that can be used as the income elasticity
 functions for staple or nonstaple foods.  Staple and nonstaple foods each
 have their own functional forms, given by eta.s and eta.n.
 There is also a constant elasticity function that can be used for testing,
 though it is not formally part of the model design." />
-
 
 
 
@@ -103,7 +104,6 @@ though it is not formally part of the model design." />
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         
       </ul>
@@ -125,13 +125,11 @@ though it is not formally part of the model design." />
     </div>
 
     <div class="ref-description">
-    
     <p>These functions generate a function that can be used as the income elasticity
 functions for staple or nonstaple foods.  Staple and nonstaple foods each
 have their own functional forms, given by <code>eta.s</code> and <code>eta.n</code>.
 There is also a constant elasticity function that can be used for testing,
 though it is not formally part of the model design.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>eta.constant</span><span class='op'>(</span><span class='va'>eta0</span><span class='op'>)</span>
@@ -139,7 +137,7 @@ though it is not formally part of the model design.</p>
 <span class='fu'>eta.s</span><span class='op'>(</span><span class='va'>nu1</span>, <span class='va'>y0</span>, mc.mode <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
 
 <span class='fu'>eta.n</span><span class='op'>(</span><span class='va'>nu1</span><span class='op'>)</span></pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -165,19 +163,17 @@ specification of the parameter space. (That is, there are valid models that can 
 be specified in terms of k and lambda.)</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A function suitable for use as either <code>eta.s</code> or <code>eta.n</code> in
 the food demand model.</p>
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>#' Income elasticity functions have the following signature:</p><ul>
 <li><p><code>function(Y, calcQ)</code></p></li>
 </ul><p>where Y is the per-capita GDP, and calcQ is a flag indicating whether the
 function should calcluate the income quantity term or the income elasticity.</p>
-    
     <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
 
     
@@ -185,7 +181,6 @@ function should calcluate the income quantity term or the income elasticity.</p>
 <li><p><code>eta.s</code>: Generate an income elasticity function for staple foods.</p></li>
 <li><p><code>eta.n</code>: Generate an income elasticity function for nonstaple foods.</p></li>
 </ul>
-    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -198,7 +193,7 @@ function should calcluate the income quantity term or the income elasticity.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Robert Link, Stephanie Waldhoff, Ryna Cui, Jae Edmonds.</p>
+  <p>Developed by Kanishka Narayan, Chris Vernon, Stephanie Waldhoff, Jae Edmonds, Ryna Cui.</p>
 </div>
 
 <div class="pkgdown">

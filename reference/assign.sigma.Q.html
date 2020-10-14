@@ -8,11 +8,13 @@
 
 <title>Assign observational errors to observed demand quantities — assign.sigma.Q • ambrosia</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
@@ -36,12 +38,11 @@
 
 
 
-<meta property="og:title" content="Assign observational errors to observed demand quantities — assign.sigma.Q" />
 
+<meta property="og:title" content="Assign observational errors to observed demand quantities — assign.sigma.Q" />
 <meta property="og:description" content="Assign sigma (observational error) values for Qs and Qn in an input data set.
 We do this by clustering the input on Ps, Pn, and Y and then taking the
 variance of the Qs and Qn in each cluster." />
-
 
 
 
@@ -101,7 +102,6 @@ variance of the Qs and Qn in each cluster." />
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         
       </ul>
@@ -123,15 +123,13 @@ variance of the Qs and Qn in each cluster." />
     </div>
 
     <div class="ref-description">
-    
     <p>Assign sigma (observational error) values for Qs and Qn in an input data set.
 We do this by clustering the input on Ps, Pn, and Y and then taking the
 variance of the Qs and Qn in each cluster.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>assign.sigma.Q</span><span class='op'>(</span><span class='va'>input.data</span>, min.group <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span></pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -144,7 +142,7 @@ variance of the Qs and Qn in each cluster.</p>
       <td><p>Minimum group size for clustering</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Observational errors are estimated by clustering observed data by the demand
@@ -157,7 +155,6 @@ variance estimate is, but less alike the observations in the cluster actually
 are (meaning some of the variance is not observational error, but actual
 difference in demand.  This tradeoff is controlled by the <code>min.group</code>
 argument.</p>
-    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -170,7 +167,7 @@ argument.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Robert Link, Stephanie Waldhoff, Ryna Cui, Jae Edmonds.</p>
+  <p>Developed by Kanishka Narayan, Chris Vernon, Stephanie Waldhoff, Jae Edmonds, Ryna Cui.</p>
 </div>
 
 <div class="pkgdown">

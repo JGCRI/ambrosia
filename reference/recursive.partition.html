@@ -8,11 +8,13 @@
 
 <title>Partition input data into clusters with a minimum number of members — recursive.partition • ambrosia</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
@@ -36,8 +38,8 @@
 
 
 
-<meta property="og:title" content="Partition input data into clusters with a minimum number of members — recursive.partition" />
 
+<meta property="og:title" content="Partition input data into clusters with a minimum number of members — recursive.partition" />
 <meta property="og:description" content="Partition the input data into clusters with a given minimum number of members
 per cluster.  This turns out to be kind of hard to do because the structure
 produced by the clustering algorithm isn't conducive to finding the cluster
@@ -45,7 +47,6 @@ that a too-small cluster was split from.  Instead, we find a dendrogram cut
 that produces all clusters larger than the minimum.  Then we recursively
 partition all of the clusters that are large enough that they could be split
 in two." />
-
 
 
 
@@ -105,7 +106,6 @@ in two." />
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         
       </ul>
@@ -127,7 +127,6 @@ in two." />
     </div>
 
     <div class="ref-description">
-    
     <p>Partition the input data into clusters with a given minimum number of members
 per cluster.  This turns out to be kind of hard to do because the structure
 produced by the clustering algorithm isn't conducive to finding the cluster
@@ -135,11 +134,10 @@ that a too-small cluster was split from.  Instead, we find a dendrogram cut
 that produces all clusters larger than the minimum.  Then we recursively
 partition all of the clusters that are large enough that they could be split
 in two.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>recursive.partition</span><span class='op'>(</span><span class='va'>input.data</span>, <span class='va'>cluster.vars</span>, min.members <span class='op'>=</span> <span class='fl'>5</span><span class='op'>)</span></pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -156,11 +154,10 @@ in two.</p>
       <td><p>Desired minimum number of members per cluster.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>List of data frames, one data frame for each cluster.</p>
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The purpose of this function is to allow us to estimate the observational
@@ -172,7 +169,6 @@ grouping to get a resasonable estimate of the variance.</p>
 <p>This function returns a list of data frames, with each list item being a
 single cluster.  This irretrievably scrambles the order of the rows, so if
 recovering the original order is important, include an ID column.</p>
-    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -185,7 +181,7 @@ recovering the original order is important, include an ID column.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Robert Link, Stephanie Waldhoff, Ryna Cui, Jae Edmonds.</p>
+  <p>Developed by Kanishka Narayan, Chris Vernon, Stephanie Waldhoff, Jae Edmonds, Ryna Cui.</p>
 </div>
 
 <div class="pkgdown">

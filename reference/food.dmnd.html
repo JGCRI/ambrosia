@@ -8,11 +8,13 @@
 
 <title>Calculate food demand using the Edmonds, et al. model. — food.dmnd • ambrosia</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
@@ -36,15 +38,14 @@
 
 
 
-<meta property="og:title" content="Calculate food demand using the Edmonds, et al. model. — food.dmnd" />
 
+<meta property="og:title" content="Calculate food demand using the Edmonds, et al. model. — food.dmnd" />
 <meta property="og:description" content="The Edmonds model divides food consumption into two categories,
 staples, which represent basic foodstuffs, and nonstaples,
 which represent higher-quality foods.  Demand for staples increases at low
 income, but eventually peaks and begins to decline with higher income.
 Demand for nonstaples increases with income over all income ranges; however,
 total (staple + nonstaple) demand saturates asymptotically at high income." />
-
 
 
 
@@ -104,7 +105,6 @@ total (staple + nonstaple) demand saturates asymptotically at high income." />
   </ul>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         
       </ul>
@@ -126,18 +126,16 @@ total (staple + nonstaple) demand saturates asymptotically at high income." />
     </div>
 
     <div class="ref-description">
-    
     <p>The Edmonds model divides food consumption into two categories,
 <em>staples</em>, which represent basic foodstuffs, and <em>nonstaples</em>,
 which represent higher-quality foods.  Demand for staples increases at low
 income, but eventually peaks and begins to decline with higher income.
 Demand for nonstaples increases with income over all income ranges; however,
 total (staple + nonstaple) demand saturates asymptotically at high income.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>food.dmnd</span><span class='op'>(</span><span class='va'>Ps</span>, <span class='va'>Pn</span>, <span class='va'>Y</span>, <span class='va'>params</span>, rgn <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -163,7 +161,7 @@ total (staple + nonstaple) demand saturates asymptotically at high income.</p>
 be included as an extra column in the output data frame.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
 
     
@@ -185,7 +183,6 @@ how valuable food is relative to everything else in the economy.</p></dd>
 <p>Note that we don't need elasticity parameters for the materials component
 because we calculate Qm as a residual.  That is, whatever portion of
 household budgets is not spent on food is by definition spent on materials.</p>
-    
     <h2 class="hasAnchor" id="output"><a class="anchor" href="#output"></a>Output</h2>
 
     
@@ -202,7 +199,6 @@ represents an aggregate of everything else besides food that consumers buy.</p><
 
 </dl><p>Demand for staple and nonstaple foods are given in thousands of dietary
 calories per person per day.  Units for materials demand are unspecified.</p>
-    
     <h2 class="hasAnchor" id="income-elasticity-functions"><a class="anchor" href="#income-elasticity-functions"></a>Income Elasticity Functions</h2>
 
     
@@ -212,7 +208,6 @@ calories per person per day.  Units for materials demand are unspecified.</p>
 blows up, but Y^(eta(Y)) is well behaved.  Therefore, the eta functions need
 to be able to calculate not just eta(Y), but Y^(eta(Y)), so they can handle
 the limiting cases.</p>
-    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -225,7 +220,7 @@ the limiting cases.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Robert Link, Stephanie Waldhoff, Ryna Cui, Jae Edmonds.</p>
+  <p>Developed by Kanishka Narayan, Chris Vernon, Stephanie Waldhoff, Jae Edmonds, Ryna Cui.</p>
 </div>
 
 <div class="pkgdown">
