@@ -42,7 +42,7 @@ The `ambrosia` R package was developed to calculate food demand for staples and 
 
 (1)	calculation of food demand for any given set of parameters including income levels and prices
 
-(2)	estimation of parameters within a given a dataset.  Note:  `ambrosia` is used to calculate parameters for the food demand model implemented in the Global Change Analysis Model(GCAM; [@calvin2019gcam]);
+(2)	estimation of parameters within a given a dataset.  Note:  `ambrosia` is used to calculate parameters for the food demand model implemented in the Global Change Analysis Model(GCAM; @calvin2019gcam);
 
 (3)	exploration and preparation of raw data before starting a parameter estimation
 
