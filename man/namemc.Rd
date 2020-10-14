@@ -7,7 +7,7 @@
 namemc(nparam = 9)
 }
 \arguments{
-\item{nparam}{Number of parameters.  Legal values are either 8 or 9.}
+\item{nparam}{Number of parameters.  Legal values are either 8 or 9 or 11.}
 }
 \value{
 A vector of parameter names for the selected version of the model.

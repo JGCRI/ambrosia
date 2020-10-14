@@ -1,7 +1,6 @@
 
 ## Scale factors used in the food demand model below
-psscl <- 100
-pnscl <- 20
+
 
 #' Calculate food demand using the Edmonds, et al. model.
 #'
@@ -64,7 +63,8 @@ pnscl <- 20
 food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL)
 {
     Pm <- params$Pm
-
+    psscl <- params$psscl
+    pnscl <- params$pnscl
     ## Normalize income and prices to Pm
     Ps <- Ps/Pm * psscl
     Pn <- Pn/Pm * pnscl
@@ -87,7 +87,7 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL)
     eps <- mapply(calc1eps, alpha[1,], alpha[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi),
                   SIMPLIFY=FALSE)
     ## Calculate quantities Q[1,] is Qs and Q[2,] is Qn
-    Q <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
+    Q <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A),psscl,pnscl)
     ## alpha.out = P*Q/Y
     alpha.out <- alpha
     alpha.out[1,] <- Ps*Q[1,]/Y / psscl
@@ -106,7 +106,7 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL)
   alpharslt <- matrix(rslt$x, nrow=2)
   eps <- mapply(calc1eps, alpharslt[1,], alpharslt[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi),
                 SIMPLIFY=FALSE)
-  qvals <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A))
+  qvals <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A),psscl,pnscl)
   qs <- qvals[1,]
   qn <- qvals[2,]
   ## calculate Qm as the budget residual.
@@ -131,6 +131,7 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL)
 #' @param eta.s Income elasticity for staple foods.
 #' @param eta.n Income elasticity for nonstaple foods.
 #' @param xi Matrix of Hicks elasticities
+#' @export
 calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
 
     ## First apply symmetry condition.  This means that the xi.sn
@@ -159,7 +160,7 @@ calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
 #' @param Ysterm Income term in the demand equation for staples
 #' @param Ynterm Income term in the demand equation for nonstaples
 #' @param Acoef Leading multiplier parameter.
-calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef) {
+calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef,psscl,pnscl) {
   ## not vectorized:  use mapply
   Qs <- Acoef[1] * Ps^eps[1] * Pn^eps[3] * Ysterm
   Qn <- Acoef[2] * Ps^eps[2] * Pn^eps[4] * Ynterm
@@ -169,7 +170,7 @@ calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef) {
   alpha.n <- Pn*Qn/Y / pnscl
   alpha.t <- alpha.s + alpha.n
   food.budget <- 1                      # maximum budget fraction for total food.
-  if(alpha.t > 1) {
+  if(alpha.t > 1 && !(is.na(alpha.t))) {
       ## Food consumption exceeds the budget constraint; reduce
       ## consumption to stay within budget.  Reduce nonstaples first,
       ## since they will normally be a less efficient source of
@@ -444,25 +445,28 @@ food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
         gdp_pcap_thous2005usd <- s_cal_pcap_day_thous <- ns_cal_pcap_day_thous <-
             NULL
 
-    if(is.null(region)) {
-        ## run this function for all regions and collect the results
-        ## into a single table.
-        levels(obsdata$GCAM_region_name) %>%
-            lapply(. %>% food.dmnd.byyear(obsdata, params, bc, .)) %>%
-            do.call(rbind, .)
-    }
-    else {
+    `%notin%` <- Negate(`%in%`)
+
+
         ## columns to keep in input data.
         selcols <- c('year', 'Ps', 'Pn', 'Y', 'Qs.Obs', 'Qn.Obs')
-        if(!is.null(obsdata$obstype))
-            selcols <- c(selcols, 'obstype')
-        dplyr::filter(obsdata, GCAM_region_name==region) %>%
-            dplyr::mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal, Y=gdp_pcap_thous2005usd,
+
+
+
+        if(!is.null(obsdata$obstype)){
+            selcols <- c(selcols, 'obstype')}
+
+        if(!is.null(obsdata$obstype)){
+          obsdata %>% filter(GCAM_region_name==region)
+        }
+
+        obsdata %>%
+            dplyr::mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal, Y=gdp_pcap_thous/1000,
                    Qs.Obs=s_cal_pcap_day_thous, Qn.Obs=ns_cal_pcap_day_thous) %>%
             dplyr::select_(.dots=selcols) -> indata
         rslt <- as.data.frame(food.dmnd(indata$Ps, indata$Pn, indata$Y, params))
-        if(!is.null(bc))
-            apply.bias.corrections(rslt, bc)
+        if(!is.null(bc)){
+            apply.bias.corrections(rslt, bc)}
         rslt$year <- indata$year
         rslt$rgn <- region
         rslt$Qs.Obs <- indata$Qs.Obs
@@ -470,7 +474,7 @@ food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
         if(!is.null(indata$obstype))
             rslt$obstype <- indata$obstype
         rslt
-    }
+
 }
 
 #' Tabulate food demand by per-capita-income

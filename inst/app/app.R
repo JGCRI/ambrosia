@@ -1,13 +1,17 @@
 library(shiny)
 library(ggplot2)
-library(gcamfd)
+library(ambrosia)
 
+#Set default value for all parameters. These are the original values of the parameters.
 etasdefault <- c(-0.17, 0.17)
 etandefault <- 0.49
 Adefault <- c(1.28, 1.14)
 Pmdefault <- 5.0
 Psdefault <- 0.1
 Pndefault <- 0.2
+psscldefault <- 100
+pnscldefault <-20
+
 
 ui <- fluidPage(
   headerPanel(h1("Food Demand Model",align='center'),windowTitle='Food Demand Model'),
@@ -50,7 +54,9 @@ ui <- fluidPage(
             conditionalPanel(condition='input.tab != 3',
                              sliderInput(inputId='pn.val.slider', min=0, max=5.0, step=0.02, label='\\(P_n\\)',
                                          value=Pndefault)),
-            numericInput(inputId='pm.val', value=Pmdefault, label='\\(P_m\\)', min=0.1, max=10.0, step=0.1)
+            numericInput(inputId='pm.val', value=Pmdefault, label='\\(P_m\\)', min=0.1, max=10.0, step=0.1),
+            numericInput(inputId='psscl.val', value=psscldefault, label='\\(psscl\\)', min=1, max=100, step=1),
+            numericInput(inputId='pnscl.val', value=pnscldefault, label='\\(pnscl\\)', min=1, max=100, step=1)
             ),
 
   ## Main Panel
@@ -109,7 +115,9 @@ set.model.params <-function(input)
     xi=matrix(c(input$xiss, input$xicross, input$xicross, input$xinn), nrow=2),
     yfunc=eta.fns,
     A=c(input$As, input$An),
-    Pm=input$pm.val)
+    Pm=input$pm.val,
+    psscl=input$psscl.val,
+    pnscl=input$pnscl.val)
 }
 
 ## data frames to hold persistent results.

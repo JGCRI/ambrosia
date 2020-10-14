@@ -182,7 +182,7 @@ mcparam.itercount <- function(niter, nproc, npset)
 #' The 9 parameter version of the model is the canonical version (and the one
 #' published in the paper)
 #'
-#' @param nparam Number of parameters.  Legal values are either 8 or 9.
+#' @param nparam Number of parameters.  Legal values are either 8 or 9 or 11.
 #' @return A vector of parameter names for the selected version of the model.
 #' @export
 namemc <- function(nparam=9)
@@ -195,8 +195,11 @@ namemc <- function(nparam=9)
     else if(nparam == 9) {
         c("As", "An", "xi.ss", "xi.cross", "xi.nn", "eps1n", "lambda", "ks", "Pm", "LL")
     }
+    else if(nparam == 11) {
+    c("As", "An", "xi.ss", "xi.cross", "xi.nn", "eps1n", "lambda", "ks", "Pm","psscl","pnscl", "LL")
+  }
     else {
-        stop("namemc:  nparam must be 8 or 9.  nparam= ", nparam)
+        stop("namemc:  nparam must be 8 or 9 or 11.  nparam= ", nparam)
     }
 }
 

@@ -1,34 +1,47 @@
-# gcamfd: Calculate food demand using the Edmonds et. al. model
-[![Travis build status](https://travis-ci.org/JGCRI/food-demand.svg?branch=master)](https://travis-ci.org/JGCRI/food-demand)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/JGCRI/food-demand?branch=master&svg=true)](https://ci.appveyor.com/project/JGCRI/food-demand) 
+![R-CMD](https://github.com/JGCRI/ambrosia/workflows/R-CMD/badge.svg) ![build](https://github.com/JGCRI/ambrosia/workflows/build/badge.svg) [![codecov](https://codecov.io/gh/JGCRI/ambrosia/branch/master/graph/badge.svg)](https://codecov.io/gh/JGCRI/ambrosia)
+[![DOI](https://zenodo.org/badge/69679416.svg)](https://zenodo.org/badge/latestdoi/69679416)
 
-The Edmonds model divides food consumption into two categories,
-_staples_, which represent basic foodstuffs, and _nonstaples_,
-which represent higher-quality foods.  Demand for staples increases at low
-income, but eventually peaks and begins to decline with higher income.
-Demand for nonstaples increases with income over all income ranges; however,
-total (staple + nonstaple) demand saturates asymptotically at high income.
 
-## Usage
 
-To run the interactive version of the model, run the `runapp`
-function.  This will start the interactive version of the model, which you
-can use to explore different parameter settings.
+# `ambrosia`: An R package for calculating and analyzing food demand and in accordance with the Edmonds et al. food demand model
 
-The API function for running the model is `food.dmnd`.  This
-function allows you to pass in a parameters structure along with vectors of
-prices and GDP and to get back a table of quantities and budget fractions.
+## Summary
+The `ambrosia` R package was developed to calculate food demand for staples and non-staple commodities that is responsive to changing levels of incomes and prices. Ambrosia implements the framework to quantify food demand as established by Edmonds et al. (2017) and allows the user to explore and estimate different variables related to the food demand system. Currently `ambrosia` provides three main functions:
+1. calculation of food demand for any given set of parameters including income levels and prices,
+2. estimation of parameters within a given a dataset.  Note:  `ambrosia` is used to calculate parameters for the food demand model implemented in the Global Change Analysis Model (GCAM; Calvin et al. 2019)
+3. exploration and preparation of raw data before starting a parameter estimation.
 
-## Example
 
-```R
-ps <- 0.2
-pn <- 0.5
-y <- seq(0.2, 10.0, 0.2)
-rslt <- food.dmnd(ps, pn, y, samp.params)
+## Getting Started with `ambrosia`
+
+`ambrosia` can be directly installed from its GitHub repository using the R `devtools` package. From an R prompt, run the command,
+
+```r
+devtools::install_github('JGCRI/ambrosia')
 
 ```
-Note that the  are parameters available in the folder parameter_data/parameter_data.csv
 
-The parameters can be re-calculated using the Calcute_parameters.R script. 
-The input data can be recalculated using the script Process_Demand_Data.R
+## Examples
+
+A list of examples describing the different features in `ambrosia`are described in the `ambrosia_vignette.rmd` in the vignettes(`vignettes/`) directory. The example below shows how a user can get an estimate of demand using some sample parameters.
+
+```r
+#Get a sample data set
+Test_Data <- data.frame(Y=seq(0.1,30, by=0.1))
+
+#Add sample values of Ps and Pn
+Test_Data %>% mutate(Ps=0.1,Pn=0.2) -> Test_Data
+
+#Add some sample parameters
+sample_parameters <- c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20)
+
+#Now calculate food demand
+Food_Demand <- food.dmnd(Test_Data$Ps,Test_Data$Pn,Test_Data$Y,params=vec2param(sample_parameters))
+
+```
+The code from the example can be used to visualize the food demand for staples and non-staples as follows,
+
+![A simple plot of food demand for staples and non-staples for changing incomes and constant prices.](vignettes/example_3.png)
+
+## Contributing to `ambrosia`
+We welcome contributions to `ambrosia` from the development community. Please contact us if you want to collaborate! The `ambrosia` GitHub repository is accessible here: [GitHub Repository](https://github.com/JGCRI/ambrosia)

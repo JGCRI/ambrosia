@@ -4,7 +4,7 @@
 \alias{calc1q}
 \title{Calculate demand quantities for a single set of inputs}
 \usage{
-calc1q(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef)
+calc1q(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef, psscl, pnscl)
 }
 \arguments{
 \item{Ps}{Price of staple foods}

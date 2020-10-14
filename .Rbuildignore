@@ -8,3 +8,6 @@
 ^gcam$
 ^paper1$
 ^runs$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
