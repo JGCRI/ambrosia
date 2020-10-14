@@ -14,7 +14,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Introduction
-
 ```r
 #load libraries
 library(ambrosia)
@@ -23,7 +22,6 @@ library(ggplot2)
 library(knitr)
 ```
 # Part 1: Calculating food demand, exploring demand side variables for a given set of parameters 
-
 
 ## Example 1.1: Get parameters
 ```r
@@ -42,9 +40,7 @@ tmp_param <- vec2param(original_param_vector)
 
 #Return a table of parameters
 kable(parameter_data ,col.names = c("parameter_name","value"),format = "pandoc")
-
 ```
-
 ## Example 1.2: Calculate food demand
 ```r
 #Get a sample data set
@@ -59,10 +55,8 @@ sample_parameters <- c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20)
 #Calculate food demand
 Food_Demand <- food.dmnd(Test_Data$Ps,Test_Data$Pn,Test_Data$Y,params=vec2param(sample_parameters))
 ```
-
 ## Example 1.3: Visualize food demand
 ```r
-
 #Add income and total demand to the data frame created in example 1.2 and create a plot.  
 
 Food_Demand$Total_Demand <- Food_Demand$Qs+Food_Demand$Qn
@@ -81,7 +75,6 @@ g<-ggplot()+
 plot(g)    
 ```
 ![](example_3.png){width=50% height=50%} 
-
 ## Example 1.4: Visualize budget shares
 ```r
 #Rename the budget shares columns
@@ -106,7 +99,6 @@ plot(g)
 ## Example 1.5: Calculate income elasticities
 ```r
 #Note that setting the second argument to "TRUE" in the functions below would return the Y term (Y^elas) as opposed to the elasticity.
-
 Food_Demand$eta.s <- tmp_param$yfunc[[1]](Y=Food_Demand$Y,FALSE)
 Food_Demand$eta.n <- tmp_param$yfunc[[2]](Y=Food_Demand$Y,FALSE)
 
@@ -141,11 +133,9 @@ plot(g)
 ```
 ![](example_6.png){width=50% height=50%} 
 
-
 # Part 2: Calculating model parameters from raw data
 
 ## Example 2.1: Get a dataset for parameter fitting from a sample training dataset
-
 ### Warning: This might take a long time to run since we are using the entire training dataset
 ```r
 #Load the training data
@@ -154,7 +144,6 @@ data("training_data")
 #Create a dataset for parameter fit
 temp_data <- create_dataset_for_parameter_fit(data=training_data,min_clusters = 300,min_price_pd = 20,min_cal_fd = 1700,outdir=tempdir()) 
 ```
-
 ## Example 2.2: Analyze distribution of observational error for non-staples
 ```r
 #Load example processed_data 
@@ -188,11 +177,8 @@ plot(g)
 ![](example_8.png){width=50% height=50%} 
 
 ## Example 2.4: Calculate actual parameters
-
 ### Warning: Calculating parameters takes a long time (around 25 minutes)
-
 ```r
-
 #load sample data
 data("processed_data_example")
 
@@ -204,9 +190,7 @@ new_parameters <- calculate_ambrosia_params(datadir="Processed_Data_for_MC.csv",
                                             optim_method = "BFGS",
                                             original_param_vector= c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20))
 ```
-
 ## Example 2.5: Set up a log likelihood function based on observational data
-
 ```r
 
 #The log likelihood function set up below can be used to fit parameters either using the maximization function or any #other approach like a Markov Chain Monte Carlo
@@ -219,7 +203,6 @@ write.csv(processed_data_example,"Processed_Data_for_MC.csv")
 
 #Now, set up a log likelihood function using the saved data
 func_MC <- mc.setup("Processed_Data_for_MC.csv")
-
 ```
 ## Example 2.6: Calculate the log likelihood score based on the parameters (vector) calculated in Example 10 and the log likelihood function calculated in Example 2.4
 
@@ -234,25 +217,16 @@ new_parameters <- c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20)
 
 #calculate the likelihood score using the function calculated in example 2.5
 likelihood_score <- func_MC(c(new_parameters))
-
 ```
-
 # Part 3: Running the interactive version of the model
 
-
 ## Example 3.1: Run the interactive version of the model
-
 ```r
-
 runapp()
-
 ```
-
 # Part 4: Exploring data from a MCMC calculation 
 
-
 ## Example 4.1: Read in mc.data and create density plots
-
 ```r
 #Load example data
 data("mc_data_example")
@@ -271,7 +245,6 @@ mcparam.density(mc_example)
 ![](example_9.png){width=50% height=50%}
 
 ## Example 4.2: Re-create maximum probability density
-
 ```r
 #Load example data
 data("mc_data_example")
@@ -286,15 +259,13 @@ mc_example <- read.mc.data("mc_data_example.dat",varnames = namemc(nparam = 9))
 mcparam.ML(mc_example) -> ml_parameters
 
 #Now, set up the log likelihood function with the dataset used to calculate original parameters 
-
 data("data_used_for_original_param")
 
 write.csv(data_used_for_original_param, "original_data.csv")
 
+#Set up the log-likelihood function
 func_MC <- mc.setup("original_data.csv")
 
 #Now calculate the probability density. Add in the price scaling parameters (which were held constant during the MCMC). The value should be -195
-
 probability_density <- func_MC(c(ml_parameters,100,20))
-
 ```

@@ -19,11 +19,11 @@ authors:
   orchid: <your orchid id>
 date: "14 October 2020"
 output:
-  html_document:
-    df_print: paged
+  word_document: default
   pdf_document:
     fig_caption: yes
-  word_document: default
+  html_document:
+    df_print: paged
 bibliography: paper.bib
 tags:
 - R
@@ -267,7 +267,7 @@ In addition to the outputs described above, the model will generate two outputs 
 Mac OS X; Linux; Windows 10
 
 ## Programming language
-R (>= 3.3.0)
+R (>= 3.5.0)
 
 ## Dependencies
 dplyr (>= 0.7)
