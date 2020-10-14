@@ -6,18 +6,18 @@ authors:
   name: Kanishka Narayan
   orcid: <your orchid id>
 - affiliation: 1
-  name: Stephanie Waldhoff
-  orcid: <your orchid id>
+  name: Chris R. Vernon
+  orcid: 0000-0002-3406-6214
 - affiliation: 1
-  name: Ryna Cui
-  orcid: <your orchid id>
+  name: Stephanie Waldhoff
+  orcid: 0000-0002-8073-0868
 - affiliation: 1
   name: Jae Edmonds
   orcid: <your orchid id>
-- affiliation: 1
-  name: Chris R. Vernon
-  orchid: 0000-0002-3406-6214
-date: "5 October 2020"
+- affiliation: 2
+  name: Ryna Cui
+  orchid: <your orchid id>
+date: "14 October 2020"
 output:
   html_document:
     df_print: paged
@@ -31,7 +31,9 @@ tags:
 - food
 affiliations:
 - index: 1
-  name: Pacific Northwest National Laboratory, Richland, WA, USA
+  name: Joint Global Change Research Institute, Pacific Northwest National Laboratory, College Park, MD, USA
+- index: 2
+  name: University of Maryland
 ---
 
 
@@ -155,10 +157,10 @@ The demand code iteratively solves for the budget shares using a Broyden solver[
 #setting the second parameter to TRUE will generate
 #the Y term (Y ^ elasticity) as opposed to the elasticity itself.
 
-#Get income elasticities for staples (1st function)
+#Get income elasticities for staples 
 Food_Demand$eta.s <- params$yfunc[[1]](Y=Food_Demand$Y,FALSE)
 
-#Get income elasticities for staples (1st function)
+#Get income elasticities for non-staples 
 Food_Demand$eta.n <- params$yfunc[[2]](Y=Food_Demand$Y,FALSE)
 
 ```
@@ -179,10 +181,12 @@ The functions to derive price elasticities are described in the example below.
 ```R
 #Example 3: Calculating/Analyzing price elasticities
 
-Food_Demand$staple_price_elasticity <- calc1eps(Food_Demand$alpha.s,Food_Demand$alpha.n,
-Food_Demand$eta.s,Food_Demand$eta.n,tmp_param$xi)[1:300]
+#Staples
+Food_Demand$staple_price_elasticity <- calc1eps(Food_Demand$alpha.s,
+Food_Demand$alpha.n,Food_Demand$eta.s,Food_Demand$eta.n,
+tmp_param$xi)[1:300]
 
-
+#Non-staples
 Food_Demand$non_staple_price_elasticity <- calc1eps(Food_Demand$alpha.s,
 Food_Demand$alpha.n,Food_Demand$eta.s,
 Food_Demand$eta.n,tmp_param$xi)[901:1200]
@@ -234,9 +238,9 @@ Example 4 below illustrates the use of this function along with all parameters.
 #Example 4: Estimating parameters
 
 parameter_data <- calculate_ambrosia_params(optim_method = "BFGS",
-                                        original_param_vector= c(1.28,1.14,-0.19,0.21,
-                                        -0.33,0.5,0.1,16,5.06,100,20),
-                                        datadir = "outputs/Processed_Data_for_MC.csv")
+                                   original_param_vector= c(1.28,1.14,
+                                  -0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20),
+                                  datadir = "outputs/Processed_Data_for_MC.csv")
 ```
 ## Summary of functions
 
