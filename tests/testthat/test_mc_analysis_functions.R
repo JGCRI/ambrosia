@@ -4,7 +4,6 @@ test_that("Monte Carlo density plots are generated",{
 
     expect_silent(mc_example <- read.mc.data("test_outputs/mc_data_example.dat",varnames = namemc(nparam = 9)))
 
-
     expect_error(mcparam.density(mc_example),NA,info=("Failure to plot densities from MC data."))
 
 })

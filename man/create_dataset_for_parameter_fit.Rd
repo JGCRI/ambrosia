@@ -4,9 +4,15 @@
 \alias{create_dataset_for_parameter_fit}
 \title{Create dataset with observational error for log likelihood calculation using clustering.}
 \usage{
-create_dataset_for_parameter_fit(min_price_pd = 20, min_cal_fd = 1000,
-  min_clusters = 300, lower_limit_sigma = 0.01, data = NULL,
-  outdir = "tests/testthat/test_outputs/", print_progress = FALSE)
+create_dataset_for_parameter_fit(
+  min_price_pd = 20,
+  min_cal_fd = 1000,
+  min_clusters = 300,
+  lower_limit_sigma = 0.01,
+  data = NULL,
+  outdir = "tests/testthat/test_outputs/",
+  print_progress = FALSE
+)
 }
 \arguments{
 \item{min_cal_fd}{Minimum calories for the food demand model}

@@ -58,7 +58,7 @@ test_that('MC function can be set up correctly with old data', {
 test_that("Parameters calculated on test data are valid",{
 
     #Run for only 1 teration
-    expect_silent(calculate_ambrosia_params(datadir = "test_outputs/Processed_Data_for_MC.csv",max_iterations = 1,outdir = tempdir())->tmp_param)
+    expect_silent(calculate_ambrosia_params(datadir = "test_outputs/Processed_Data_for_MC.csv",max_iterations = 1,outdir = tempdir()) -> tmp_param)
 
 
     expect(validate.params(tmp_param),"Parameters calculated by function are invalid. Please check results.")

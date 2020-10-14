@@ -2,6 +2,7 @@ library(shiny)
 library(ggplot2)
 library(ambrosia)
 
+#Set default value for all parameters. These are the original values of the parameters.
 etasdefault <- c(-0.17, 0.17)
 etandefault <- 0.49
 Adefault <- c(1.28, 1.14)

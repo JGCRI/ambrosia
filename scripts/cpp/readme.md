@@ -1,4 +1,4 @@
-# Running the GCAM food demand model from C++
+# Example of fitting parameters using an MCMC implemented in C++
 
 This code shows how we used to use RInside to run the GCAM food demand
 model from a C++ program.  At one time this was how we used our C++

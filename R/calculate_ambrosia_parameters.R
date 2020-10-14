@@ -38,8 +38,7 @@
 #' @param print_progress A parameter that allows the user to track progress of function.
 #' @author KBN 2020
 #' @export
-calculate_ambrosia_params <- function(
-                                     optim_method = "BFGS",
+calculate_ambrosia_params <- function(optim_method = "BFGS",
                                      original_param_vector= c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20),
                                      datadir= "outputs/Processed_Data_for_MC.csv",
                                      outdir="tests/testthat/test_outputs/",
@@ -50,18 +49,18 @@ calculate_ambrosia_params <- function(
 
 
     #Read in original co-efficents as vector. These were taken directly from the paper.
-    original_param_vector<-original_param_vector
+    original_param_vector <- original_param_vector
 
 
 
     #Now create likelihood function with new data
-    func_MC<-mc.setup(datadir)
+    func_MC <- mc.setup(datadir)
 
 
     #Now calculate new parameters
     if(print_progress){
     print("Fitting parameters by maximizing log likelihood")}
-    params_vector <- optim(original_param_vector, func_MC, control=list(fnscale=-1,maxit=max_iterations),method = optim_method)
+    params_vector <- optim(original_param_vector, func_MC, control=list(fnscale=-1, maxit=max_iterations), method = optim_method)
 
     #If the optimizer does not work, or runs out of iterations, try again. It works in the first try.
     if(params_vector$convergence != 0){
@@ -71,7 +70,7 @@ calculate_ambrosia_params <- function(
 
 
     #Check probability density of original likelihood function
-    func_MC(params_vector$par)->New_probability_density
+    func_MC(params_vector$par) -> New_probability_density
 
     if(print_progress){
     print(paste0("Maximum value of log likelihood function is ",params_vector$value))}
@@ -79,8 +78,8 @@ calculate_ambrosia_params <- function(
 
     parameter_names<-c('A_s', 'A_n', 'xi_ss', 'xi_cross', 'xi_nn', 'nu1_n',
                        'lambda_s', 'k_s', 'Pm','psscl','pnscl')
-    parameter_data<-data.frame(parameter_names,params_vector$par)
-    write.csv(parameter_data,paste0(outdir,"parameter_data.csv"),row.names = FALSE)
+    parameter_data <- data.frame(parameter_names, params_vector$par)
+    write.csv(parameter_data, paste0(outdir,"parameter_data.csv"), row.names = FALSE)
 
     return(params_vector$par)
 
@@ -124,8 +123,8 @@ create_dataset_for_parameter_fit <- function(min_price_pd = 20,
                                              outdir="tests/testthat/test_outputs/",
                                              print_progress = FALSE){
     `%notin%` <- Negate(`%in%`)
-    data<-as.data.frame(data)
-    req_colnames<-c("s_cal_pcap_day_thous","ns_cal_pcap_day_thous","gdp_pcap_thous","s_usd_p1000cal","ns_usd_p1000cal","pop_thous")
+    data <- as.data.frame(data)
+    req_colnames <- c("s_cal_pcap_day_thous","ns_cal_pcap_day_thous","gdp_pcap_thous","s_usd_p1000cal","ns_usd_p1000cal","pop_thous")
 
     #Always check that we have the required columns
     for (i in req_colnames){
@@ -134,13 +133,13 @@ create_dataset_for_parameter_fit <- function(min_price_pd = 20,
         stop("Error: Required columns s_cal_pcap_day_thous, ns_cal_pcap_day_thous, gdp_pcap_thous,s_usd_p1000cal,ns_usd_p1000cal,pop_thous are not in the dataset.")
 
     }}
-
-    if(any(data$gdp_pcap_thous<0.1)){
+     #If income is below 0.1 USD, you cannot assign a budget for food demand. This code checks for the same.
+    if(any(data$gdp_pcap_thous < 0.1)){
         stop("Income levels for some observations are below 0.1 USD. This will cause a crash on the final food demand calculations.")
     }
 
     #Currently adding a status column to be transparent about the observations that we are including and excluding.
-    Raw_Data<-data %>%
+    raw_data <- data %>%
         #Calculate total calories
         mutate(Tot_cal=s_cal_pcap_day_thous+ns_cal_pcap_day_thous) %>%
         #Only keep prices less than 20 dollars per 1000 USD
@@ -152,28 +151,29 @@ create_dataset_for_parameter_fit <- function(min_price_pd = 20,
 
 
     #Calculate population weights
-    Raw_Data<-calc.pop.weight(Raw_Data)
+    raw_data <- calc.pop.weight(raw_data)
 
     #Calculate observational errors
-    Raw_Data<-assign.sigma.Q(Raw_Data)
+    raw_data <- assign.sigma.Q(raw_data)
 
     #Check number of observational errors. Anything under 20 means that there are a few observations skewing the distribution.
-    if (length(unique(Raw_Data$sig2Qn))<min_clusters){stop("Number of clusters for observational errors for non-staples are under the threshold. Please revisit data.")}
-    if (length(unique(Raw_Data$sig2Qn))<min_clusters){stop("Number of clusters for observational errors for non-staples are under the threshold. Please revisit data.")}
+    if (length(unique(raw_data$sig2Qn)) < min_clusters){stop("Number of clusters for observational errors for non-staples are under the threshold. Please revisit data.")}
+    if (length(unique(raw_data$sig2Qn)) < min_clusters){stop("Number of clusters for observational errors for non-staples are under the threshold. Please revisit data.")}
 
     #Some processing for data.
     # We need the following columns- Ps,Pn,Qs,Qn,Y,sig2Qn,sig2Qs,weight.
-    Raw_Data %>% rename(Ps=s_usd_p1000cal,Pn=ns_usd_p1000cal,Qs=s_cal_pcap_day_thous,Qn=ns_cal_pcap_day_thous,
+    raw_data %>% rename(Ps=s_usd_p1000cal,Pn=ns_usd_p1000cal,Qs=s_cal_pcap_day_thous,Qn=ns_cal_pcap_day_thous,
                         Y=gdp_pcap_thous2005usd) %>%
-        #We want prices in thousands of USD for a year's consumptiona at 1000 calories per day. Lower limit sig2Qn,sig2Qs to 0.01
+        #We want prices in thousands of USD for a year's consumption at 1000 calories per day (Hence, multiply this by 0.365). Lower limit sig2Qn , sig2Qs to 0.01
         mutate(Ps= Ps*0.365, Pn= Pn*0.365, sig2Qs=pmax(lower_limit_sigma,sig2Qs)
-               ,sig2Qn=pmax(lower_limit_sigma,sig2Qn))->Processed_Data_for_MC
+               ,sig2Qn=pmax(lower_limit_sigma,sig2Qn)) -> processed_data_for_mc
 
 
     #Write to a csv. We need this for calculating the likelihood function.
-    write.csv(Processed_Data_for_MC,paste0(outdir,"Processed_Data_for_MC.csv"),row.names = FALSE)
-   if(print_progress){
+    write.csv(processed_data_for_mc, paste0(outdir,"Processed_Data_for_MC.csv"),row.names = FALSE)
+
+    if(print_progress){
     print("Completed processing raw data and created clusters. Check output folder for Processed_Data_for_MC.csv")}
-    return(Processed_Data_for_MC)
+    return(processed_data_for_mc)
 
 }
