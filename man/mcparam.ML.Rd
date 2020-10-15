@@ -9,6 +9,9 @@ mcparam.ML(mc.data)
 \arguments{
 \item{mc.data}{Data frame of Monte Carlo output}
 }
+\value{
+A vector of parameters which yield the highest log likelihood.
+}
 \description{
 The MAP parameters are those that produced the largest posterior probability
 density.

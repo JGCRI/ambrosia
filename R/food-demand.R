@@ -131,6 +131,7 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL)
 #' @param eta.s Income elasticity for staple foods.
 #' @param eta.n Income elasticity for nonstaple foods.
 #' @param xi Matrix of Hicks elasticities
+#' @return matrix of price elasticities, where xi[1],xi[4] are staple and non-staple price elasticities, rest are cross elasticities
 #' @export
 calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
 
@@ -160,6 +161,7 @@ calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
 #' @param Ysterm Income term in the demand equation for staples
 #' @param Ynterm Income term in the demand equation for nonstaples
 #' @param Acoef Leading multiplier parameter.
+#' @return Quantities of staples and non-staples (Qs and Qn)
 calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef,psscl,pnscl) {
   ## not vectorized:  use mapply
   Qs <- Acoef[1] * Ps^eps[1] * Pn^eps[3] * Ysterm
@@ -339,6 +341,7 @@ eta.n <- function(nu1) {
 #' @param Y Per-capita income
 #' @param params Model parameters.  See description in \code{\link{food.dmnd}}.
 #' @param basedata Model results for the base values of Ps, Pn, and Y.
+#' @return data frame with elasticities
 #' @export
 calc.elas.actual <- function(Ps,Pn,Y, params, basedata=NULL)
 {
@@ -400,6 +403,7 @@ calc.elas.actual <- function(Ps,Pn,Y, params, basedata=NULL)
 #' @param alpha.s Budget fraction for staples
 #' @param alpha.n Budget fraction for nonstaples
 #' @param alpha.m Budget fraction for materials
+#' @return dataframe with hicks elasticities
 #' @export
 calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
 {
@@ -438,6 +442,7 @@ calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
 #' @param bc Vector of regional bias correction factors.  Optional. If
 #' omitted, no bias correction will be applied.
 #' @param region Region to apply the analysis to.
+#' @return food demand by year as a data frame
 #' @export
 food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
 {
@@ -487,6 +492,7 @@ food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
 #' \code{\link{food.dmnd}}.
 #' @param region Name of a single region to tabulate.  If \code{NULL}, tabulate all
 #' regions and concatenate the tables.
+#' @return food demand by per capita income returned as a data frame.
 #' @export
 food.dmnd.byincome <- function(obsdata, params, region=NULL)
 {
@@ -525,6 +531,7 @@ food.dmnd.byincome <- function(obsdata, params, region=NULL)
 #' representation to the former.
 #'
 #' @param df Data frame of lambda and ks parameters.
+#' @return data frame with converted values
 #' @export
 lamks2nu1y0 <- function(df)
 {
@@ -552,6 +559,7 @@ lamks2nu1y0 <- function(df)
 #'
 #' @param obs.trn Data frame of observations in the training set.
 #' @param obs.tst Data frame of observations in the testing set.
+#' @return merged dataframe
 #' @export
 merge_trn_tst <- function(obs.trn, obs.tst)
 {
@@ -611,6 +619,7 @@ compute.bc.rgn <- function(obs, params)
 #' @param params Model parameter structure (described in
 #' \code{\link{food.dmnd}})
 #' @param obs.trn Data frame of training observations.
+#' @return calculated bias corrected values
 #' @export
 compute.bias.corrections <- function(params, obs.trn)
 {
@@ -634,6 +643,7 @@ apply.bc.rgn <- function(mod, bc)
 #'
 #' @param mod Data frame of model outputs
 #' @param bc Vector of regional bias correction factors
+#' @return A data frame with bias corrected values
 #' @export
 apply.bias.corrections <- function(mod, bc)
 {

@@ -13,6 +13,9 @@ mcparam.itercount(niter, nproc, npset)
 
 \item{npset}{Number of parameter sets per processor}
 }
+\value{
+iteration count for MCMC calculation
+}
 \description{
 This is only necessary for the C++ MC code, due to some limitations in the
 way it records its output.

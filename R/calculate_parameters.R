@@ -19,7 +19,7 @@
 #'
 #' lambda_s : Income elasticity for staples
 #'
-#' k_s : Minimum price for staples
+#' k_s : Income level at which total demand begins saturating
 #'
 #' Pm : Scaling parameter for price of materials (everything other than staples and non-staples)
 #'

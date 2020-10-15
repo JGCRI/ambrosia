@@ -15,6 +15,9 @@ food.dmnd.byincome(obsdata, params, region = NULL)
 \item{region}{Name of a single region to tabulate.  If \code{NULL}, tabulate all
 regions and concatenate the tables.}
 }
+\value{
+food demand by per capita income returned as a data frame.
+}
 \description{
 Tabulate staple and nonstaple demand as a function of per-capita GDP.  This
 function uses observed prices for the comparison

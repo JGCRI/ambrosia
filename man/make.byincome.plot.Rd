@@ -13,6 +13,9 @@ make.byincome.plot(obsdata, params, region = NULL)
 
 \item{region}{Regions to include in the plot.}
 }
+\value{
+Plot of model results by income levels
+}
 \description{
 Plot model results by per-capita income
 }

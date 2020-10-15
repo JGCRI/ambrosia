@@ -23,7 +23,7 @@ devtools::install_github('JGCRI/ambrosia')
 
 ## Examples
 
-A list of examples describing the different features in `ambrosia`are described in the `ambrosia_vignette.rmd` in the vignettes(`vignettes/`) directory. The example below shows how a user can get an estimate of demand using some sample parameters.
+A list of examples describing the different features in `ambrosia`are described in the [`ambrosia_vignette.rmd`](https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html) in the vignettes(`vignettes/`) directory. The example below shows how a user can get an estimate of demand using some sample parameters.
 
 ```r
 #Get a sample data set

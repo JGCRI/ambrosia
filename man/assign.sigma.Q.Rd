@@ -11,6 +11,9 @@ assign.sigma.Q(input.data, min.group = 5)
 
 \item{min.group}{Minimum group size for clustering}
 }
+\value{
+A dataframe updated with the calculated observational error (sig2Qs and sig2Qn columns)
+}
 \description{
 Assign sigma (observational error) values for Qs and Qn in an input data set.
 We do this by clustering the input on Ps, Pn, and Y and then taking the

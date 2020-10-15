@@ -9,6 +9,9 @@ lamks2nu1y0(df)
 \arguments{
 \item{df}{Data frame of lambda and ks parameters.}
 }
+\value{
+data frame with converted values
+}
 \description{
 The staple income elasticity has two formulations of its parameters.  The one
 that uses nu1 (income elasticity at Y==1) and y0 (value of Y for which the

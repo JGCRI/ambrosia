@@ -11,6 +11,9 @@ apply.bias.corrections(mod, bc)
 
 \item{bc}{Vector of regional bias correction factors}
 }
+\value{
+A data frame with bias corrected values
+}
 \description{
 Apply bias corrections to model outputs
 }

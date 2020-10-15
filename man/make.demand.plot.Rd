@@ -15,6 +15,9 @@ make.demand.plot(alldata, xdata, xlabel, max.yval = NULL)
 
 \item{max.yval}{Maximum value to display on the y-axis.  See details.}
 }
+\value{
+Plot of food demand by staples and non-staples relative to income
+}
 \description{
 The plot will have quantity on the y-axis.  The x-axis data is passed in as a
 separate vector, so it can be any of the input values used in the model (or

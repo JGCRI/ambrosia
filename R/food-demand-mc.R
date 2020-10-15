@@ -225,6 +225,7 @@ process.gcam.data <- function(gcam.data)
 #' @param regions Vector of regions to include in the computation.  If NULL,
 #' include all.
 #' @importFrom dplyr %>%
+#' @return Data frame with results of food demand by year
 #' @export
 mc.food.dmnd.byyear <- function(obsdata, x, regions=NULL)
 {
