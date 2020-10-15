@@ -1,10 +1,10 @@
 ---
 title: 'ambrosia: An R package for calculating and analyzing food demand and in accordance
-  with the Edmonds et al. food demand model.'
+  with the Edmonds et al. food demand model'
 authors:
 - affiliation: 1
   name: Kanishka Narayan
-  orcid: <your orchid id>
+  orcid: 0000-0001-8483-6216
 - affiliation: 1
   name: Chris R. Vernon
   orcid: 0000-0002-3406-6214
@@ -13,10 +13,10 @@ authors:
   orcid: 0000-0002-8073-0868
 - affiliation: 1
   name: Jae Edmonds
-  orcid: <your orchid id>
+  orcid: 0000-0002-3210-9209
 - affiliation: 2
   name: Ryna Cui
-  orchid: <your orchid id>
+  orchid: 0000-0002-8531-4126
 date: "14 October 2020"
 output:
   word_document: default
@@ -121,7 +121,7 @@ The ambrosia package can be easily loaded as a standard R package after installa
 
 original_param_vector <- c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20)
 
-#Names of the parameters above are as follows. 
+#Names of the parameters above are as follows.
 #These are the same as the names in Table 1 in Appendix I  
 
 parameter_names <- c('A_s', 'A_n', 'xi_ss', 'xi_cross', 'xi_nn', 'nu1_n',
@@ -153,14 +153,14 @@ The demand code iteratively solves for the budget shares using a Broyden solver[
 ```R
 #Example 2: Calculating/Analyzing income elasticities
 
-#As explained in the documentation of these functions, 
+#As explained in the documentation of these functions,
 #setting the second parameter to TRUE will generate
 #the Y term (Y ^ elasticity) as opposed to the elasticity itself.
 
-#Get income elasticities for staples 
+#Get income elasticities for staples
 Food_Demand$eta.s <- params$yfunc[[1]](Y=Food_Demand$Y,FALSE)
 
-#Get income elasticities for non-staples 
+#Get income elasticities for non-staples
 Food_Demand$eta.n <- params$yfunc[[2]](Y=Food_Demand$Y,FALSE)
 
 ```
@@ -288,7 +288,7 @@ $Name$- Github
 
 $Identifier$- https://github.com/JGCRI/ambrosia/tree/master
 
-$License$- BSD 2-Clause 
+$License$- BSD 2-Clause
 
 
 # Acknowledgements
