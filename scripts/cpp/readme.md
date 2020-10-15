@@ -6,3 +6,4 @@ switched over to R-native MCMC packages. If someone really wants to run the mode
 should be easy to rework this example to run with the new
 version.
 
+Using this code, the user can fit a log-likelihood function in ambrosia and then use the same to run a Markov Chain Monte Carlo parameter fit.
