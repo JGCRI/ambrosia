@@ -12,7 +12,7 @@ authors:
   name: Stephanie Waldhoff
   orcid: 0000-0002-8073-0868
 - affiliation: 1
-  name: Jae Edmonds
+  name: Jae A. Edmonds
   orcid: 0000-0002-3210-9209
 - affiliation: 2
   name: Ryna Cui
@@ -57,9 +57,9 @@ An important motivation to develop `ambrosia` is functionalizing and separating 
 Thus, the model not only enables easy use and future development, but also enables easy modularization of the code within other systems. The sections below contain a detailed discussion of the different functions and customization options available within the tool.
 
 # Summary of the Edmonds et al. framework
-The Edmonds et al. model represents a food demand model for staples and non-staple commodities at different levels of prices and incomes. Demand for staples is described as increasing when income is lower, eventually peaks at under 1000$ per person per capita,  and then begins to decline as higher income ranges are approached. Demand for non-staples increases with income over all income ranges; however, total (staple + non-staple) demand saturates at high income level [@edmonds2017global].
+The @edmonds2017global model represents a food demand model for staples and non-staple commodities at different levels of prices and incomes. Demand for staples is described as increasing when income is lower, eventually peaks at under 1000$ per person per capita,  and then begins to decline as higher income ranges are approached. Demand for non-staples increases with income over all income ranges; however, total (staple + non-staple) demand saturates at high income level.
 
-The [@edmonds2017global] approach uses an 11 parameter model where the parameters are fit using pooled cross-sectional-timeseries observations and a Bayesian Markov Chain Monte Carlo method [MCMC; @hastings1970]. The framework represents demand for three categories of goods staples (s), non-staples (n) and materials (m) where materials represent everything in the economy other than staples and non-staple food commodities. The demand for these three categories changes with changes in income (Y) and prices (P), with the response to price changes varying with income. Expenditures on these three goods are assumed to exhaust income.  
+The @edmonds2017global approach uses an 11 parameter model where the parameters are fit using pooled cross-sectional-timeseries observations and a Bayesian Markov Chain Monte Carlo method [MCMC; @hastings1970]. The framework represents demand for three categories of goods staples (s), non-staples (n) and materials (m) where materials represent everything in the economy other than staples and non-staple food commodities. The demand for these three categories changes with changes in income (Y) and prices (P), with the response to price changes varying with income. Expenditures on these three goods are assumed to exhaust income.  
 
 Demand for these three categories can be represented mathematically as,
 
@@ -110,7 +110,7 @@ In addition to this, an interactive version of the food demand model can be laun
 
 ## Functions to explore demand variables
 
-The `ambrosia` package can be easily loaded as a standard R package after installation from GitHub. The user can calculate demand for staples and non-staples using the  ```food.dmnd()``` function. The user will have to pass in a dataset with the price of staples ($Ps$), price of non-staples ($Pn$), incomes ($Y$) in GDP per capita in thousand USD. In addition to the dataset, the user must pass a vector of 11 parameters. In order to functionalize the parameters, the code contains a function called ```vec2param()``` that will generate a parameter structure that can be used by the food demand function. The usage of the functions are described in the example below. The example makes use of the vector of parameters directly from [@edmonds2017global]. The food demand function is implemented using equations (1),(2),(3) described above.
+The `ambrosia` package can be easily loaded as a standard R package after installation from GitHub. The user can calculate demand for staples and non-staples using the  ```food.dmnd()``` function. The user will have to pass in a dataset with the price of staples ($Ps$), price of non-staples ($Pn$), incomes ($Y$) in GDP per capita in thousand USD. In addition to the dataset, the user must pass a vector of 11 parameters. In order to functionalize the parameters, the code contains a function called ```vec2param()``` that will generate a parameter structure that can be used by the food demand function. The usage of the functions are described in the example below. The example makes use of the vector of parameters directly from [@edmonds2017global]. The food demand function is implemented using equations (1), (2), (3) described above.
 
 ### Example 1: Creating estimates of demand
 ```R
@@ -136,13 +136,13 @@ Food_Demand<-food.dmnd(Ps = Test_Data$Ps,
                        params = params)
 ```
 
-Using the function above will create a data frame with estimates of demand for each level of price and incomes and also the budget shares (shares of incomes spent) for staples and non-staples. Plotting these result in Figure 1 and Figure 2 below respectively
+Using the function above will create a data frame with estimates of demand for each level of price and incomes and also the budget shares (shares of incomes spent) for staples and non-staples. Plotting these result in Figure 1 and Figure 2 below respectively.
 
 ![Food Demand in thousand calories for a range of incomes with constant prices.](Fig1FoodDemand.png)
 
 ![Budget shares as a percent for a range of incomes with constant prices.](Fig2BudgetShares.png)
 
-The demand code iteratively solves for the budget shares using a Broyden solver [@broyden1969] with changing incomes and re-calculates income and price elasticities for changes in budget shares. The user can  separately analyze the income elasticities by using two functions (one for staples and other for non-staples) from within the parameter structure generated above. These functions implement equations (5) and (6) described above for a given level of income (Y). This is explained in the example below  
+The demand code iteratively solves for the budget shares using a Broyden solver [@broyden1969] with changing incomes and re-calculates income and price elasticities for changes in budget shares. The user can  separately analyze the income elasticities by using two functions (one for staples and other for non-staples) from within the parameter structure generated above. These functions implement equations (5) and (6) described above for a given level of income (Y). This is explained in the example below.
 
 ### Example 2: Calculating/analyzing income elasticities
 ```R
@@ -211,11 +211,11 @@ parameter_data <- create_dataset_for_parameter_fit(data=Sample_Data,
 
 The dataset returned by this function can now be used for parameter estimation. The user can also plot the observational errors for staples and non-staples to ensure there is a valid distribution and the data is not skewed (as seen in Figure 5 below for staples).
 
-![Distribution of observational error for staples for sample data](Fig7ObserrorStaples.png)
+![Distribution of observational error for staples for sample data.](Fig7ObserrorStaples.png)
 
 ## Functions for parameter estimation
 
-User may also complete the parameter estimation on the dataset returned by ```create_dataset_for_parameter_fit()``` with a call to the ```calculate_ambrosia_params()``` function. ```ambrosia``` builds on the [@edmonds2017global] approach by maximizing the log-likelihood score using the ```optim()``` function. Note that the user can also choose to use a different method (for example, the original MCMC) to maximize the log-likelihood function by first setting up the function using the ```mc.setup()``` function. The code contains an example of a MCMC implementation in C++ under ```scripts/cpp ```.
+User may also complete the parameter estimation on the dataset returned by ```create_dataset_for_parameter_fit()``` with a call to the ```calculate_ambrosia_params()``` function. ```ambrosia``` builds on the @edmonds2017global approach by maximizing the log-likelihood score using the ```optim()``` function. Note that the user can also choose to use a different method (for example, the original MCMC) to maximize the log-likelihood function by first setting up the function using the ```mc.setup()``` function. The code contains an example of a MCMC implementation in C++ under ```scripts/cpp ```.
 
 The following steps are involved in the parameter estimation function,
 
