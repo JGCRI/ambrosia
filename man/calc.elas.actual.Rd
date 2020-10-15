@@ -17,6 +17,9 @@ calc.elas.actual(Ps, Pn, Y, params, basedata = NULL)
 
 \item{basedata}{Model results for the base values of Ps, Pn, and Y.}
 }
+\value{
+data frame with elasticities
+}
 \description{
 Given a set of prices and incomes, and model parameters,calculate the
 elasticities using numerical derivatives.  Optionally, you can pass the model

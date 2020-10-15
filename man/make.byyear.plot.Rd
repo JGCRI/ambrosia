@@ -11,6 +11,9 @@ make.byyear.plot(byyear.data, pltrgn = NULL)
 
 \item{pltrgn}{Region to plot}
 }
+\value{
+Plot of model results by year
+}
 \description{
 Plot model results by year
 }

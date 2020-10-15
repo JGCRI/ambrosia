@@ -17,6 +17,9 @@ calc1eps(alpha.s, alpha.n, eta.s, eta.n, xi)
 
 \item{xi}{Matrix of Hicks elasticities}
 }
+\value{
+matrix of price elasticities, where xi[1],xi[4] are staple and non-staple price elasticities, rest are cross elasticities
+}
 \description{
 This is an approximation to the Slutsky equations, inasmuch as we use these
 as the exponents directly, instead of solving for exponents that produce

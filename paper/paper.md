@@ -19,11 +19,11 @@ authors:
   orchid: 0000-0002-8531-4126
 date: "14 October 2020"
 output:
-  word_document: default
-  pdf_document:
-    fig_caption: yes
   html_document:
     df_print: paged
+  pdf_document:
+    fig_caption: yes
+  word_document: default
 bibliography: paper.bib
 tags:
 - R
@@ -46,7 +46,7 @@ The `ambrosia` R package was developed to calculate food demand for staples and 
 (3)	exploration and preparation of raw data before starting a parameter estimation.
 
 # Statement of need
-An important motivation to develop `ambrosia` is functionalizing and separating out the different components of the sophisticated food demand framework described in  into usable R functions that can be easily parameterized and customized by the user. Thus, in addition to providing scientifically sound parameters for GCAM, `ambrosia` has been developed to help researchers explore questions related to trends in food demand empirically. Since the equations of the model are grounded in peer reviewed research while the code itself is written in R (which increases usability), the tool is useful to researchers interested in,
+An important motivation to develop `ambrosia` is functionalizing and separating out the different components of the sophisticated food demand framework from @edmonds2017global (summarized below) into usable R functions that can be easily parameterized and customized by the user. Thus, `ambrosia` has been developed to help researchers explore questions related to trends in food demand empirically. Since the equations of the model are grounded in peer reviewed research while the code itself is written in R (which increases usability), the tool is useful to researchers interested in,
 
 1)	analyzing and exploring trends in food demand with a computational model that is responsive to changes in incomes and prices that can easily be implemented on any time series (dataset);
 2)  re-estimating parameters of the food demand model using custom data;
@@ -54,7 +54,7 @@ An important motivation to develop `ambrosia` is functionalizing and separating 
 
 `ambrosia` is part of an ecosystem of tools within the Global Change Intersectoral Modeling System (GCIMS) that help users computationally explore science and policy questions related to different dimensions of human-Earth systems [@pnnl_2020]. The parameters calculated from `ambrosia` are utilized directly in GCAM [@calvin2019gcam] to represent forecasts of food demand. `ambrosia` ensures that the parameters that are used within GCAM are scientifically and empirically sound and also ensures reproducibility of the parameters for validation to comply with the commitment of GCIMS to FAIR guiding principles for scientific data management [@wilkinson2016fair]. The code is structured to ensure that the parameters can be updated and tested effectively with changes in underlying data.    
 
-Thus, the model not only enables easy use and future development, but also enables easy modularization of the code within other systems. The sections below contain a detailed discussion of the different functions and customization options available within the tool.
+Thus, the tool not only enables easy use and future development, but also enables easy modularization of the code within other systems. The sections below contain a detailed discussion of the different functions and customization options available within the tool.
 
 # Summary of the Edmonds et al. framework
 The @edmonds2017global model represents a food demand model for staples and non-staple commodities at different levels of prices and incomes. Demand for staples is described as increasing when income is lower, eventually peaks at under 1000$ per person per capita,  and then begins to decline as higher income ranges are approached. Demand for non-staples increases with income over all income ranges; however, total (staple + non-staple) demand saturates at high income level.
@@ -63,9 +63,9 @@ The @edmonds2017global approach uses an 11 parameter model where the parameters 
 
 Demand for these three categories can be represented mathematically as,
 
-(1) Staple demand: $q_{s} = A_{s}(x^{h_{s}(x)})(w_{s}^{e_{ss(x)}})(w_{n}^{e_sn(x)})$
+(1) Staple demand: $q_{s} = A_{s}(x^{h_{s}(x)})(w_{s}^{e_{ss}(x)})(w_{n}^{e_{sn}(x)})$
 
-(2) Non-staple food demand: $q_{n} = A_{n}(x^{h_{n}(x)})(w_{s}^{e_{ns(x)}})(w_{n}^{e_nn(x)})$
+(2) Non-staple food demand: $q_{n} = A_{n}(x^{h_{n}(x)})(w_{s}^{e_{ns}(x)})(w_{n}^{e_{nn}(x)})$
 
 (3) Materials demand : $q_{m} = x - w_{s}q_{s} - w_{n}q_{n}$
 
@@ -110,7 +110,7 @@ In addition to this, an interactive version of the food demand model can be laun
 
 ## Functions to explore demand variables
 
-The `ambrosia` package can be easily loaded as a standard R package after installation from GitHub. The user can calculate demand for staples and non-staples using the  ```food.dmnd()``` function. The user will have to pass in a dataset with the price of staples ($Ps$), price of non-staples ($Pn$), incomes ($Y$) in GDP per capita in thousand USD. In addition to the dataset, the user must pass a vector of 11 parameters. In order to functionalize the parameters, the code contains a function called ```vec2param()``` that will generate a parameter structure that can be used by the food demand function. The usage of the functions are described in the example below. The example makes use of the vector of parameters directly from [@edmonds2017global]. The food demand function is implemented using equations (1), (2), (3) described above.
+The `ambrosia` package can be easily loaded as a standard R package after installation from GitHub. The user can calculate demand for staples and non-staples using the  ```food.dmnd()``` function. The user will have to pass in a dataset with the price of staples ($Ps$), price of non-staples ($Pn$), incomes ($Y$) in GDP per capita in thousand USD. In addition to the dataset, the user must pass a vector of 11 parameters. In order to functionalize the parameters, the code contains a function called ```vec2param()``` that will generate a parameter structure that can be used by the food demand function. The usage of the functions are described in the example below. The example makes use of the vector of parameters directly from @edmonds2017global. The food demand function is implemented using equations (1), (2), (3) described above.
 
 ### Example 1: Creating estimates of demand
 ```R
@@ -189,7 +189,7 @@ Similar to the income elasticities, these can now be plot against incomes as see
 
 ## Functions to process raw data for parameter estimation
 
-As mentioned in the statement of need, one of the benefits of using ```ambrosia``` is that a user can estimate their own parameters with a custom data set using the log-likelihood maximization approach. To enable this, ```ambrosia``` is equipped with a function (```create_dataset_for_parameter_fit()```) that will help a user generate a dataset that is appropriate for parameter estimation. The user can re-create the training data used to calculate the parameters for GCAM using the ```Process_Demand_Data.R``` under the ```scripts``` directory.  
+As mentioned in the statement of need, one of the benefits of using ```ambrosia``` is that a user can estimate their own parameters with a custom data set using the log-likelihood maximization approach. To enable this, ```ambrosia``` is equipped with a function ```create_dataset_for_parameter_fit()``` that will help a user generate a dataset that is appropriate for parameter estimation. The user can re-create the training data used to calculate the parameters for GCAM using the ```Process_Demand_Data.R``` under the ```scripts``` directory.  
 
 There are a few steps that the function will perform on a sample dataset.
 
@@ -220,7 +220,7 @@ User may also complete the parameter estimation on the dataset returned by ```cr
 The following steps are involved in the parameter estimation function,
 
 1) First a log-likelihood function is set up with the data returned by the function above. This function is the same as equation (7) described above.
-2) Next, the value returned by this function will be maximized using ```optim()```. The user can provide a seed of initial parameters to begin the optimization process (the lowest possible seed would be the lowest values of all 11 parameters). The default seed is set to the original parameters from Edmonds et al. The user can now specify the optimization method to be used. The default is set to the "BFGS" method [@yuan1991modified], but the user can also run the optimization using methods such as "Neldor-Mead" [@singer2009nelder].
+2) Next, the value returned by this function will be maximized using ```optim()```. The user can provide a seed of initial parameters to begin the optimization process (the lowest possible seed would be the lowest values of all 11 parameters). The default seed is set to the original parameters from @edmonds2017global. The user can now specify the optimization method to be used. The default is set to the "BFGS" method [@yuan1991modified], but the user can also run the optimization using methods such as "Neldor-Mead" [@singer2009nelder].
 3) Finally, the function will now return a vector of parameters that can be used to derive estimates of food demand (similar to Example 1 above). The function also prints out the maximized value of the log-likelihood function, so that the user can verify the efficiency and effectiveness of the parameter estimation.
 
 Example 4 below illustrates the use of this function along with all parameters.

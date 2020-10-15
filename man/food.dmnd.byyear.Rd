@@ -17,6 +17,9 @@ omitted, no bias correction will be applied.}
 
 \item{region}{Region to apply the analysis to.}
 }
+\value{
+food demand by year as a data frame
+}
 \description{
 Tabulate food demand by year for in input model using the observed prices and
 incomes for a given region.  If \code{region} is \code{NULL}, do it for all

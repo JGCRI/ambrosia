@@ -27,6 +27,9 @@ mc.make.byyear.plot(
 \item{pltrgn}{Regions to include in the plot.  If \code{NULL}, include them
 all.}
 }
+\value{
+by-year plot for a set of monte carlo results by sampling the distribution
+}
 \description{
 Make the by-year plot for a set of monte carlo results by sampling the distribution
 }

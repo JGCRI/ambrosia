@@ -100,6 +100,7 @@ recursive.partition <- function(input.data, cluster.vars, min.members=5)
 #'
 #' @param input.data Data frame of observational input.
 #' @param min.group Minimum group size for clustering
+#' @return A dataframe updated with the calculated observational error (sig2Qs and sig2Qn columns)
 #' @importFrom dplyr %>%
 #' @export
 assign.sigma.Q <- function(input.data, min.group=5)

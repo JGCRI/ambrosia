@@ -15,6 +15,9 @@ calc.hicks.actual(eps, alpha.s, alpha.n, alpha.m)
 
 \item{alpha.m}{Budget fraction for materials}
 }
+\value{
+dataframe with hicks elasticities
+}
 \description{
 Given actual price and income elasticities (i.e., calculated using finite
 difference derivatives), compute the corresponding Hicks elasticities.

@@ -13,6 +13,7 @@
 #' @param varnames Names of the variables stored in the file (the MC output
 #' format didn't have column headers). If omitted, a default set of names is
 #' supplied.
+#' @return A table with parameter names in accordance with the food demand model
 #' @export
 read.mc.data <- function(filename, varnames=namemc())
 {
@@ -32,6 +33,7 @@ read.mc.data <- function(filename, varnames=namemc())
 #' Create a density plot for all of the MC variables
 #'
 #' @param mc.data Data frame of Monte Carlo output.
+#' @return A density plot
 #' @export
 mcparam.density <- function(mc.data)
 {
@@ -78,6 +80,7 @@ mcparam.sample <- function(mc.data, nsamp=100, func=NULL)
 #' density.
 #'
 #' @param mc.data Data frame of Monte Carlo output
+#' @return A vector of parameters which yield the highest log likelihood.
 #' @export
 mcparam.ML <- function(mc.data)
 {
@@ -130,6 +133,7 @@ mcparam.clip.tails <- function(mc.data, qlo=0.01, qhi=0.99)
 #' @param niter Total number of iterations in the mcpar loop.
 #' @param nproc Number of processors allocated to the calculation.
 #' @param npset Number of parameter sets per processor
+#' @return iteration count for MCMC calculation
 #' @export
 mcparam.itercount <- function(niter, nproc, npset)
 {

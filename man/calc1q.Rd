@@ -21,6 +21,9 @@ calc1q(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef, psscl, pnscl)
 
 \item{Acoef}{Leading multiplier parameter.}
 }
+\value{
+Quantities of staples and non-staples (Qs and Qn)
+}
 \description{
 This is a helper function for the \code{mapply} calls in
 \code{\link{food.dmnd}}

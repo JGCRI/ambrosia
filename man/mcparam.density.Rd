@@ -9,6 +9,9 @@ mcparam.density(mc.data)
 \arguments{
 \item{mc.data}{Data frame of Monte Carlo output.}
 }
+\value{
+A density plot
+}
 \description{
 Create a density plot for all of the MC variables
 }

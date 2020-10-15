@@ -13,6 +13,9 @@ read.mc.data(filename, varnames = namemc())
 format didn't have column headers). If omitted, a default set of names is
 supplied.}
 }
+\value{
+A table with parameter names in accordance with the food demand model
+}
 \description{
 Read the Monte Carlo results file
 }

@@ -14,6 +14,9 @@ mc.food.dmnd.byyear(obsdata, x, regions = NULL)
 \item{regions}{Vector of regions to include in the computation.  If NULL,
 include all.}
 }
+\value{
+Data frame with results of food demand by year
+}
 \description{
 The input parameters must be in the Monte Carlo formulation (i.e., lambda-ks,
 \emph{not} nu1-y0 format

@@ -11,6 +11,9 @@ merge_trn_tst(obs.trn, obs.tst)
 
 \item{obs.tst}{Data frame of observations in the testing set.}
 }
+\value{
+merged dataframe
+}
 \description{
 Create a merged dataset with training and test data, each labeled accordingly
 }

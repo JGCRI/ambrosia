@@ -11,6 +11,7 @@
 #' @param xdata Vector of values for the x-axis.
 #' @param xlabel Character string to use for the x-axis label
 #' @param max.yval Maximum value to display on the y-axis.  See details.
+#' @return Plot of food demand by staples and non-staples relative to income
 #' @export
 make.demand.plot <- function(alldata,xdata,xlabel,max.yval=NULL)
 {
@@ -37,6 +38,7 @@ make.demand.plot <- function(alldata,xdata,xlabel,max.yval=NULL)
 #' @param byyear.data Output from \code{\link{food.dmnd.byyear}}
 #' @param pltrgn Region to plot
 #' @importFrom dplyr %>%
+#' @return Plot of model results by year
 #' @export
 make.byyear.plot <- function(byyear.data, pltrgn=NULL)
 {
@@ -104,6 +106,7 @@ make.byyear.plot <- function(byyear.data, pltrgn=NULL)
 #' @param obsdata Data frame of observed food demand data
 #' @param params Model parameter structure
 #' @param region Regions to include in the plot.
+#' @return Plot of model results by income levels
 #' @export
 make.byincome.plot <- function(obsdata, params, region=NULL)
 {
@@ -128,6 +131,7 @@ make.byincome.plot <- function(obsdata, params, region=NULL)
 #' @param pltrgn Regions to include in the plot.  If \code{NULL}, include them
 #' all.
 #' @importFrom dplyr %>%
+#' @return by-year plot for a set of monte carlo results by sampling the distribution
 #' @export
 mc.make.byyear.plot <- function(mc.data, obsdata, bias.correction=NULL, region=NULL, nsamp=30, pltrgn=NULL)
 {
