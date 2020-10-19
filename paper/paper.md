@@ -19,11 +19,11 @@ authors:
   orchid: 0000-0002-8531-4126
 date: "14 October 2020"
 output:
-  html_document:
-    df_print: paged
+  word_document: default
   pdf_document:
     fig_caption: yes
-  word_document: default
+  html_document:
+    df_print: paged
 bibliography: paper.bib
 tags:
 - R
@@ -251,35 +251,6 @@ In the addition to the main functions described above, ambrosia also includes a 
 ## Other outputs
 
 In addition to the outputs described above, the model will generate two outputs as CSV files for testing and validation. First, the `Processed_Data_for_MC.csv` is saved as an output of the `create_dataset_for_parameter_fit()` function. This dataset is used to fit the parameters and is also used by the testing suite to ensure outputs are valid. Last, the `parameter_data.csv` is saved as an output of the ```calculate_ambrosia_params()``` function. This is the final set of parameters with their scientific names that are passed to GCAM.
-
-# Availability
-
-## Operating system
-Mac OS X; Linux; Windows 10
-
-## Programming language
-R (>= 3.5.0)
-
-## Dependencies
-dplyr (>= 0.7)
-
-nleqslv (>= 3.2)
-
-reshape2 (>= 1.4.3)
-
-ggplot2 (>= 2.2.1)
-
-cluster (>= 2.0)
-
-tidyr  (>= 0.7.1)
-
-## Code repository
-
-$Name$- GitHub; `JGCRI/ambrosia`
-
-$Identifier$- https://github.com/JGCRI/ambrosia/tree/v1.3.0
-
-$License$- BSD 2-Clause
 
 
 # Acknowledgements

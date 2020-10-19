@@ -45,3 +45,32 @@ The code from the example can be used to visualize the food demand for staples a
 
 ## Contributing to `ambrosia`
 We welcome contributions to `ambrosia` from the development community. Please contact us if you want to collaborate! The `ambrosia` GitHub repository is accessible here: [GitHub Repository](https://github.com/JGCRI/ambrosia)
+
+# Availability
+
+## Operating system
+Mac OS X; Linux; Windows 10
+
+## Programming language
+R (>= 3.5.0)
+
+## Dependencies
+dplyr (>= 0.7)
+
+nleqslv (>= 3.2)
+
+reshape2 (>= 1.4.3)
+
+ggplot2 (>= 2.2.1)
+
+cluster (>= 2.0)
+
+tidyr  (>= 0.7.1)
+
+## Code repository
+
+$Name$- GitHub; `JGCRI/ambrosia`
+
+$Identifier$- https://github.com/JGCRI/ambrosia/tree/v1.3.0
+
+$License$- BSD 2-Clause
