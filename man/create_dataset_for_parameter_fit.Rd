@@ -23,15 +23,15 @@ create_dataset_for_parameter_fit(
 
 \item{data}{A data.frame or data.table with the raw data. Data should contain following names,
 
-s_cal_pcap_day_thous (Containing 1000 calories per capita per day for staples)
+{s_cal_pcap_day_thous} (Containing 1000 calories per capita per day for staples)
 
-ns_cal_pcap_day_thous (Containing 1000 calories per capita per day for non-staples)
+{ns_cal_pcap_day_thous} (Containing 1000 calories per capita per day for non-staples)
 
-gdp_pcap_thous (Containing GDP per capita in thous USD)
+{gdp_pcap_thous} (Containing GDP per capita)
 
-s_usd_p1000cal (Price of 1000 calories for staples per person per day)
+{s_usd_p1000cal} (Price of 1000 calories for staples per person per day)
 
-ns_usd_p1000cal (Price of 1000 calories for non-staples per person per day)}
+{ns_usd_p1000cal} (Price of 1000 calories for non-staples per person per day)}
 
 \item{outdir}{Directory to store output csv. Default is set to test_output folder.}
 
@@ -51,7 +51,26 @@ sig2Qn- which is the observational error for non-staples
 sig2Qs- which is the observational error for staples
 }
 \description{
-Create dataset with observational error for log likelihood calculation using clustering.
+There are a few steps that the function will perform on a sample dataset (see details).
+}
+\details{
+The steps that will be performed by the function are :
+
+1) It will ensure that the user's dataset contains all columns required for parameter estimation.
+
+2) It will filter out anomalies and outliers using parameterized cutoff values selected by the user.
+  This step is necessary since data on food consumption and prices are often incomplete which may lead to
+  unrealistically high or low values of consumption or prices in the dataset.
+
+3) After this, the function will create clusters of observations from the dataset based on income levels,
+  and prices of staples and non-staples. This step is necessary because this being economic data,
+  the observational error can only be calculated within different clusters. The code will also check for a  user
+  specified minimum number of clusters (if there are anomalies within the dataset, the clustering can be incorrect leading in a small number of clusters).
+  The clustering is implemented using the Divisive Analysis Clustering Algorithm (DIANA).
+
+4) Once the clustering is completed, the code will calculate the observational error
+  which is the variance in food demand for staples and non-staples .Note that the user can chose a
+  lower limit on the observational error calculated. The default value of the lower limit is 0.01.
 }
 \author{
 KBN 2020

@@ -69,8 +69,8 @@ tidyr  (>= 0.7.1)
 
 ## Code repository
 
-$Name$- GitHub; `JGCRI/ambrosia`
+Name- GitHub; `JGCRI/ambrosia`
 
-$Identifier$- https://github.com/JGCRI/ambrosia/tree/v1.3.0
+Identifier- https://github.com/JGCRI/ambrosia/tree/v1.3.0
 
-$License$- BSD 2-Clause
+License- BSD 2-Clause
