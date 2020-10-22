@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Calculate the exponents in the demand equation. — calc1eps • ambrosia</title>
+<title>Compute regional bias corrections. — compute_bias_corrections • ambrosia</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,10 @@
 
 
 
-<meta property="og:title" content="Calculate the exponents in the demand equation. — calc1eps" />
-<meta property="og:description" content="This is an approximation to the Slutsky equations, inasmuch as we use these
-as the exponents directly, instead of solving for exponents that produce
-these values as the elasticities." />
+<meta property="og:title" content="Compute regional bias corrections. — compute_bias_corrections" />
+<meta property="og:description" content="Compute regional bias correction for a set of parameters and a training set of observations.
+Bias correction factors are multiplied by model data to get bias
+corrected model output." />
 
 
 
@@ -117,47 +117,36 @@ these values as the elasticities." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculate the exponents in the demand equation.</h1>
+    <h1>Compute regional bias corrections.</h1>
     
-    <div class="hidden name"><code>calc1eps.Rd</code></div>
+    <div class="hidden name"><code>compute_bias_corrections.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This is an approximation to the Slutsky equations, inasmuch as we use these
-as the exponents directly, instead of solving for exponents that produce
-these values as the elasticities.</p>
+    <p>Compute regional bias correction for a set of parameters and a training set of observations.
+Bias correction factors are <em>multiplied</em> by model data to get bias
+corrected model output.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>calc1eps</span><span class='op'>(</span><span class='va'>alpha.s</span>, <span class='va'>alpha.n</span>, <span class='va'>eta.s</span>, <span class='va'>eta.n</span>, <span class='va'>xi</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>compute_bias_corrections</span><span class='op'>(</span><span class='va'>params</span>, <span class='va'>obs.trn</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>alpha.s</th>
-      <td><p>Budget fraction for staple foods.</p></td>
+      <th>params</th>
+      <td><p>Model parameter structure (described in
+<code><a href='food.dmnd.html'>food.dmnd</a></code>)</p></td>
     </tr>
     <tr>
-      <th>alpha.n</th>
-      <td><p>Budget fraction for nonstaple foods.</p></td>
-    </tr>
-    <tr>
-      <th>eta.s</th>
-      <td><p>Income elasticity for staple foods.</p></td>
-    </tr>
-    <tr>
-      <th>eta.n</th>
-      <td><p>Income elasticity for nonstaple foods.</p></td>
-    </tr>
-    <tr>
-      <th>xi</th>
-      <td><p>Matrix of Hicks elasticities</p></td>
+      <th>obs.trn</th>
+      <td><p>Data frame of training observations.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>matrix of price elasticities, where xi[1],xi[4] are staple and non-staple price elasticities, rest are cross elasticities</p>
+    <p>calculated bias corrected values</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

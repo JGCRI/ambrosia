@@ -115,13 +115,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculates the 11 parameters for ambrosia using data calculated by create_dataset_for_parameter_fit() by maximizing log likelihood</h1>
+    <h1>Calculates the 11 parameters for ambrosia using data calculated by <code>create_dataset_for_parameter_fit()</code> by maximizing log likelihood</h1>
     
     <div class="hidden name"><code>calculate_ambrosia_params.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Calculates the 11 parameters for ambrosia using data calculated by create_dataset_for_parameter_fit() by maximizing log likelihood</p>
+    <p>Calculates the 11 parameters for ambrosia using data calculated by <code><a href='create_dataset_for_parameter_fit.html'>create_dataset_for_parameter_fit()</a></code> by maximizing log likelihood</p>
     </div>
 
     <pre class="usage"><span class='fu'>calculate_ambrosia_params</span><span class='op'>(</span>
@@ -147,7 +147,7 @@
     </tr>
     <tr>
       <th>datadir</th>
-      <td><p>Directory to the data calculated by process_food_demand_data()</p></td>
+      <td><p>Directory to the data calculated by <code><a href='create_dataset_for_parameter_fit.html'>create_dataset_for_parameter_fit()</a></code></p></td>
     </tr>
     <tr>
       <th>outdir</th>
@@ -202,7 +202,7 @@
  values of all 11 parameters). The default seed is set to the original parameters from Edmonds et al (2017). The user
  can now specify the optimization method to be used. The default is set to the "BFGS" method, but the user can
  also run the optimization using methods such as "Neldor-Mead".</p>
-<p>3) Finally, the function will now return a vector of parameters that can be used to derive estimates of food demand (similar to Example 1 above). The function also prints out the maximized value of the log-likelihood function, so that the user can verify the efficiency and effectiveness of the parameter estimation.</p>
+<p>3) Finally, the function will now return a vector of parameters that can be used to derive estimates of food demand (using the <code><a href='food.dmnd.html'>food.dmnd</a></code> function). The function also prints out the maximized value of the log-likelihood function, so that the user can verify the efficiency and effectiveness of the parameter estimation.</p>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>KBN 2020</p>
@@ -218,7 +218,7 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Kanishka Narayan, Chris Vernon, Stephanie Waldhoff, Jae Edmonds, Ryna Cui.</p>
+  <p>Developed by Kanishka Narayan, Chris Vernon, Stephanie Waldhoff, James Edmonds, Ryna Cui.</p>
 </div>
 
 <div class="pkgdown">
