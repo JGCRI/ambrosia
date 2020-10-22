@@ -85,8 +85,6 @@ The following functional forms are chosen for $h_{s}$ and $h_{n}$,
 
 In addition to the above, two other scaling parameters are applied when normalizing the demand values to that of materials. These are $psscl$ for staples and $pnscl$ for non-staples.
 
-The table in appendix I summarizes all of the parameters described above.
-
 The parameters are fit using a weighted least square log likelihood function [@carrol1988] described below.
 
 (7) $ln(L) = {\Sigma}_{i=1}^{N}(w_{i}(y_{i}-\hat{y_{i}})^{2})/2{\sigma^{2}}$
@@ -110,6 +108,5 @@ User may also complete the parameter estimation on the dataset returned by ```cr
 # Acknowledgements
 
 This research was supported in part by the U.S. Department of Energy, Office of Science, as part of research in Multisector Dynamics, Earth and Environmental System Modeling Program. The Pacific Northwest National Laboratory is operated for DOE by Battelle Memorial Institute under contract DE-AC05-76RL01830.
-
 
 # References
