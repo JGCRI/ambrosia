@@ -95,8 +95,7 @@ By applying the 11 parameters to the equations described above, the user can gen
 
 # Main functions and customization
 
-The [```ambrosia_vignette.rmd```](https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html) provides usable examples for the major functions within the code. 
-
+The [```ambrosia_vignette.rmd```](https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html) provides usable examples for all the major functions within the code. 
 
 The `ambrosia` package can be easily loaded as a standard R package after installation from GitHub. The user can calculate demand for staples and non-staples using the  ```food.dmnd()``` function. The user will have to pass in a dataset with the price of staples ($Ps$), price of non-staples ($Pn$), incomes ($Y$) in GDP per capita in thousand USD. In addition to the dataset, the user must pass a vector of 11 parameters. In order to functionalize the parameters, the code contains a function called ```vec2param()``` that will generate a parameter structure that can be used by the food demand function. The food demand function is implemented using equations (1), (2), (3) described above. The user can also calculate and analyze price elasticities using the function ```calc1eps()```. These elasticities are calculated in accordance with equation (4) described above.
 

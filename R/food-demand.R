@@ -62,13 +62,13 @@
 #' @export
 food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL)
 {
-    Pm <- params$Pm
-    psscl <- params$psscl
-    pnscl <- params$pnscl
-    ## Normalize income and prices to Pm
-    Ps <- Ps/Pm * psscl
-    Pn <- Pn/Pm * pnscl
-    Y  <- Y/Pm
+  Pm <- params$Pm
+  psscl <- params$psscl
+  pnscl <- params$pnscl
+  ## Normalize income and prices to Pm
+  Ps <- Ps/Pm * psscl
+  Pn <- Pn/Pm * pnscl
+  Y  <- Y/Pm
 
   # get eta values
   eta.s <- params$yfunc[[1]](Y,FALSE)
@@ -110,14 +110,14 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL)
   qs <- qvals[1,]
   qn <- qvals[2,]
   ## calculate Qm as the budget residual.
-    resid <- Y - (Ps*qs/psscl + Pn*qn/pnscl)
-    qm <-  resid / Pm
-    alpha.m <- resid / Y
+  resid <- Y - (Ps*qs/psscl + Pn*qn/pnscl)
+  qm <-  resid / Pm
+  alpha.m <- resid / Y
 
-    if(is.null(rgn))
-        data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m)
-    else
-        data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m, rgn=rgn)
+  if(is.null(rgn))
+    data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m)
+  else
+    data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m, rgn=rgn)
 }
 
 #' Calculate the exponents in the demand equation.
@@ -135,17 +135,17 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL)
 #' @export
 calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
 
-    ## First apply symmetry condition.  This means that the xi.sn
-    ## value will be ignored.  Also, set a floor on the terms to
-    ## ensure that the function is well-behaved.
-    alphamin <- 0.1
-    xi[3] <- max(alpha.n, alphamin)/max(alpha.s,alphamin) * xi[2]
+  ## First apply symmetry condition.  This means that the xi.sn
+  ## value will be ignored.  Also, set a floor on the terms to
+  ## ensure that the function is well-behaved.
+  alphamin <- 0.1
+  xi[3] <- max(alpha.n, alphamin)/max(alpha.s,alphamin) * xi[2]
 
-    ## Now calculate the epsilon matrix using the Slutsky equation.
-    c(xi[1] - alpha.s * eta.s,    # ess
-      xi[2] - alpha.s * eta.n,    # ens
-      xi[3] - alpha.n * eta.s,    # esn
-      xi[4] - alpha.n * eta.n)   # enn
+  ## Now calculate the epsilon matrix using the Slutsky equation.
+  c(xi[1] - alpha.s * eta.s,    # ess
+    xi[2] - alpha.s * eta.n,    # ens
+    xi[3] - alpha.n * eta.s,    # esn
+    xi[4] - alpha.n * eta.n)   # enn
 }
 
 
@@ -173,19 +173,19 @@ calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef,psscl,pnscl) {
   alpha.t <- alpha.s + alpha.n
   food.budget <- 1                      # maximum budget fraction for total food.
   if(alpha.t > 1 && !(is.na(alpha.t))) {
-      ## Food consumption exceeds the budget constraint; reduce
-      ## consumption to stay within budget.  Reduce nonstaples first,
-      ## since they will normally be a less efficient source of
-      ## calories than staples.
-      if(alpha.s < food.budget) {
-          alpha.n <- food.budget-alpha.s
-      }
-      else {
-          alpha.n <- 0
-          alpha.s <- food.budget
-      }
-      Qs <- alpha.s * Y/Ps
-      Qn <- alpha.n * Y/Pn
+    ## Food consumption exceeds the budget constraint; reduce
+    ## consumption to stay within budget.  Reduce nonstaples first,
+    ## since they will normally be a less efficient source of
+    ## calories than staples.
+    if(alpha.s < food.budget) {
+      alpha.n <- food.budget-alpha.s
+    }
+    else {
+      alpha.n <- 0
+      alpha.s <- food.budget
+    }
+    Qs <- alpha.s * Y/Ps
+    Qn <- alpha.n * Y/Pn
   }
   c(Qs, Qn)
 }
@@ -235,95 +235,95 @@ eta.constant <- function(eta0) {
 #' be specified in terms of k and lambda.)
 #' @export
 eta.s <- function(nu1, y0, mc.mode=FALSE) {
-    if(mc.mode) {
-        lam <- nu1
-        k <- y0
+  if(mc.mode) {
+    lam <- nu1
+    k <- y0
+  }
+  else {
+    ## validate inputs.  Elasticity goes from + to -, so if y0<1,
+    ## nu1<0.  If y0>1, nu1>0.  If these conditions are violated,
+    ## then the model doesn't make sense.  To protect against
+    ## this, we interpret only the magnitude of nu1 as meaningful,
+    ## and we set the sign automatically
+    if(y0<=1) {
+      ## see below for special handling when y0 = 1
+      nu1 <- -abs(nu1)
     }
     else {
-        ## validate inputs.  Elasticity goes from + to -, so if y0<1,
-        ## nu1<0.  If y0>1, nu1>0.  If these conditions are violated,
-        ## then the model doesn't make sense.  To protect against
-        ## this, we interpret only the magnitude of nu1 as meaningful,
-        ## and we set the sign automatically
-        if(y0<=1) {
-            ## see below for special handling when y0 = 1
-            nu1 <- -abs(nu1)
-        }
-        else {
-            nu1 <- abs(nu1)
-        }
+      nu1 <- abs(nu1)
+    }
 
-        ## We need to caclulate the coefficients k and lambda.  Q = (kY)^(lambda/Y)
-        e <- exp(1.0)
-        k <- e/y0
-        if(abs(1-y0) > 1e-4) {
-            lam <- nu1/(1-log(k))
-        }
-        else {
-            ## This case is problematic.  Any value of lambda will
-            ## give the requisite value at Y=1, but the shape
-            ## parameter is completely undefined.  This is the price
-            ## we pay for letting the user specify the shape in more
-            ## natural terms.  In this case we reinterpret the nu1
-            ## input as the elasticity at Y=e so as to give a
-            ## well-defined result.  It's not ideal, but short of
-            ## forcing users to calculate k and lambda, it's the best
-            ## we can do.  In a MCMC calculation, we'll work with k
-            ## and lambda directly.
-            lam <- -abs(nu1)*e
-        }
+    ## We need to caclulate the coefficients k and lambda.  Q = (kY)^(lambda/Y)
+    e <- exp(1.0)
+    k <- e/y0
+    if(abs(1-y0) > 1e-4) {
+      lam <- nu1/(1-log(k))
     }
-    ## Limit as Y->0 of the logarithmic derivative of this function is
-    ## not well behaved.  However, the quantity is very small for k*Y
-    ## < ~1e-3 anyhow, so we can replace this segment with a linear
-    ## relation with little change in behavior.
-    y1 <- 1e-3/k
-    Qy1 <- (k*y1)^(lam/y1) / y1       # match-up condition:  qty at y=y1, divided by y
-    scl <- k^(-lam)                   # scale factor gives Y(1) = 1.
-    function(Y,calcQ=FALSE) {
-        if(calcQ) {
-            scl * ifelse(Y>y1, (k*Y)^(lam/Y),
-                         Qy1*Y)
-        }
-        else {
-            ifelse(Y>y1,
-                   lam*(1-log(k*Y))/Y,
-                   lam*(1-log(k*y1))/y1) # logarithmic derivative of the linear
-                                        # segment of Q.
-        }
+    else {
+      ## This case is problematic.  Any value of lambda will
+      ## give the requisite value at Y=1, but the shape
+      ## parameter is completely undefined.  This is the price
+      ## we pay for letting the user specify the shape in more
+      ## natural terms.  In this case we reinterpret the nu1
+      ## input as the elasticity at Y=e so as to give a
+      ## well-defined result.  It's not ideal, but short of
+      ## forcing users to calculate k and lambda, it's the best
+      ## we can do.  In a MCMC calculation, we'll work with k
+      ## and lambda directly.
+      lam <- -abs(nu1)*e
     }
+  }
+  ## Limit as Y->0 of the logarithmic derivative of this function is
+  ## not well behaved.  However, the quantity is very small for k*Y
+  ## < ~1e-3 anyhow, so we can replace this segment with a linear
+  ## relation with little change in behavior.
+  y1 <- 1e-3/k
+  Qy1 <- (k*y1)^(lam/y1) / y1       # match-up condition:  qty at y=y1, divided by y
+  scl <- k^(-lam)                   # scale factor gives Y(1) = 1.
+  function(Y,calcQ=FALSE) {
+    if(calcQ) {
+      scl * ifelse(Y>y1, (k*Y)^(lam/Y),
+                   Qy1*Y)
+    }
+    else {
+      ifelse(Y>y1,
+             lam*(1-log(k*Y))/Y,
+             lam*(1-log(k*y1))/y1) # logarithmic derivative of the linear
+      # segment of Q.
+    }
+  }
 }
 
 #' @describeIn eta.constant Generate an income elasticity function for nonstaple foods.
 #' @export
 eta.n <- function(nu1) {
-    ## Return a function for calculating eta_n or Y^eta_n.  Which one
-    ## gets calculated is controlled by the parameter 'calcQ'.
+  ## Return a function for calculating eta_n or Y^eta_n.  Which one
+  ## gets calculated is controlled by the parameter 'calcQ'.
 
-    ## We don't have a mc.mode parameter for this function because it
-    ## is well-behaved when specified in terms of nu1, so we just
-    ## stick with that.
+  ## We don't have a mc.mode parameter for this function because it
+  ## is well-behaved when specified in terms of nu1, so we just
+  ## stick with that.
 
-    ## Arguments:
-    ##   nu1 : elasticity at Y=1.  Evidently, k == 2*nu1
-    k <- 2*nu1
+  ## Arguments:
+  ##   nu1 : elasticity at Y=1.  Evidently, k == 2*nu1
+  k <- 2*nu1
 
-    function(Y, calcQ=FALSE) {
-        e.k <- exp(-k)
-        delta <- 1-Y
-        scl <- 1/e.k
-        if (calcQ) {
-            scl*ifelse(abs(delta)>1.0e-3/k,
-                       Y^(k/(delta)),
-                       e.k - 0.5*k*e.k*delta + 1.0/24.0*e.k * k*(3*k-8)*delta*delta)
-        }
-        else {
-            k * ifelse(Y<1e-4, 1,
-                       ifelse(abs(delta) > 1.0e-3/k,
-                              1/delta + Y*log(Y)/(delta*delta),
-                              0.5 + 1/6*delta + 1/12*delta*delta + 1/20 * delta^3))
-        }
+  function(Y, calcQ=FALSE) {
+    e.k <- exp(-k)
+    delta <- 1-Y
+    scl <- 1/e.k
+    if (calcQ) {
+      scl*ifelse(abs(delta)>1.0e-3/k,
+                 Y^(k/(delta)),
+                 e.k - 0.5*k*e.k*delta + 1.0/24.0*e.k * k*(3*k-8)*delta*delta)
     }
+    else {
+      k * ifelse(Y<1e-4, 1,
+                 ifelse(abs(delta) > 1.0e-3/k,
+                        1/delta + Y*log(Y)/(delta*delta),
+                        0.5 + 1/6*delta + 1/12*delta*delta + 1/20 * delta^3))
+    }
+  }
 }
 
 
@@ -345,51 +345,51 @@ eta.n <- function(nu1) {
 #' @export
 calc.elas.actual <- function(Ps,Pn,Y, params, basedata=NULL)
 {
-    if(is.null(basedata)) {
-        basedata <- food.dmnd(Ps, Pn, Y, params)
-    }
+  if(is.null(basedata)) {
+    basedata <- food.dmnd(Ps, Pn, Y, params)
+  }
 
-    ## size of finite difference step
-    h <- 0.001
+  ## size of finite difference step
+  h <- 0.001
 
-    ## Calculate Ps elasticities
-    psdelta <- Ps + h
-    psh <- 1.0/(psdelta - Ps)           # Using psdelta-ps instead of h helps with roundoff error.
-    psdata <- food.dmnd(psdelta, Pn, Y, params)
-    eps.ss <- (psdata$Qs - basedata$Qs) * psh * Ps/basedata$Qs
-    eps.ns <- (psdata$Qn - basedata$Qn) * psh * Ps/basedata$Qn
-    eps.ms <- (psdata$Qm - basedata$Qm) * psh * Ps/basedata$Qm
+  ## Calculate Ps elasticities
+  psdelta <- Ps + h
+  psh <- 1.0/(psdelta - Ps)           # Using psdelta-ps instead of h helps with roundoff error.
+  psdata <- food.dmnd(psdelta, Pn, Y, params)
+  eps.ss <- (psdata$Qs - basedata$Qs) * psh * Ps/basedata$Qs
+  eps.ns <- (psdata$Qn - basedata$Qn) * psh * Ps/basedata$Qn
+  eps.ms <- (psdata$Qm - basedata$Qm) * psh * Ps/basedata$Qm
 
-    ## Calculate Pn elasticities
-    pndelta <- Pn + h
-    pnh <- 1.0/(pndelta - Pn)
-    pndata <- food.dmnd(Ps, pndelta, Y, params)
-    eps.sn <- (pndata$Qs - basedata$Qs) * pnh * Pn/basedata$Qs
-    eps.nn <- (pndata$Qn - basedata$Qn) * pnh * Pn/basedata$Qn
-    eps.mn <- (pndata$Qm - basedata$Qm) * pnh * Pn/basedata$Qm
+  ## Calculate Pn elasticities
+  pndelta <- Pn + h
+  pnh <- 1.0/(pndelta - Pn)
+  pndata <- food.dmnd(Ps, pndelta, Y, params)
+  eps.sn <- (pndata$Qs - basedata$Qs) * pnh * Pn/basedata$Qs
+  eps.nn <- (pndata$Qn - basedata$Qn) * pnh * Pn/basedata$Qn
+  eps.mn <- (pndata$Qm - basedata$Qm) * pnh * Pn/basedata$Qm
 
-    ## Calculate Pm elasticities.  Note that Pm is passed through the
-    ## parameters structure.
-    Pm <- params$Pm
-    pmdelta <- Pm + h
-    pmh <- 1.0/(pmdelta-Pm)
-    ptemp <- params
-    ptemp$Pm <- pmdelta
-    pmdata <- food.dmnd(Ps, Pn, Y, ptemp)
-    eps.sm <- (pmdata$Qs - basedata$Qs) * pmh * Pm/basedata$Qs
-    eps.nm <- (pmdata$Qn - basedata$Qn) * pmh * Pm/basedata$Qn
-    eps.mm <- (pmdata$Qm - basedata$Qm) * pmh * Pm/basedata$Qm
+  ## Calculate Pm elasticities.  Note that Pm is passed through the
+  ## parameters structure.
+  Pm <- params$Pm
+  pmdelta <- Pm + h
+  pmh <- 1.0/(pmdelta-Pm)
+  ptemp <- params
+  ptemp$Pm <- pmdelta
+  pmdata <- food.dmnd(Ps, Pn, Y, ptemp)
+  eps.sm <- (pmdata$Qs - basedata$Qs) * pmh * Pm/basedata$Qs
+  eps.nm <- (pmdata$Qn - basedata$Qn) * pmh * Pm/basedata$Qn
+  eps.mm <- (pmdata$Qm - basedata$Qm) * pmh * Pm/basedata$Qm
 
-    ## Calculate income elasticities
-    ydelta <- Y + h
-    yh <- 1.0/(ydelta - Y)
-    ydata <- food.dmnd(Ps, Pn, ydelta, params)
-    eta.s <- (ydata$Qs - basedata$Qs) * yh * Y/basedata$Qs
-    eta.n <- (ydata$Qn - basedata$Qn) * yh * Y/basedata$Qn
-    eta.m <- (ydata$Qm - basedata$Qm) * yh * Y/basedata$Qm
+  ## Calculate income elasticities
+  ydelta <- Y + h
+  yh <- 1.0/(ydelta - Y)
+  ydata <- food.dmnd(Ps, Pn, ydelta, params)
+  eta.s <- (ydata$Qs - basedata$Qs) * yh * Y/basedata$Qs
+  eta.n <- (ydata$Qn - basedata$Qn) * yh * Y/basedata$Qn
+  eta.m <- (ydata$Qm - basedata$Qm) * yh * Y/basedata$Qm
 
-    data.frame(ess=eps.ss, ens=eps.ns, ems=eps.ms, esn=eps.sn, enn=eps.nn, emn=eps.mn,
-               esm=eps.sm, enm=eps.nm, emm=eps.mm, etas=eta.s, etan=eta.n, etam=eta.m)
+  data.frame(ess=eps.ss, ens=eps.ns, ems=eps.ms, esn=eps.sn, enn=eps.nn, emn=eps.mn,
+             esm=eps.sm, enm=eps.nm, emm=eps.mm, etas=eta.s, etan=eta.n, etam=eta.m)
 
 }
 
@@ -407,23 +407,23 @@ calc.elas.actual <- function(Ps,Pn,Y, params, basedata=NULL)
 #' @export
 calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
 {
-    xi.ss <- eps$ess + alpha.s * eps$etas
-    rslt <- data.frame(xi.ss=xi.ss)
-    rslt$xi.sn <- eps$esn + alpha.n * eps$etas
-    rslt$xi.sm <- eps$esm + alpha.m * eps$etas
+  xi.ss <- eps$ess + alpha.s * eps$etas
+  rslt <- data.frame(xi.ss=xi.ss)
+  rslt$xi.sn <- eps$esn + alpha.n * eps$etas
+  rslt$xi.sm <- eps$esm + alpha.m * eps$etas
 
-    rslt$xi.ns <- eps$ens + alpha.s * eps$etan
-    rslt$xi.nn <- eps$enn + alpha.n * eps$etan
-    rslt$xi.nm <- eps$enm + alpha.m * eps$etan
+  rslt$xi.ns <- eps$ens + alpha.s * eps$etan
+  rslt$xi.nn <- eps$enn + alpha.n * eps$etan
+  rslt$xi.nm <- eps$enm + alpha.m * eps$etan
 
-    rslt$xi.ms <- eps$ems + alpha.s * eps$etam
-    rslt$xi.mn <- eps$emn + alpha.n * eps$etam
-    rslt$xi.mm <- eps$emm + alpha.m * eps$etam
+  rslt$xi.ms <- eps$ems + alpha.s * eps$etam
+  rslt$xi.mn <- eps$emn + alpha.n * eps$etam
+  rslt$xi.mm <- eps$emm + alpha.m * eps$etam
 
-    rslt$xi.sn.wt <- rslt$xi.sn * alpha.s
-    rslt$xi.ns.wt <- rslt$xi.ns * alpha.n
+  rslt$xi.sn.wt <- rslt$xi.sn * alpha.s
+  rslt$xi.ns.wt <- rslt$xi.ns * alpha.n
 
-    rslt
+  rslt
 }
 
 
@@ -446,39 +446,39 @@ calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
 #' @export
 food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
 {
-    . <- GCAM_region_name <- s_usd_p1000cal <- ns_usd_p1000cal <-
-        gdp_pcap_thous2005usd <- s_cal_pcap_day_thous <- ns_cal_pcap_day_thous <-
-            NULL
+  . <- GCAM_region_name <- s_usd_p1000cal <- ns_usd_p1000cal <-
+    gdp_pcap_thous2005usd <- s_cal_pcap_day_thous <- ns_cal_pcap_day_thous <-
+    NULL
 
-    `%notin%` <- Negate(`%in%`)
-
-
-        ## columns to keep in input data.
-        selcols <- c('year', 'Ps', 'Pn', 'Y', 'Qs.Obs', 'Qn.Obs')
+  `%notin%` <- Negate(`%in%`)
 
 
+  ## columns to keep in input data.
+  selcols <- c('year', 'Ps', 'Pn', 'Y', 'Qs.Obs', 'Qn.Obs')
 
-        if(!is.null(obsdata$obstype)){
-            selcols <- c(selcols, 'obstype')}
 
-        if(!is.null(obsdata$obstype)){
-          obsdata %>% filter(GCAM_region_name==region)
-        }
 
-        obsdata %>%
-            dplyr::mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal, Y=gdp_pcap_thous/1000,
-                   Qs.Obs=s_cal_pcap_day_thous, Qn.Obs=ns_cal_pcap_day_thous) %>%
-            dplyr::select_(.dots=selcols) -> indata
-        rslt <- as.data.frame(food.dmnd(indata$Ps, indata$Pn, indata$Y, params))
-        if(!is.null(bc)){
-            apply.bias.corrections(rslt, bc)}
-        rslt$year <- indata$year
-        rslt$rgn <- region
-        rslt$Qs.Obs <- indata$Qs.Obs
-        rslt$Qn.Obs <- indata$Qn.Obs
-        if(!is.null(indata$obstype))
-            rslt$obstype <- indata$obstype
-        rslt
+  if(!is.null(obsdata$obstype)){
+    selcols <- c(selcols, 'obstype')}
+
+  if(!is.null(obsdata$obstype)){
+    obsdata %>% filter(GCAM_region_name==region)
+  }
+
+  obsdata %>%
+    dplyr::mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal, Y=gdp_pcap_thous/1000,
+                  Qs.Obs=s_cal_pcap_day_thous, Qn.Obs=ns_cal_pcap_day_thous) %>%
+    dplyr::select_(.dots=selcols) -> indata
+  rslt <- as.data.frame(food.dmnd(indata$Ps, indata$Pn, indata$Y, params))
+  if(!is.null(bc)){
+    apply.bias.corrections(rslt, bc)}
+  rslt$year <- indata$year
+  rslt$rgn <- region
+  rslt$Qs.Obs <- indata$Qs.Obs
+  rslt$Qn.Obs <- indata$Qn.Obs
+  if(!is.null(indata$obstype))
+    rslt$obstype <- indata$obstype
+  rslt
 
 }
 
@@ -496,28 +496,28 @@ food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
 #' @export
 food.dmnd.byincome <- function(obsdata, params, region=NULL)
 {
-    . <- GCAM_region_name <- s_usd_p1000cal <- ns_usd_p1000cal <-
-        gdp_pcap_thous2005usd <- Ps <- Pn <- s_cal_pcap_day_thous <-
-            ns_cal_pcap_day_thous <- region <- Qs <- Qn <- pcGDP <- NULL
-    `Staple Residual` <- `Nonstaple Residual` <- NULL
+  . <- GCAM_region_name <- s_usd_p1000cal <- ns_usd_p1000cal <-
+    gdp_pcap_thous2005usd <- Ps <- Pn <- s_cal_pcap_day_thous <-
+    ns_cal_pcap_day_thous <- region <- Qs <- Qn <- pcGDP <- NULL
+  `Staple Residual` <- `Nonstaple Residual` <- NULL
 
-    if(is.null(region)) {
-        levels(obsdata$GCAM_region_name) %>% lapply(. %>% food.dmnd.byincome(obsdata, params, .)) %>%
-            do.call(rbind, .)
-    }
-    else {
-        od <- dplyr::filter(obsdata, GCAM_region_name == region) %>%
-            dplyr::mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal) %>%
-                dplyr::select(Y=gdp_pcap_thous2005usd, Ps, Pn,
-                       obs.qs=s_cal_pcap_day_thous,obs.qn=ns_cal_pcap_day_thous)
-        food.dmnd(od$Ps, od$Pn, od$Y, params) %>%
-            dplyr::mutate(region=simplify.region(region), pcGDP=od$Y,
-                   `Staple Residual`=Qs-od$obs.qs,
-                   `Nonstaple Residual`=Qn-od$obs.qn) %>%
-            dplyr::select(region, pcGDP, `Staple Quantity`=Qs, `Nonstaple Quantity`=Qn,
-                   `Staple Residual`, `Nonstaple Residual`) %>%
-            reshape2::melt(id=c('region','pcGDP'))
-    }
+  if(is.null(region)) {
+    levels(obsdata$GCAM_region_name) %>% lapply(. %>% food.dmnd.byincome(obsdata, params, .)) %>%
+      do.call(rbind, .)
+  }
+  else {
+    od <- dplyr::filter(obsdata, GCAM_region_name == region) %>%
+      dplyr::mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal) %>%
+      dplyr::select(Y=gdp_pcap_thous2005usd, Ps, Pn,
+                    obs.qs=s_cal_pcap_day_thous,obs.qn=ns_cal_pcap_day_thous)
+    food.dmnd(od$Ps, od$Pn, od$Y, params) %>%
+      dplyr::mutate(region=simplify.region(region), pcGDP=od$Y,
+                    `Staple Residual`=Qs-od$obs.qs,
+                    `Nonstaple Residual`=Qn-od$obs.qn) %>%
+      dplyr::select(region, pcGDP, `Staple Quantity`=Qs, `Nonstaple Quantity`=Qn,
+                    `Staple Residual`, `Nonstaple Residual`) %>%
+      reshape2::melt(id=c('region','pcGDP'))
+  }
 }
 
 #' Convert the lambda and ks parameters to nu1 and y0
@@ -535,23 +535,23 @@ food.dmnd.byincome <- function(obsdata, params, region=NULL)
 #' @export
 lamks2nu1y0 <- function(df)
 {
-    ## convert the eta.s k and lambda parameters to nu1 and y0
-    if(!('lambda' %in% names(df)) || !('ks' %in% names(df))) {
-        warning('data frame does not contain lambda & ks vars.')
-    }
-    else {
-        e <- exp(1.0)
-        ## add y0 and nu1 columns
-        df$y0 <- e / df$ks
-        df$eps1s <- df$lambda * (1-log(df$ks))
-        ## drop ks and lambda columns.  Arrange for LL to still be at the end
-        lltmp <- df$LL
-        df$ks <- NULL
-        df$lambda <- NULL
-        df$LL <- NULL
-        df$LL <- lltmp
-    }
-    df
+  ## convert the eta.s k and lambda parameters to nu1 and y0
+  if(!('lambda' %in% names(df)) || !('ks' %in% names(df))) {
+    warning('data frame does not contain lambda & ks vars.')
+  }
+  else {
+    e <- exp(1.0)
+    ## add y0 and nu1 columns
+    df$y0 <- e / df$ks
+    df$eps1s <- df$lambda * (1-log(df$ks))
+    ## drop ks and lambda columns.  Arrange for LL to still be at the end
+    lltmp <- df$LL
+    df$ks <- NULL
+    df$lambda <- NULL
+    df$LL <- NULL
+    df$LL <- lltmp
+  }
+  df
 }
 
 
@@ -563,9 +563,9 @@ lamks2nu1y0 <- function(df)
 #' @export
 merge_trn_tst <- function(obs.trn, obs.tst)
 {
-    obs.trn$obstype <- 'Training'
-    obs.tst$obstype <- 'Testing'
-    rbind(obs.trn, obs.tst)
+  obs.trn$obstype <- 'Training'
+  obs.tst$obstype <- 'Testing'
+  rbind(obs.trn, obs.tst)
 }
 
 
@@ -578,35 +578,35 @@ merge_trn_tst <- function(obs.trn, obs.tst)
 #' @export
 prepare.obs <- function(obs)
 {
-    s_usd_p1000cal <- ns_usd_p1000cal <- GCAM_region_name <-
-        gdp_pcap_thous2005usd <- s_cal_pcap_day_thous <- ns_cal_pcap_day_thous <-
-            NULL
+  s_usd_p1000cal <- ns_usd_p1000cal <- GCAM_region_name <-
+    gdp_pcap_thous2005usd <- s_cal_pcap_day_thous <- ns_cal_pcap_day_thous <-
+    NULL
 
-    ## Convert units on prices and rename certain columns so they
-    ## aren't such a pain to work with.
-    dplyr::mutate(obs,
-           Ps=0.365*s_usd_p1000cal, # convert daily cost in dollars to annual cost in thousands of dollars.
-           Pn=0.365*ns_usd_p1000cal) %>%
-      dplyr::rename(rgn=GCAM_region_name, Y=gdp_pcap_thous2005usd,
-               Qs=s_cal_pcap_day_thous, Qn=ns_cal_pcap_day_thous)
+  ## Convert units on prices and rename certain columns so they
+  ## aren't such a pain to work with.
+  dplyr::mutate(obs,
+                Ps=0.365*s_usd_p1000cal, # convert daily cost in dollars to annual cost in thousands of dollars.
+                Pn=0.365*ns_usd_p1000cal) %>%
+    dplyr::rename(rgn=GCAM_region_name, Y=gdp_pcap_thous2005usd,
+                  Qs=s_cal_pcap_day_thous, Qn=ns_cal_pcap_day_thous)
 }
 
 
 ## Helper function for compute.bias.corrections
 compute.bc.rgn <- function(obs, params)
 {
-    year <- NULL
+  year <- NULL
 
-    ## compute the bias corrections for an individual region.  Bias
-    ## corrections are *multiplied* by model data to get adjusted
-    ## data.
-    yrmax <- max(obs$year)
-    yrmin <- yrmax-10
-    obs <- dplyr::filter(obs, year > yrmin)
+  ## compute the bias corrections for an individual region.  Bias
+  ## corrections are *multiplied* by model data to get adjusted
+  ## data.
+  yrmax <- max(obs$year)
+  yrmin <- yrmax-10
+  obs <- dplyr::filter(obs, year > yrmin)
 
-    mod <- food.dmnd(obs$Ps, obs$Pn, obs$Y, params)
+  mod <- food.dmnd(obs$Ps, obs$Pn, obs$Y, params)
 
-    c(s=mean(obs$Qs)/mean(mod$Qs), n=mean(obs$Qn)/mean(mod$Qn))
+  c(s=mean(obs$Qs)/mean(mod$Qs), n=mean(obs$Qn)/mean(mod$Qn))
 
 }
 
@@ -623,20 +623,20 @@ compute.bc.rgn <- function(obs, params)
 #' @export
 compute.bias.corrections <- function(params, obs.trn)
 {
-    . <- NULL
+  . <- NULL
 
-    obs <- prepare.obs(obs.trn)
-    obs <- split(obs, obs$rgn)
-    params$bc <- sapply(obs, . %>% compute.bc.rgn(params))
+  obs <- prepare.obs(obs.trn)
+  obs <- split(obs, obs$rgn)
+  params$bc <- sapply(obs, . %>% compute.bc.rgn(params))
 }
 
 
 ## Helper function for apply.bias.corrections
 apply.bc.rgn <- function(mod, bc)
 {
-    mod$Qs <- mod$Qs * bc['s',mod$rgn]
-    mod$Qn <- mod$Qn * bc['n',mod$rgn]
-    mod
+  mod$Qs <- mod$Qs * bc['s',mod$rgn]
+  mod$Qn <- mod$Qn * bc['n',mod$rgn]
+  mod
 }
 
 #' Apply bias corrections to model outputs
@@ -647,15 +647,15 @@ apply.bc.rgn <- function(mod, bc)
 #' @export
 apply.bias.corrections <- function(mod, bc)
 {
-    . <- NULL
-    ## make this function work whether or not the column names have been converted.
-    rgn <- if(is.null(mod$rgn))
-        mod$GCAM_region_name
-    else
-        mod$rgn
-    split(mod, mod$rgn) <- lapply(split(mod, mod$rgn),
-                                  . %>% apply.bc.rgn(bc))
-    mod
+  . <- NULL
+  ## make this function work whether or not the column names have been converted.
+  rgn <- if(is.null(mod$rgn))
+    mod$GCAM_region_name
+  else
+    mod$rgn
+  split(mod, mod$rgn) <- lapply(split(mod, mod$rgn),
+                                . %>% apply.bc.rgn(bc))
+  mod
 }
 
 #' Sample values for the demand model.
@@ -703,7 +703,7 @@ samp.params <- list(A=c(0.3, 0.1),
                     yfunc=c(eta.s(-0.15,0.6), eta.n(1.0)),
                     xi=matrix(c(-0.05, 0.1, 0.1, -0.5), nrow=2),
                     Pm=1
-                    )
+)
 
 #' x1: Monte carlo parameter vector
 #'

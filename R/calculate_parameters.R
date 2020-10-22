@@ -1,15 +1,15 @@
 ##Functions to estimate parameters
 
 
-#' Calculate the 11 parameters for ambrosia using data calculated by process_food_demand_data() by maximizing log likelihood
+#' Calculates the 11 parameters for ambrosia using data calculated by create_dataset_for_parameter_fit() by maximizing log likelihood
 #'
-#'@details The following steps are involved in the parameter estimation function,
+#'@details The following steps are involved in the parameter estimation function.
 #'
-#'1) First a log-likelihood function is set up with the data returned by the function above.
+#'1) First a log-likelihood function is set up with the data.
 #'
-#'2) Next, the value returned by this function will be maximized using ```optim()```. The user can provide
+#'2) Next, the value returned by the log-likelihood function will be maximized using optim(). The user can provide
 #'  a seed of initial parameters to begin the optimization process (the lowest possible seed would be the lowest
-#'  values of all 11 parameters). The default seed is set to the original parameters from Edmonds et al. The user
+#'  values of all 11 parameters). The default seed is set to the original parameters from Edmonds et al (2017). The user
 #'  can now specify the optimization method to be used. The default is set to the "BFGS" method, but the user can
 #'  also run the optimization using methods such as "Neldor-Mead".
 #'
