@@ -23,7 +23,7 @@ devtools::install_github('JGCRI/ambrosia')
 
 ## Examples
 
-A list of examples describing the different features in `ambrosia`are described in the [`ambrosia_vignette.rmd`](https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html) in the vignettes(`vignettes/`) directory. The example below shows how a user can get an estimate of demand using some sample parameters. The 11 parameters are described in table below with values from the latest version of ambrosia.
+A list of examples describing the different features in `ambrosia`are described in the [`ambrosia_vignette.rmd`](https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html) in the vignettes(`vignettes/`) directory. The example below shows how a user can get an estimate of demand using some sample parameters. 
 
 ```r
 #Get a sample data set
@@ -43,9 +43,9 @@ The code from the example can be used to visualize the food demand for staples a
 
 ![A simple plot of food demand for staples and non-staples for changing incomes and constant prices.](vignettes/example_3.png)
 
-# Summary of 11 parameters 
+# Description of parameters 
 
-Table describing all 11 parameters for the food demand model with values from the latest iteration.
+The 11 parameters are described in table below with values from the latest version of ambrosia.
 
 | Parameter name | Description                                  | Value |
 |----------------|----------------------------------------------|-------|
