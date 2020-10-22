@@ -43,7 +43,7 @@ The code from the example can be used to visualize the food demand for staples a
 
 ![A simple plot of food demand for staples and non-staples for changing incomes and constant prices.](vignettes/example_3.png)
 
-# Description of parameters 
+#### Description of parameters 
 
 The 11 parameters are described in table below with values from the latest version of ambrosia.
 
