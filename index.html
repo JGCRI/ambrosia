@@ -97,7 +97,7 @@
 <div id="examples" class="section level2">
 <h2 class="hasAnchor">
 <a href="#examples" class="anchor"></a>Examples</h2>
-<p>A list of examples describing the different features in <code>ambrosia</code>are described in the <a href="https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html"><code>ambrosia_vignette.rmd</code></a> in the vignettes(<code>vignettes/</code>) directory. The example below shows how a user can get an estimate of demand using some sample parameters.</p>
+<p>A list of examples describing the different features in <code>ambrosia</code>are described in the <a href="https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html"><code>ambrosia_vignette.rmd</code></a> in the vignettes(<code>vignettes/</code>) directory. The example below shows how a user can get an estimate of demand using some sample parameters (See the table below for description of parameters).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="co">#Get a sample data set</span>
 <span class="va">Test_Data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">30</span>, by<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span><span class="op">)</span>
@@ -112,12 +112,112 @@
 <span class="va">Food_Demand</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/food.dmnd.html">food.dmnd</a></span><span class="op">(</span><span class="va">Test_Data</span><span class="op">$</span><span class="va">Ps</span>,<span class="va">Test_Data</span><span class="op">$</span><span class="va">Pn</span>,<span class="va">Test_Data</span><span class="op">$</span><span class="va">Y</span>,params<span class="op">=</span><span class="fu"><a href="reference/vec2param.html">vec2param</a></span><span class="op">(</span><span class="va">sample_parameters</span><span class="op">)</span><span class="op">)</span></pre></div>
 <p>The code from the example can be used to visualize the food demand for staples and non-staples as follows,</p>
 <p><img src="articles/example_3.png" alt="A simple plot of food demand for staples and non-staples for changing incomes and constant prices."></p>
+<div id="description-of-parameters" class="section level4">
+<h4 class="hasAnchor">
+<a href="#description-of-parameters" class="anchor"></a>Description of parameters</h4>
+<p>The 11 parameters are described in table below with values from the latest version of ambrosia.</p>
+<table class="table">
+<thead><tr class="header">
+<th>Parameter name</th>
+<th>Description</th>
+<th>Value</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>A_s</td>
+<td>Scaling parameter for staples (constant)</td>
+<td>1.13</td>
+</tr>
+<tr class="even">
+<td>A_n</td>
+<td>Scaling parameter for non-staples (constant)</td>
+<td>1.24</td>
+</tr>
+<tr class="odd">
+<td>xi_ss</td>
+<td>Price elasticity for staples</td>
+<td>-0.024</td>
+</tr>
+<tr class="even">
+<td>xi_cross</td>
+<td>Cross price elasticity</td>
+<td>-0.010</td>
+</tr>
+<tr class="odd">
+<td>xi_nn</td>
+<td>Price elasticity for non_staples</td>
+<td>-0.143</td>
+</tr>
+<tr class="even">
+<td>nu1_n</td>
+<td>Income elasticity for non-staples</td>
+<td>0.5</td>
+</tr>
+<tr class="odd">
+<td>lambda_s</td>
+<td>Income elasticity for staples</td>
+<td>0.0476</td>
+</tr>
+<tr class="even">
+<td>k_s</td>
+<td>Value of income (Y) at which elasticity is 0</td>
+<td>16.0</td>
+</tr>
+<tr class="odd">
+<td>Pm</td>
+<td>Price of materials</td>
+<td>5.13</td>
+</tr>
+<tr class="even">
+<td>psscl</td>
+<td>Additional scaling parameter for staples</td>
+<td>100.0</td>
+</tr>
+<tr class="odd">
+<td>pnscl</td>
+<td>Additional scaling parameter for non-staples</td>
+<td>20.1</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div id="contributing-to-ambrosia" class="section level2">
 <h2 class="hasAnchor">
 <a href="#contributing-to-ambrosia" class="anchor"></a>Contributing to <code>ambrosia</code>
 </h2>
 <p>We welcome contributions to <code>ambrosia</code> from the development community. Please contact us if you want to collaborate! The <code>ambrosia</code> GitHub repository is accessible here: <a href="https://github.com/JGCRI/ambrosia">GitHub Repository</a></p>
+</div>
+</div>
+<div id="availability" class="section level1">
+<h1 class="hasAnchor">
+<a href="#availability" class="anchor"></a>Availability</h1>
+<div id="operating-system" class="section level2">
+<h2 class="hasAnchor">
+<a href="#operating-system" class="anchor"></a>Operating system</h2>
+<p>Mac OS X; Linux; Windows 10</p>
+</div>
+<div id="programming-language" class="section level2">
+<h2 class="hasAnchor">
+<a href="#programming-language" class="anchor"></a>Programming language</h2>
+<p>R (&gt;= 3.5.0)</p>
+</div>
+<div id="dependencies" class="section level2">
+<h2 class="hasAnchor">
+<a href="#dependencies" class="anchor"></a>Dependencies</h2>
+<p>dplyr (&gt;= 0.7)</p>
+<p>nleqslv (&gt;= 3.2)</p>
+<p>reshape2 (&gt;= 1.4.3)</p>
+<p>ggplot2 (&gt;= 2.2.1)</p>
+<p>cluster (&gt;= 2.0)</p>
+<p>tidyr (&gt;= 0.7.1)</p>
+</div>
+<div id="code-repository" class="section level2">
+<h2 class="hasAnchor">
+<a href="#code-repository" class="anchor"></a>Code repository</h2>
+<p>Name- GitHub; <code>JGCRI/ambrosia</code></p>
+<p>Identifier- <a href="https://github.com/JGCRI/ambrosia/tree/v1.3.0" class="uri">https://github.com/JGCRI/ambrosia/tree/v1.3.0</a></p>
+<p>License- BSD 2-Clause</p>
 </div>
 </div>
 

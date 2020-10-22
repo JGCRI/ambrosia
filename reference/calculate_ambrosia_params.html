@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Calculate the 11 parameters for ambrosia using data calculated by process_food_demand_data() by maximizing log likelihood — calculate_ambrosia_params • ambrosia</title>
+<title>Calculates the 11 parameters for ambrosia using data calculated by create_dataset_for_parameter_fit() by maximizing log likelihood — calculate_ambrosia_params • ambrosia</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Calculate the 11 parameters for ambrosia using data calculated by process_food_demand_data() by maximizing log likelihood — calculate_ambrosia_params" />
-<meta property="og:description" content="Calculate the 11 parameters for ambrosia using data calculated by process_food_demand_data() by maximizing log likelihood" />
+<meta property="og:title" content="Calculates the 11 parameters for ambrosia using data calculated by create_dataset_for_parameter_fit() by maximizing log likelihood — calculate_ambrosia_params" />
+<meta property="og:description" content="Calculates the 11 parameters for ambrosia using data calculated by create_dataset_for_parameter_fit() by maximizing log likelihood" />
 
 
 
@@ -115,13 +115,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculate the 11 parameters for ambrosia using data calculated by process_food_demand_data() by maximizing log likelihood</h1>
+    <h1>Calculates the 11 parameters for ambrosia using data calculated by create_dataset_for_parameter_fit() by maximizing log likelihood</h1>
     
     <div class="hidden name"><code>calculate_ambrosia_params.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Calculate the 11 parameters for ambrosia using data calculated by process_food_demand_data() by maximizing log likelihood</p>
+    <p>Calculates the 11 parameters for ambrosia using data calculated by create_dataset_for_parameter_fit() by maximizing log likelihood</p>
     </div>
 
     <pre class="usage"><span class='fu'>calculate_ambrosia_params</span><span class='op'>(</span>
@@ -193,6 +193,16 @@
 <p>Pm : Scaling parameter for price of materials (everything other than staples and non-staples)</p>
 <p>psscl : Price scaling parameter for staples that is applied to the Price of staples (Ps) and the alpha of staples</p>
 <p>pnscl : Price scaling parameter for staples that is applied to the Price of non-staples (Pn) and the alpha of non-staples</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The following steps are involved in the parameter estimation function.</p>
+<p>1) First a log-likelihood function is set up with the data.</p>
+<p>2) Next, the value returned by the log-likelihood function will be maximized using optim(). The user can provide
+ a seed of initial parameters to begin the optimization process (the lowest possible seed would be the lowest
+ values of all 11 parameters). The default seed is set to the original parameters from Edmonds et al (2017). The user
+ can now specify the optimization method to be used. The default is set to the "BFGS" method, but the user can
+ also run the optimization using methods such as "Neldor-Mead".</p>
+<p>3) Finally, the function will now return a vector of parameters that can be used to derive estimates of food demand (similar to Example 1 above). The function also prints out the maximized value of the log-likelihood function, so that the user can verify the efficiency and effectiveness of the parameter estimation.</p>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>KBN 2020</p>

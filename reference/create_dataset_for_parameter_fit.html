@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Create dataset with observational error for log likelihood calculation using clustering. — create_dataset_for_parameter_fit" />
-<meta property="og:description" content="Create dataset with observational error for log likelihood calculation using clustering." />
+<meta property="og:description" content="There are a few steps that the function will perform on a sample dataset (see details)." />
 
 
 
@@ -121,7 +121,7 @@
     </div>
 
     <div class="ref-description">
-    <p>Create dataset with observational error for log likelihood calculation using clustering.</p>
+    <p>There are a few steps that the function will perform on a sample dataset (see details).</p>
     </div>
 
     <pre class="usage"><span class='fu'>create_dataset_for_parameter_fit</span><span class='op'>(</span>
@@ -154,7 +154,7 @@
       <td><p>A data.frame or data.table with the raw data. Data should contain following names,</p>
 <p>s_cal_pcap_day_thous (Containing 1000 calories per capita per day for staples)</p>
 <p>ns_cal_pcap_day_thous (Containing 1000 calories per capita per day for non-staples)</p>
-<p>gdp_pcap_thous (Containing GDP per capita in thous USD)</p>
+<p>gdp_pcap_thous (Containing GDP per capita)</p>
 <p>s_usd_p1000cal (Price of 1000 calories for staples per person per day)</p>
 <p>ns_usd_p1000cal (Price of 1000 calories for non-staples per person per day)</p></td>
     </tr>
@@ -185,6 +185,21 @@
     <p>A dataframe  called Processed_Data_for_MC with the following columns</p>
 <p>sig2Qn- which is the observational error for non-staples</p>
 <p>sig2Qs- which is the observational error for staples</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The steps that will be performed by the function are :</p>
+<p>1) It will ensure that the user's dataset contains all columns required for parameter estimation.</p>
+<p>2) It will filter out anomalies and outliers using parameterized cutoff values selected by the user.
+  This step is necessary since data on food consumption and prices are often incomplete which may lead to
+  unrealistically high or low values of consumption or prices in the dataset.</p>
+<p>3) After this, the function will create clusters of observations from the dataset based on income levels,
+  and prices of staples and non-staples. This step is necessary because this being economic data,
+  the observational error can only be calculated within different clusters. The code will also check for a  user
+  specified minimum number of clusters (if there are anomalies within the dataset, the clustering can be incorrect leading in a small number of clusters).
+  The clustering is implemented using the Divisive Analysis Clustering Algorithm (DIANA).</p>
+<p>4) Once the clustering is completed, the code will calculate the observational error
+  which is the variance in food demand for staples and non-staples .Note that the user can chose a
+  lower limit on the observational error calculated. The default value of the lower limit is 0.01.</p>
     <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
 
     <p>KBN 2020</p>
