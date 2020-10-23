@@ -2,7 +2,7 @@
 % Please edit documentation in R/calculate_parameters.R
 \name{calculate_ambrosia_params}
 \alias{calculate_ambrosia_params}
-\title{Calculate the 11 parameters for ambrosia using data calculated by process_food_demand_data() by maximizing log likelihood}
+\title{Calculates the 11 parameters for ambrosia using data calculated by \code{\link{create_dataset_for_parameter_fit()}} by maximizing log likelihood}
 \usage{
 calculate_ambrosia_params(
   optim_method = "BFGS",
@@ -19,7 +19,7 @@ calculate_ambrosia_params(
 
 \item{original_param_vector}{Original parameter vector to be used as the starting point for the optimization.These parameters are taken from Edmonds et al 2017}
 
-\item{datadir}{Directory to the data calculated by process_food_demand_data()}
+\item{datadir}{Directory to the data calculated by \code{\link{create_dataset_for_parameter_fit()}}}
 
 \item{outdir}{Directory to store output csv. Default is set to test_output folder.}
 
@@ -61,7 +61,20 @@ psscl : Price scaling parameter for staples that is applied to the Price of stap
 pnscl : Price scaling parameter for staples that is applied to the Price of non-staples (Pn) and the alpha of non-staples
 }
 \description{
-Calculate the 11 parameters for ambrosia using data calculated by process_food_demand_data() by maximizing log likelihood
+Calculates the 11 parameters for ambrosia using data calculated by \code{\link{create_dataset_for_parameter_fit()}} by maximizing log likelihood
+}
+\details{
+The following steps are involved in the parameter estimation function.
+
+1) First a log-likelihood function is set up with the data.
+
+2) Next, the value returned by the log-likelihood function will be maximized using optim(). The user can provide
+ a seed of initial parameters to begin the optimization process (the lowest possible seed would be the lowest
+ values of all 11 parameters). The default seed is set to the original parameters from Edmonds et al (2017). The user
+ can now specify the optimization method to be used. The default is set to the "BFGS" method, but the user can
+ also run the optimization using methods such as "Neldor-Mead".
+
+3) Finally, the function will now return a vector of parameters that can be used to derive estimates of food demand (using the \code{\link{food.dmnd}} function). The function also prints out the maximized value of the log-likelihood function, so that the user can verify the efficiency and effectiveness of the parameter estimation.
 }
 \author{
 KBN 2020

@@ -21,9 +21,9 @@ devtools::install_github('JGCRI/ambrosia')
 
 ```
 
-## Examples
+## User tutorial and examples
 
-A list of examples describing the different features in `ambrosia`are described in the [`ambrosia_vignette.rmd`](https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html) in the vignettes(`vignettes/`) directory. The example below shows how a user can get an estimate of demand using some sample parameters.
+A list of example along with a user tutorial describing the different features in `ambrosia`are available in the [`ambrosia_vignette.rmd`](https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html) in the vignettes(`vignettes/`) directory. The example below shows how a user can get an estimate of demand using some sample parameters (See the table below for description of parameters). 
 
 ```r
 #Get a sample data set
@@ -43,5 +43,52 @@ The code from the example can be used to visualize the food demand for staples a
 
 ![A simple plot of food demand for staples and non-staples for changing incomes and constant prices.](vignettes/example_3.png)
 
+#### Description of parameters 
+
+The 11 parameters are described in table below with values from the latest version of ambrosia.
+
+| Parameter name | Description                                  | Value |
+|----------------|----------------------------------------------|-------|
+| A_s            | Scaling parameter for staples (constant)     | 1.13  |
+| A_n            | Scaling parameter for non-staples (constant) | 1.24  |
+| xi_ss          | Price elasticity for staples                 | -0.024|
+| xi_cross       | Cross price elasticity                       | -0.010|
+| xi_nn          | Price elasticity for non_staples             | -0.143|
+| nu1_n          | Income elasticity for non-staples            | 0.5   |
+| lambda_s       | Income elasticity for staples                | 0.0476|
+| k_s            | Value of income (Y) at which elasticity is 0 | 16.0  |
+| Pm             | Price of materials                           | 5.13  |
+| psscl          | Additional scaling parameter for staples     | 100.0 |
+| pnscl          | Additional scaling parameter for non-staples | 20.1  |
+
 ## Contributing to `ambrosia`
 We welcome contributions to `ambrosia` from the development community. Please contact us if you want to collaborate! The `ambrosia` GitHub repository is accessible here: [GitHub Repository](https://github.com/JGCRI/ambrosia)
+
+# Availability
+
+## Operating system
+Mac OS X; Linux; Windows 10
+
+## Programming language
+R (>= 3.5.0)
+
+## Dependencies
+dplyr (>= 0.7)
+
+nleqslv (>= 3.2)
+
+reshape2 (>= 1.4.3)
+
+ggplot2 (>= 2.2.1)
+
+cluster (>= 2.0)
+
+tidyr  (>= 0.7.1)
+
+## Code repository
+
+Name- GitHub; `JGCRI/ambrosia`
+
+Identifier- https://github.com/JGCRI/ambrosia/tree/v1.3.0
+
+License- BSD 2-Clause
