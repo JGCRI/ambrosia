@@ -72,6 +72,7 @@ g<-ggplot()+
 plot(g)    
 ```
 ![](example_3.png){width=50% height=50%} 
+
 ## Example 1.4: Visualize budget shares
 ```r
 #Rename the budget shares columns

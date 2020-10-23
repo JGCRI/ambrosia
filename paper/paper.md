@@ -12,7 +12,7 @@ authors:
   name: Stephanie Waldhoff
   orcid: 0000-0002-8073-0868
 - affiliation: 1
-  name: Jae A. Edmonds
+  name: James Edmonds
   orcid: 0000-0002-3210-9209
 - affiliation: 2
   name: Ryna Cui

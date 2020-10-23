@@ -1,7 +1,7 @@
 ##Functions to estimate parameters
 
 
-#' Calculates the 11 parameters for ambrosia using data calculated by create_dataset_for_parameter_fit() by maximizing log likelihood
+#' Calculates the 11 parameters for ambrosia using data calculated by \code{\link{create_dataset_for_parameter_fit()}} by maximizing log likelihood
 #'
 #'@details The following steps are involved in the parameter estimation function.
 #'
@@ -13,7 +13,7 @@
 #'  can now specify the optimization method to be used. The default is set to the "BFGS" method, but the user can
 #'  also run the optimization using methods such as "Neldor-Mead".
 #'
-#'3) Finally, the function will now return a vector of parameters that can be used to derive estimates of food demand (similar to Example 1 above). The function also prints out the maximized value of the log-likelihood function, so that the user can verify the efficiency and effectiveness of the parameter estimation.
+#'3) Finally, the function will now return a vector of parameters that can be used to derive estimates of food demand (using the \code{\link{food.dmnd}} function). The function also prints out the maximized value of the log-likelihood function, so that the user can verify the efficiency and effectiveness of the parameter estimation.
 #'
 #' @return A vector with the 11 parameters which are as follows,
 #'
@@ -44,7 +44,7 @@
 #' @param lower_limit_sigma Lower limit for sigma values calculated
 #' @param original_param_vector Original parameter vector to be used as the starting point for the optimization.These parameters are taken from Edmonds et al 2017
 #' @param optim_method The optimization method to be used for maximization of the log likelihood. The default is set to BFGS
-#' @param datadir Directory to the data calculated by process_food_demand_data()
+#' @param datadir Directory to the data calculated by \code{\link{create_dataset_for_parameter_fit()}}
 #' @param outdir Directory to store output csv. Default is set to test_output folder.
 #' @param max_iterations A maximum number of iterations that can be passed to optim. This is largely meant for testing purposes.Default is set to 100 for BFGS.
 #' @param print_progress A parameter that allows the user to track progress of function.

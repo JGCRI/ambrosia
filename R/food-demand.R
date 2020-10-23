@@ -621,7 +621,7 @@ compute.bc.rgn <- function(obs, params)
 #' @param obs.trn Data frame of training observations.
 #' @return calculated bias corrected values
 #' @export
-compute.bias.corrections <- function(params, obs.trn)
+ compute_bias_corrections <- function(params, obs.trn)
 {
   . <- NULL
 
