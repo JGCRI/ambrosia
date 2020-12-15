@@ -17,9 +17,15 @@ The `ambrosia` R package was developed to calculate food demand for staples and 
 `ambrosia` can be directly installed from its GitHub repository using the R `devtools` package. From an R prompt, run the command,
 
 ```r
-devtools::install_github('JGCRI/ambrosia')
-
+devtools::install_github('JGCRI/ambrosia', build_vignettes = TRUE)
 ```
+To load the vignette with examples for the major functions within ambrosia, run the following command
+
+```r
+vignette("ambrosia_vignette")
+```
+
+
 
 ## User tutorial and examples
 
