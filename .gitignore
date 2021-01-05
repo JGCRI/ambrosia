@@ -35,7 +35,9 @@ vignettes/*.pdf
 
 # Example files generated
 *.dat
-*.csv
+/*.csv
+paper/*.csv
+paper/*.xlsx
 
 
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
