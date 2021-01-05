@@ -4,19 +4,19 @@
 \alias{namemc}
 \title{Return the list of names for the parameters in the model.}
 \usage{
-namemc(nparam = 9)
+namemc(nparam = 11)
 }
 \arguments{
-\item{nparam}{Number of parameters.  Legal values are either 8 or 9 or 11.}
+\item{nparam}{Number of parameters.  Legal values are either 10 or 11.}
 }
 \value{
 A vector of parameter names for the selected version of the model.
 }
 \description{
-Supports both the 7 and 9 parameter version.  Adds the "LL" tag to the end to
+Supports both the 10 and 11 parameter version.  Adds the "LL" tag to the end to
 cover the log likelihood column appened by the monte carlo code.
 }
 \details{
-The 9 parameter version of the model is the canonical version (and the one
+The 11 parameter version of the model is the canonical version (and the one
 published in the paper)
 }

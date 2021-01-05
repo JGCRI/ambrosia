@@ -5,7 +5,7 @@
 \alias{plohi}
 \title{Recommended parameter limits for the model.}
 \format{
-An object of class \code{matrix} with 2 rows and 9 columns.
+An object of class \code{matrix} with 2 rows and 11 columns.
 }
 \usage{
 plohi
@@ -16,9 +16,9 @@ are numerically ill-behaved.  The first row of the matrix has recommended
 minimum values; the second has recommended maximum values.
 }
 \details{
-In other functions we talk about the "8-parameter" and "9-parameter" versions
-of the model.  The 8-parameter version was used in early tests and is now
-deprecated; therefore, these recommendations apply only to the 9-parameter
+In other functions we talk about the "10-parameter" and "11-parameter" versions
+of the model.  The 10-parameter version was used in early tests and is now
+deprecated; therefore, these recommendations apply only to the 11-parameter
 version.
 }
 \keyword{datasets}

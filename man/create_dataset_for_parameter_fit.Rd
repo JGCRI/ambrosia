@@ -36,12 +36,6 @@ create_dataset_for_parameter_fit(
 \item{outdir}{Directory to store output csv. Default is set to test_output folder.}
 
 \item{print_progress}{A parameter that allows the user to track progress of function.}
-
-\item{min_price_fd}{Highest possible price of staples and non-staples}
-
-\item{original_param_vector}{Original parameter vector to be used as the starting point for the optimization.These parameters are taken from Edmonds et al 2017}
-
-\item{optim_method}{The optimization method to be used for maximization of the log likelihood. The default is set to BFGS}
 }
 \value{
 A dataframe  called Processed_Data_for_MC with the following columns
