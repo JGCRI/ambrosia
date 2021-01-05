@@ -383,6 +383,6 @@ mcparam.ML(mc_example) -> ml_parameters
 #Set up the log-likelihood function
 func_MC <- mc.setup("Processed_Data_for_MC.csv")
 
-#Now calculate the probability density. Add in the price scaling parameters (which were held constant during the MCMC). The value should be -962
+#Now calculate the probability density.The value should be -962
 probability_density <- func_MC(c(ml_parameters))
 ```
