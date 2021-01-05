@@ -47,7 +47,7 @@
 #' @param trace_param Setting this to TRUE will generate a .dat file with all parameter samples and log likelihhod value during a parameter fitting exercise (eg. MCMC)
 #' @author KBN 2020
 #' @importFrom  stats optim
-#' @importFrom utils write.csv
+#' @importFrom utils write.csv write.table
 #' @export
 calculate_ambrosia_params <- function(optim_method = "BFGS",
                                      original_param_vector= c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20),
@@ -147,7 +147,7 @@ calculate_ambrosia_params <- function(optim_method = "BFGS",
 #' @importFrom dplyr mutate filter rename
 #' @author KBN 2020
 #' @export
-create_dataset_for_parameter_fit <- function(min_price_pd = 20,
+create_dataset_for_parameter_fit <- function(
                                              min_cal_fd = 1000,
                                              min_clusters = 300,
                                              lower_limit_sigma = 0.01,
@@ -156,7 +156,7 @@ create_dataset_for_parameter_fit <- function(min_price_pd = 20,
                                              print_progress = FALSE){
 
     s_cal_pcap_day_thous <- ns_cal_pcap_day_thous <- ns_usd_p1000cal <- Tot_cal <- gdp_pcap_thous <-
-        s_usd_p1000cal <- Ps <- sig2Qs <- sig2Qn <- NULL
+        s_usd_p1000cal <- Ps <- sig2Qs <- sig2Qn <- gdp_pcap_thous2005usd <- Pn <- NULL
 
     `%notin%` <- Negate(`%in%`)
     data <- as.data.frame(data)
