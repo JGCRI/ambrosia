@@ -71,13 +71,13 @@ xi.matrix.input <- function()
 
     shiny::fluidRow(
         shiny::column(4,
-               shiny::numericInput(inputId="xiss", value=xidefault[1],label="\\(\\xi_{ss}\\)",
+               shiny::numericInput(inputId="xiss", value=xidefault[1],label="\\(\\xi_{ss}\\) (xi_ss)",
                             min=elasmin, max=elasmax, step=elasstep)),
         shiny::column(4,
-               shiny::numericInput(inputId="xinn", value=xidefault[2], label="\\(\\xi_{nn}\\)",
+               shiny::numericInput(inputId="xinn", value=xidefault[2], label="\\(\\xi_{nn}\\) (xi_nn)",
                             min=elasmin, max=elasmax, step=elasstep)),
         shiny::column(4,
-               shiny::numericInput(inputId="xicross", value = xidefault[3], label='\\(\\xi_{\\text{cross}}\\)',
+               shiny::numericInput(inputId="xicross", value = xidefault[3], label='\\(\\xi_{\\text{cross}}\\) (xi_cross)',
                             min=elasmin, max=elasmax, step=elasstep))
         )
 }
@@ -103,7 +103,7 @@ y0.input.box <- function()
 #' @param step Slider step size
 #' @param labels Character vector of labels
 #' @export
-column.input.table <- function(inputids, defvals, min, max, step, labels=c('Staple','Nonstaple'))
+column.input.table <- function(inputids, defvals, min, max, step, labels=c('Staple (A_s)','Nonstaple (A_n)'))
 {
     ## Draw an input table with a single column of two values
     ##  inputids and defvals are vectors

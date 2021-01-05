@@ -18,7 +18,7 @@ column.input.table(
   min,
   max,
   step,
-  labels = c("Staple", "Nonstaple")
+  labels = c("Staple (A_s)", "Nonstaple (A_n)")
 )
 
 eta.selector(id, label2 = "\\\\(\\\\eta=f(Y)\\\\)", sel = 1)

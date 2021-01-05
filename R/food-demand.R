@@ -447,7 +447,7 @@ calc.hicks.actual <- function(eps, alpha.s, alpha.n, alpha.m)
 food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
 {
   . <- GCAM_region_name <- s_usd_p1000cal <- ns_usd_p1000cal <-
-    gdp_pcap_thous2005usd <- s_cal_pcap_day_thous <- ns_cal_pcap_day_thous <-
+    gdp_pcap_thous2005usd <- s_cal_pcap_day_thous <- ns_cal_pcap_day_thous <- gdp_pcap_thous <-
     NULL
 
   `%notin%` <- Negate(`%in%`)

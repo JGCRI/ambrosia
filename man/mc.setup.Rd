@@ -4,7 +4,13 @@
 \alias{mc.setup}
 \title{Create a posterior log-pdf function for monte carlo sampling the model parameters.}
 \usage{
-mc.setup(obsdata_filename, logprior = NULL, logfile = NULL, chunksize = 10)
+mc.setup(
+  obsdata_filename,
+  logprior = NULL,
+  logfile = NULL,
+  chunksize = 10,
+  trace_param = FALSE
+)
 }
 \arguments{
 \item{obsdata_filename}{File name for the oberved data.}
@@ -17,6 +23,8 @@ log-posterior function's optional argument described in the details section.}
 
 \item{chunksize}{See details for description of chunking and why it is
 needed.}
+
+\item{trace_param}{Set this to TRUE to generate the data file (.dat file) during the statistical fitting procedure.}
 }
 \value{
 A function that computes the log-posterior probability density for an

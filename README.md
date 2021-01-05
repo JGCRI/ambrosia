@@ -8,7 +8,7 @@
 ## Summary
 The `ambrosia` R package was developed to calculate food demand for staples and non-staple commodities that is responsive to changing levels of incomes and prices. Ambrosia implements the framework to quantify food demand as established by Edmonds et al. (2017) and allows the user to explore and estimate different variables related to the food demand system. Currently `ambrosia` provides three main functions:
 1. calculation of food demand for any given set of parameters including income levels and prices,
-2. estimation of parameters within a given a dataset.  Note:  `ambrosia` is used to calculate parameters for the food demand model implemented in the Global Change Analysis Model (GCAM; Calvin et al. 2019)
+2. estimation of parameters within a given a dataset.  Note:  `ambrosia` is used to calculate parameters for the food demand model implemented in the [Global Change Analysis Model](http://www.globalchange.umd.edu/gcam/). 
 3. exploration and preparation of raw data before starting a parameter estimation.
 
 
@@ -19,17 +19,15 @@ The `ambrosia` R package was developed to calculate food demand for staples and 
 ```r
 devtools::install_github('JGCRI/ambrosia', build_vignettes = TRUE)
 ```
-To load the vignette with examples for the major functions within ambrosia, run the following command
+
+## User tutorial and examples
+
+A list of examples along with a user tutorial describing the different features in `ambrosia` are available in the [`ambrosia_vignette.rmd`](https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html). To load the vignette with examples for the major functions within ambrosia, run the following command
 
 ```r
 vignette("ambrosia_vignette")
 ```
-
-
-
-## User tutorial and examples
-
-A list of examples along with a user tutorial describing the different features in `ambrosia` are available in the [`ambrosia_vignette.rmd`](https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html) in the vignettes(`vignettes/`) directory. The example below shows how a user can get an estimate of demand using some sample parameters (See the table below for description of parameters). 
+The example below shows how a user can get an estimate of demand using some sample parameters (See the table below for description of parameters). 
 
 ```r
 #Get a sample data set
@@ -51,24 +49,50 @@ The code from the example can be used to visualize the food demand for staples a
 
 #### Description of parameters 
 
-The 11 parameters are described in table below with values from the latest version of ambrosia.
+The 11 parameters are described in table below with values from the latest version of ambrosia. The table also contains an acceptable range for each of the parameters. The original parameters were calculated using a Markov Chain Monte Carlo (MCMC) approach. The range is calculated as the 95% Joint Confidence Interval of the range of the parameters apperaing in all Monte Carlo samples with likelihood values above the 5th percentile.
 
-| Parameter name | Description                                  | Value |
-|----------------|----------------------------------------------|-------|
-| A_s            | Scaling parameter for staples (constant)     | 1.13  |
-| A_n            | Scaling parameter for non-staples (constant) | 1.24  |
-| xi_ss          | Price elasticity for staples                 | -0.024|
-| xi_cross       | Cross price elasticity                       | -0.010|
-| xi_nn          | Price elasticity for non_staples             | -0.143|
-| nu1_n          | Income elasticity for non-staples            | 0.5   |
-| lambda_s       | Income elasticity for staples                | 0.0476|
-| k_s            | Value of income (Y) at which elasticity is 0 | 16.0  |
-| Pm             | Price of materials                           | 5.13  |
-| psscl          | Additional scaling parameter for staples     | 100.0 |
-| pnscl          | Additional scaling parameter for non-staples | 20.1  |
+| Parameter name | Description                                                                                                                                                                                                                                                           | Units        | Value | Range of parameter values |
+|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|-------|---------------------------|
+| `A_s`            | A scale term used to derive expenditure share for staple demand                                                                                                                                                                                                       | Unitless     | 1.28  | 1.25 -1.40                |
+| `A_n`            | A scale term used to derive expenditure share for non-staple demand.                                                                                                                                                                                                  | Unitless     | 1.14  | 0.9 - 1.16               |
+| `xi_ss`          | Price elasticity of staple goods. Unit change in per capita demand for staples as a result of unit increase in price (in $ per person per day).                                                                                                                       | Elasticity   | -0.19 | -0.27 - -0.07         |
+| `xi_cross`          | Cross price elasticity between staples and non-staples which in combination with the other price elasticities is used to derive substitution elasticity.                                                                                                              | Elasticity   | 0.21  | 0.09 - 0.27          |
+| `xi_nn`          | Price elasticity of non-staple goods. Unit change in per capita demand for non-staples as a result of unit increase in price (in $ per person per day).                                                                                                                       | Elasticity   | -0.3 | -0.46 - -0.10
+| `nu1_n`          | Income elasticity for non-staple goods. Unit change in per capita demand for non-staples for unit change in income (in thousand USD).                                                                                                                                 | Elasticity   | 0.5   | 0.46 - 0.61               |
+| `lambda_s`       | Income elasticity for staple goods. Unit change in per capita demand for staples for unit change in income (in thousand USD)                                                                                                                                          | Elasticity   | 0.1   | 0.075 - 0.16                |
+| `k_s`            | Log of Income level at which staple demand is anticipated to be at its highest                                                                                                                                                                                   | Thousand USD | 16    | 10 -17                    |
+| `psscl`          | Additional scaling term used to derive the expenditure shares for staples. This is applied to price of staples (`Ps`/`Pm` * `psscl`), where Ps is the price of staples and Pm is the price of materials and to the expenditure shares of staples (`alpha_s`).                 | Unitless     | 100   | 80 - 120                  |
+| `pnscl`          | Additional scaling term used to derive the expenditure shares for non-staples. This is applied to price of non-staples (`Pn`/`Pm` * `pnscl`), where Pn is the price of non-staples and Pm is the price of materials and to the expenditure shares of non-staples (`alpha_n`). | Unitless     | 20    | 18 - 25                   |
+
+#### Simple example of equations to derive demand using parameters described above.
+
+Below is a simple example of how quantities of demand for staples (`Q_s`) and non-staples (`Q_n`) in thousand calories are calculated using the above 11 parameters above for an income level of `Y` in thousand USD for a staple price of `Ps` in $ per capita per day and non-staple price of `Pn` in $ per capita per day.  
+
+```r
+# 1) Staple demand
+
+Q_s <- A_s * Ps ^ xi_ss * Pn ^ xi_cross * Income_Term_staples   
+
+where,
+
+Income_term_staples <- (k_s * Y) ^ (lambda_s / Y)
+
+# 2) Non-staple demand
+
+Q_n <- A_s * Ps ^ xi_cross * Pn ^ xi_nn * Income_Term_Non_staples
+
+where,
+
+Income_Term_Non_staples <- Y ^ (2 * nu1_n)
+
+```
+
 
 ## Contributing to `ambrosia`
-We welcome contributions to `ambrosia` from the development community. Please contact us if you want to collaborate! The `ambrosia` GitHub repository is accessible here: [GitHub Repository](https://github.com/JGCRI/ambrosia)
+We welcome contributions to `ambrosia` from the development community. Please contact us at the email IDs below if you want to collaborate! The `ambrosia` GitHub repository is accessible here: [GitHub Repository](https://github.com/JGCRI/ambrosia). In order to report issues with `ambrosia`, please open an issue in the above mentioned Github Repository. 
+
+For more information about contributing, please contact Kanishka Narayan at kanishka.narayan@pnnl.gov or Chris Vernon at chris.vernon@pnnl.gov
+
 
 # Availability
 

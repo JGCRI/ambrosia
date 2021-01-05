@@ -75,28 +75,28 @@ make.byyear.plot <- function(byyear.data, pltrgn=NULL)
     }
 
     baseplt <- ggplot2::ggplot(data=modeldata, ggplot2::aes(x=year)) +
-        ggplot2::facet_wrap(~rgn) +
-        ggplot2::ylab('Q (1000 Cal pc/day)') +
-        ggplot2::geom_line(ggplot2::aes(y=value, colour=variable), size=1.5) +
-        ggplot2::geom_ribbon(data=Qs.err, ggplot2::aes(x=year, ymin=Qlo, ymax=Qhi), alpha=0.2) +
-        ggplot2::geom_ribbon(data=Qn.err, ggplot2::aes(x=year, ymin=Qlo, ymax=Qhi), alpha=0.2) +
-        ggplot2::theme(panel.margin=ggplot2::unit(1,'lines'))
+      ggplot2::facet_wrap(~rgn) +
+      ggplot2::ylab('Q (1000 Cal pc/day)') +
+      ggplot2::geom_line(ggplot2::aes(y=value, colour=variable), size=1.5) +
+      ggplot2::geom_ribbon(data=Qs.err, ggplot2::aes(x=year, ymin=Qlo, ymax=Qhi), alpha=0.2) +
+      ggplot2::geom_ribbon(data=Qn.err, ggplot2::aes(x=year, ymin=Qlo, ymax=Qhi), alpha=0.2) +
+      ggplot2::theme(panel.margin=ggplot2::unit(1,'lines'))
 
     ## Add the points for the observed data
     if(is.null(obsdata$obstype)) {
-        ## observation data not separated into training and testing
-        ## sets, so just plot one type of point, but give it a legend
-        ## to make it a little more clear that the dots are
-        ## observations and the lines are model output.
-        obsdata$obstype <- 'obs'
-        baseplt +
-            ggplot2::geom_point(data=obsdata, ggplot2::aes(y=value, colour=variable, shape=obstype)) +
-            ggplot2::scale_shape(guide=ggplot2::guide_legend(title='Observed Data', label=FALSE))
+      ## observation data not separated into training and testing
+      ## sets, so just plot one type of point, but give it a legend
+      ## to make it a little more clear that the dots are
+      ## observations and the lines are model output.
+      obsdata$obstype <- 'obs'
+      baseplt +
+        ggplot2::geom_point(data=obsdata, ggplot2::aes(y=value, colour=variable, shape=obstype)) +
+        ggplot2::scale_shape(guide=ggplot2::guide_legend(title='Observed Data', label=FALSE))
     }
     else {
-        baseplt +
-            ggplot2::geom_point(data=obsdata, ggplot2::aes(y=value, colour=variable, shape=obstype)) +
-            ggplot2::scale_shape(guide=ggplot2::guide_legend(title='Observed Data')) # This one includes labels for the obs types.
+      baseplt +
+        ggplot2::geom_point(data=obsdata, ggplot2::aes(y=value, colour=variable, shape=obstype)) +
+        ggplot2::scale_shape(guide=ggplot2::guide_legend(title='Observed Data')) # This one includes labels for the obs types.
     }
 }
 
@@ -110,14 +110,14 @@ make.byyear.plot <- function(byyear.data, pltrgn=NULL)
 #' @export
 make.byincome.plot <- function(obsdata, params, region=NULL)
 {
-    pcGDP <- value <- region <- variable <- NULL
+  pcGDP <- value <- region <- variable <- NULL
 
-    plotdata <- food.dmnd.byincome(obsdata, params, region)
+  plotdata <- food.dmnd.byincome(obsdata, params, region)
 
-    ggplot2::ggplot(data=plotdata, ggplot2::aes(x=pcGDP, y=value, color=region, variable)) +
-        ggplot2::geom_point() + ggplot2::facet_wrap(~variable, ncol=2) +
-        ggplot2::ylab('Q (1000 Calories/person/day)') +
-        ggplot2::scale_color_brewer(type='qual', guide='legend',palette=7)
+  ggplot2::ggplot(data=plotdata, ggplot2::aes(x=pcGDP, y=value, color=region, variable)) +
+    ggplot2::geom_point() + ggplot2::facet_wrap(~variable, ncol=2) +
+    ggplot2::ylab('Q (1000 Calories/person/day)') +
+    ggplot2::scale_color_brewer(type='qual', guide='legend',palette=7)
 
 }
 
@@ -135,31 +135,31 @@ make.byincome.plot <- function(obsdata, params, region=NULL)
 #' @export
 mc.make.byyear.plot <- function(mc.data, obsdata, bias.correction=NULL, region=NULL, nsamp=30, pltrgn=NULL)
 {
-    . <- NULL
+  . <- NULL
 
-    mcsamp <- mcparam.sample(mc.data, nsamp=nsamp)
-    ## drop likelihood values so we have just the parameter values
-    mcsamp.xl <- mcsamp
-    mcsamp.xl$LL <- NULL
+  mcsamp <- mcparam.sample(mc.data, nsamp=nsamp)
+  ## drop likelihood values so we have just the parameter values
+  mcsamp.xl <- mcsamp
+  mcsamp.xl$LL <- NULL
 
-    fd.byyear <- apply(mcsamp.xl, 1,
-                       . %>% vec2param %>% food.dmnd.byyear(obsdata, ., bias.correction, region) ) %>%
-        do.call(rbind, .)
+  fd.byyear <- apply(mcsamp.xl, 1,
+                     . %>% vec2param %>% food.dmnd.byyear(obsdata, ., bias.correction, region) ) %>%
+    do.call(rbind, .)
 
-    ## Do we want to return the samples and whatnot here?  Not sure.
-    make.byyear.plot(fd.byyear, pltrgn)
+  ## Do we want to return the samples and whatnot here?  Not sure.
+  make.byyear.plot(fd.byyear, pltrgn)
 
 }
 
 ## Fit a curve through model outputs to display on plots.
 fit.with.err <- function(Qdata)
 {
-    rgn <- year <- Q.sig <- Q.predict <- Qlo <- Qhi <- sd <- Q <- NULL
+  rgn <- year <- Q.sig <- Q.predict <- Qlo <- Qhi <- sd <- Q <- NULL
 
-    rslt <- dplyr::group_by(Qdata, rgn, year) %>% dplyr::summarise(Q.sig=sd(Q), Q.predict=mean(Q))
+  rslt <- dplyr::group_by(Qdata, rgn, year) %>% dplyr::summarise(Q.sig=sd(Q), Q.predict=mean(Q))
 
-    ## return value
-    dplyr::mutate(rslt, Qlo=Q.predict-2*Q.sig, Qhi=Q.predict+2*Q.sig)
+  ## return value
+  dplyr::mutate(rslt, Qlo=Q.predict-2*Q.sig, Qhi=Q.predict+2*Q.sig)
 }
 
 
@@ -167,16 +167,16 @@ fit.with.err <- function(Qdata)
 ## etc.) so that there aren't so many of them.
 simplify.region <- function(region)
 {
-    ifelse( grepl('Africa',region), 'Africa',
-      ifelse( grepl('Europe|EU',region) | region == 'Russia', 'Europe',
-        ifelse( grepl('Asia', region) |
-                   region %in% c('Australia_NZ', 'HongKong_Macau',
-                                 'Japan','Middle East', 'Pakistan',
-                                 'South Korea'),
-               'Asia-Pacific',
-          ifelse( grepl('America', region) |
-                     region %in% c('Brazil', 'Canada',
-                                   'Colombia', 'Mexico'),
-                 'Americas',
-                 as.character(region)))))
+  ifelse( grepl('Africa',region), 'Africa',
+          ifelse( grepl('Europe|EU',region) | region == 'Russia', 'Europe',
+                  ifelse( grepl('Asia', region) |
+                            region %in% c('Australia_NZ', 'HongKong_Macau',
+                                          'Japan','Middle East', 'Pakistan',
+                                          'South Korea'),
+                          'Asia-Pacific',
+                          ifelse( grepl('America', region) |
+                                    region %in% c('Brazil', 'Canada',
+                                                  'Colombia', 'Mexico'),
+                                  'Americas',
+                                  as.character(region)))))
 }
