@@ -82,7 +82,7 @@
 <p>The <code>ambrosia</code> R package was developed to calculate food demand for staples and non-staple commodities that is responsive to changing levels of incomes and prices. Ambrosia implements the framework to quantify food demand as established by Edmonds et al. (2017) and allows the user to explore and estimate different variables related to the food demand system. Currently <code>ambrosia</code> provides three main functions:</p>
 <ol>
 <li>calculation of food demand for any given set of parameters including income levels and prices,</li>
-<li>estimation of parameters within a given a dataset. Note: <code>ambrosia</code> is used to calculate parameters for the food demand model implemented in the Global Change Analysis Model (GCAM; Calvin et al. 2019)</li>
+<li>estimation of parameters within a given a dataset. Note: <code>ambrosia</code> is used to calculate parameters for the food demand model implemented in the <a href="http://www.globalchange.umd.edu/gcam/">Global Change Analysis Model</a>.</li>
 <li>exploration and preparation of raw data before starting a parameter estimation.</li>
 </ol>
 </div>
@@ -92,13 +92,16 @@
 </h2>
 <p><code>ambrosia</code> can be directly installed from its GitHub repository using the R <code>devtools</code> package. From an R prompt, run the command,</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">'JGCRI/ambrosia'</span><span class="op">)</span></pre></div>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">'JGCRI/ambrosia'</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></pre></div>
 </div>
-<div id="examples" class="section level2">
+<div id="user-tutorial-and-examples" class="section level2">
 <h2 class="hasAnchor">
-<a href="#examples" class="anchor"></a>Examples</h2>
-<p>A list of examples describing the different features in <code>ambrosia</code>are described in the <a href="https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html"><code>ambrosia_vignette.rmd</code></a> in the vignettes(<code>vignettes/</code>) directory. The example below shows how a user can get an estimate of demand using some sample parameters (See the table below for description of parameters).</p>
+<a href="#user-tutorial-and-examples" class="anchor"></a>User tutorial and examples</h2>
+<p>A list of examples along with a user tutorial describing the different features in <code>ambrosia</code> are available in the <a href="https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html"><code>ambrosia_vignette.rmd</code></a>. To load the vignette with examples for the major functions within ambrosia, run the following command</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span><span class="op">(</span><span class="st">"ambrosia_vignette"</span><span class="op">)</span></pre></div>
+<p>The example below shows how a user can get an estimate of demand using some sample parameters (See the table below for description of parameters).</p>
+<div class="sourceCode" id="cb3"><pre class="downlit">
 <span class="co">#Get a sample data set</span>
 <span class="va">Test_Data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">30</span>, by<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span><span class="op">)</span>
 
@@ -115,78 +118,123 @@
 <div id="description-of-parameters" class="section level4">
 <h4 class="hasAnchor">
 <a href="#description-of-parameters" class="anchor"></a>Description of parameters</h4>
-<p>The 11 parameters are described in table below with values from the latest version of ambrosia.</p>
+<p>The 11 parameters are described in table below with values from the latest version of ambrosia. The table also contains an acceptable range for each of the parameters. The original parameters were calculated using a Markov Chain Monte Carlo (MCMC) approach. The range is calculated as the 95% Joint Confidence Interval of the range of the parameters apperaing in all Monte Carlo samples with likelihood values above the 5th percentile.</p>
 <table class="table">
+<colgroup>
+<col width="4%">
+<col width="80%">
+<col width="4%">
+<col width="2%">
+<col width="8%">
+</colgroup>
 <thead><tr class="header">
 <th>Parameter name</th>
 <th>Description</th>
+<th>Units</th>
 <th>Value</th>
+<th>Range of parameter values</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td>A_s</td>
-<td>Scaling parameter for staples (constant)</td>
-<td>1.13</td>
+<td><code>A_s</code></td>
+<td>A scale term used to derive expenditure share for staple demand</td>
+<td>Unitless</td>
+<td>1.28</td>
+<td>1.25 -1.40</td>
 </tr>
 <tr class="even">
-<td>A_n</td>
-<td>Scaling parameter for non-staples (constant)</td>
-<td>1.24</td>
+<td><code>A_n</code></td>
+<td>A scale term used to derive expenditure share for non-staple demand.</td>
+<td>Unitless</td>
+<td>1.14</td>
+<td>0.9 - 1.16</td>
 </tr>
 <tr class="odd">
-<td>xi_ss</td>
-<td>Price elasticity for staples</td>
-<td>-0.024</td>
+<td><code>xi_ss</code></td>
+<td>Price elasticity of staple goods. Unit change in per capita demand for staples as a result of unit increase in price (in $ per person per day).</td>
+<td>Elasticity</td>
+<td>-0.19</td>
+<td>-0.27 - -0.07</td>
 </tr>
 <tr class="even">
-<td>xi_cross</td>
-<td>Cross price elasticity</td>
-<td>-0.010</td>
+<td><code>xi_cross</code></td>
+<td>Cross price elasticity between staples and non-staples which in combination with the other price elasticities is used to derive substitution elasticity.</td>
+<td>Elasticity</td>
+<td>0.21</td>
+<td>0.09 - 0.27</td>
 </tr>
 <tr class="odd">
-<td>xi_nn</td>
-<td>Price elasticity for non_staples</td>
-<td>-0.143</td>
+<td><code>xi_nn</code></td>
+<td>Price elasticity of non-staple goods. Unit change in per capita demand for non-staples as a result of unit increase in price (in $ per person per day).</td>
+<td>Elasticity</td>
+<td>-0.3</td>
+<td>-0.46 - -0.10</td>
 </tr>
 <tr class="even">
-<td>nu1_n</td>
-<td>Income elasticity for non-staples</td>
+<td><code>nu1_n</code></td>
+<td>Income elasticity for non-staple goods. Unit change in per capita demand for non-staples for unit change in income (in thousand USD).</td>
+<td>Elasticity</td>
 <td>0.5</td>
+<td>0.46 - 0.61</td>
 </tr>
 <tr class="odd">
-<td>lambda_s</td>
-<td>Income elasticity for staples</td>
-<td>0.0476</td>
+<td><code>lambda_s</code></td>
+<td>Income elasticity for staple goods. Unit change in per capita demand for staples for unit change in income (in thousand USD)</td>
+<td>Elasticity</td>
+<td>0.1</td>
+<td>0.075 - 0.16</td>
 </tr>
 <tr class="even">
-<td>k_s</td>
-<td>Value of income (Y) at which elasticity is 0</td>
-<td>16.0</td>
+<td><code>k_s</code></td>
+<td>Log of Income level at which staple demand is anticipated to be at its highest</td>
+<td>Thousand USD</td>
+<td>16</td>
+<td>10 -17</td>
 </tr>
 <tr class="odd">
-<td>Pm</td>
-<td>Price of materials</td>
-<td>5.13</td>
+<td><code>psscl</code></td>
+<td>Additional scaling term used to derive the expenditure shares for staples. This is applied to price of staples (<code>Ps</code>/<code>Pm</code> * <code>psscl</code>), where Ps is the price of staples and Pm is the price of materials and to the expenditure shares of staples (<code>alpha_s</code>).</td>
+<td>Unitless</td>
+<td>100</td>
+<td>80 - 120</td>
 </tr>
 <tr class="even">
-<td>psscl</td>
-<td>Additional scaling parameter for staples</td>
-<td>100.0</td>
-</tr>
-<tr class="odd">
-<td>pnscl</td>
-<td>Additional scaling parameter for non-staples</td>
-<td>20.1</td>
+<td><code>pnscl</code></td>
+<td>Additional scaling term used to derive the expenditure shares for non-staples. This is applied to price of non-staples (<code>Pn</code>/<code>Pm</code> * <code>pnscl</code>), where Pn is the price of non-staples and Pm is the price of materials and to the expenditure shares of non-staples (<code>alpha_n</code>).</td>
+<td>Unitless</td>
+<td>20</td>
+<td>18 - 25</td>
 </tr>
 </tbody>
 </table>
+</div>
+<div id="simple-example-of-equations-to-derive-demand-using-parameters-described-above" class="section level4">
+<h4 class="hasAnchor">
+<a href="#simple-example-of-equations-to-derive-demand-using-parameters-described-above" class="anchor"></a>Simple example of equations to derive demand using parameters described above.</h4>
+<p>Below is a simple example of how quantities of demand for staples (<code>Q_s</code>) and non-staples (<code>Q_n</code>) in thousand calories are calculated using the above 11 parameters above for an income level of <code>Y</code> in thousand USD for a staple price of <code>Ps</code> in $ per capita per day and non-staple price of <code>Pn</code> in $ per capita per day.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># 1) Staple demand</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a></span>
+<span id="cb4-3"><a href="#cb4-3"></a>Q_s &lt;-<span class="st"> </span>A_s <span class="op">*</span><span class="st"> </span>Ps <span class="op">^</span><span class="st"> </span>xi_ss <span class="op">*</span><span class="st"> </span>Pn <span class="op">^</span><span class="st"> </span>xi_cross <span class="op">*</span><span class="st"> </span>Income_Term_staples   </span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a>where,</span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a>Income_term_staples &lt;-<span class="st"> </span>(k_s <span class="op">*</span><span class="st"> </span>Y) <span class="op">^</span><span class="st"> </span>(lambda_s <span class="op">/</span><span class="st"> </span>Y)</span>
+<span id="cb4-8"><a href="#cb4-8"></a></span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="co"># 2) Non-staple demand</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a></span>
+<span id="cb4-11"><a href="#cb4-11"></a>Q_n &lt;-<span class="st"> </span>A_s <span class="op">*</span><span class="st"> </span>Ps <span class="op">^</span><span class="st"> </span>xi_cross <span class="op">*</span><span class="st"> </span>Pn <span class="op">^</span><span class="st"> </span>xi_nn <span class="op">*</span><span class="st"> </span>Income_Term_Non_staples</span>
+<span id="cb4-12"><a href="#cb4-12"></a></span>
+<span id="cb4-13"><a href="#cb4-13"></a>where,</span>
+<span id="cb4-14"><a href="#cb4-14"></a></span>
+<span id="cb4-15"><a href="#cb4-15"></a>Income_Term_Non_staples &lt;-<span class="st"> </span>Y <span class="op">^</span><span class="st"> </span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>nu1_n)</span></code></pre></div>
 </div>
 </div>
 <div id="contributing-to-ambrosia" class="section level2">
 <h2 class="hasAnchor">
 <a href="#contributing-to-ambrosia" class="anchor"></a>Contributing to <code>ambrosia</code>
 </h2>
-<p>We welcome contributions to <code>ambrosia</code> from the development community. Please contact us if you want to collaborate! The <code>ambrosia</code> GitHub repository is accessible here: <a href="https://github.com/JGCRI/ambrosia">GitHub Repository</a></p>
+<p>We welcome contributions to <code>ambrosia</code> from the development community. Please contact us at the email IDs below if you want to collaborate! The <code>ambrosia</code> GitHub repository is accessible here: <a href="https://github.com/JGCRI/ambrosia">GitHub Repository</a>. In order to report issues with <code>ambrosia</code>, please open an issue in the above mentioned Github Repository.</p>
+<p>For more information about contributing, please contact Kanishka Narayan at <a href="mailto:kanishka.narayan@pnnl.gov" class="email">kanishka.narayan@pnnl.gov</a> or Chris Vernon at <a href="mailto:chris.vernon@pnnl.gov" class="email">chris.vernon@pnnl.gov</a></p>
 </div>
 </div>
 <div id="availability" class="section level1">

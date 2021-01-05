@@ -134,7 +134,13 @@ sampler.  It will also work in an optimizer, provided you configure it to
 look for a maximum rather than a minimum.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>mc.setup</span><span class='op'>(</span><span class='va'>obsdata_filename</span>, logprior <span class='op'>=</span> <span class='cn'>NULL</span>, logfile <span class='op'>=</span> <span class='cn'>NULL</span>, chunksize <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>mc.setup</span><span class='op'>(</span>
+  <span class='va'>obsdata_filename</span>,
+  logprior <span class='op'>=</span> <span class='cn'>NULL</span>,
+  logfile <span class='op'>=</span> <span class='cn'>NULL</span>,
+  chunksize <span class='op'>=</span> <span class='fl'>10</span>,
+  trace_param <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -157,6 +163,10 @@ log-posterior function's optional argument described in the details section.</p>
       <th>chunksize</th>
       <td><p>See details for description of chunking and why it is
 needed.</p></td>
+    </tr>
+    <tr>
+      <th>trace_param</th>
+      <td><p>Set this to TRUE to generate the data file (.dat file) during the statistical fitting procedure.</p></td>
     </tr>
     </table>
 

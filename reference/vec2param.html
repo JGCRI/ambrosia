@@ -40,11 +40,12 @@
 
 
 <meta property="og:title" content="Convert a vector of parameters into a params structure. — vec2param" />
-<meta property="og:description" content="We assume that if you're using this you are doing an Monte Carlo calculation,
-so we set the parameters of eta.s accordingly.  We also look at the number of
-parameters passed in.  If it is 8, we assume you want etas = constant.  If
-it's 9, we assume you want etas = eta.s(lambda, k).  If it's anything else,
-we throw an error." />
+<meta property="og:description" content="This function allows the user to pass in a vector of each of the 11 parameters for ambrosia.
+The user can set individual parameter values described below or can pass in a direct vector of 11 parameters.
+We also look at the number of
+parameters passed in.  If it is 10, we assume you want a constant income elasticity for staples (etas = constant).  If
+it's 11, we assume you want to use a dynamic income elasticity for staples (etas = eta.s(lambda, k)).  If it's anything else,
+we throw an error. The table in the details section provides a description of the parameters, the units and the acceptable range." />
 
 
 
@@ -125,21 +126,79 @@ we throw an error." />
     </div>
 
     <div class="ref-description">
-    <p>We assume that if you're using this you are doing an Monte Carlo calculation,
-so we set the parameters of eta.s accordingly.  We also look at the number of
-parameters passed in.  If it is 8, we assume you want etas = constant.  If
-it's 9, we assume you want etas = eta.s(lambda, k).  If it's anything else,
-we throw an error.</p>
+    <p>This function allows the user to pass in a vector of each of the 11 parameters for ambrosia.
+The user can set individual parameter values described below or can pass in a direct vector of 11 parameters.
+We also look at the number of
+parameters passed in.  If it is 10, we assume you want a constant income elasticity for staples (etas = constant).  If
+it's 11, we assume you want to use a dynamic income elasticity for staples (etas = eta.s(lambda, k)).  If it's anything else,
+we throw an error. The table in the details section provides a description of the parameters, the units and the acceptable range.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>vec2param</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>vec2param</span><span class='op'>(</span>
+  x <span class='op'>=</span> <span class='cn'>NULL</span>,
+  A_s <span class='op'>=</span> <span class='fl'>1.28</span>,
+  A_n <span class='op'>=</span> <span class='fl'>1.14</span>,
+  xi_ss <span class='op'>=</span> <span class='op'>-</span><span class='fl'>0.19</span>,
+  xi_cross <span class='op'>=</span> <span class='fl'>0.21</span>,
+  xi_nn <span class='op'>=</span> <span class='op'>-</span><span class='fl'>0.33</span>,
+  nu1_n <span class='op'>=</span> <span class='fl'>0.5</span>,
+  lambda_s <span class='op'>=</span> <span class='fl'>0.1</span>,
+  k_s <span class='op'>=</span> <span class='fl'>16</span>,
+  Pm <span class='op'>=</span> <span class='fl'>5.06</span>,
+  psscl <span class='op'>=</span> <span class='fl'>100</span>,
+  pnscl <span class='op'>=</span> <span class='fl'>20</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>Vector of model parameters, using the Monte Carlo formulation.</p></td>
+      <td><p>Vector of 11 model parameters using the statistical formulation. If this is NULL, a vector is generated based on default parameter values for 11 parameters.</p></td>
+    </tr>
+    <tr>
+      <th>A_s</th>
+      <td><p>A scale term used to derive expenditure share for staple demand.</p></td>
+    </tr>
+    <tr>
+      <th>A_n</th>
+      <td><p>A scale term used to derive expenditure share for non-staple demand.</p></td>
+    </tr>
+    <tr>
+      <th>xi_ss</th>
+      <td><p>Price elasticity of staple goods. Unit change in per capita demand for staples as a result of unit increase in price (in $ per person per day).</p></td>
+    </tr>
+    <tr>
+      <th>xi_cross</th>
+      <td><p>Cross price elasticity between staples and non-staples which in combination with the other price elasticities is used to derive substitution elasticity.</p></td>
+    </tr>
+    <tr>
+      <th>xi_nn</th>
+      <td><p>Price elasticity of non-staple goods. Unit change in per capita demand for non-staples as a result of unit increase in price (in $ per person per day).</p></td>
+    </tr>
+    <tr>
+      <th>nu1_n</th>
+      <td><p>Income elasticity for non-staple goods. Unit change in per capita demand for non-staples for unit change in income (in thousand USD).</p></td>
+    </tr>
+    <tr>
+      <th>lambda_s</th>
+      <td><p>Income elasticity for staple goods. Unit change in per capita demand for staples for unit change in income (in thousand USD).</p></td>
+    </tr>
+    <tr>
+      <th>k_s</th>
+      <td><p>Exponent of Income level at which staple demand is anticipated to be at its highest. Log of this term (log(k_s)) is the income level in Thousand USD.k_s and lamda_s are used in conjunction to derive the income elasticity for staples.</p></td>
+    </tr>
+    <tr>
+      <th>Pm</th>
+      <td><p>Price of materials in $ per capita per day. This is basically the price consumers pay for goods in the economy others than food. The range based on the statistical formulation is 1.94 - 5.91.</p></td>
+    </tr>
+    <tr>
+      <th>psscl</th>
+      <td><p>Additional scaling term used to derive the expenditure shares for staples. This is applied to price of staples (Ps/Pm * psscl), where Ps is the price of staples and Pm is the price of materials and to the expenditure shares of staples (alpha_s).</p></td>
+    </tr>
+    <tr>
+      <th>pnscl</th>
+      <td><p>Additional scaling term used to derive the expenditure shares for non-staples. This is applied to price of non-staples (Pn/Pm * pnscl), where Pn is the price of non-staples and Pm is the price of materials and to the expenditure shares of non-staples (alpha_n).</p></td>
     </tr>
     </table>
 
@@ -148,11 +207,30 @@ we throw an error.</p>
     <p>Parameter structure suitable for use in <code><a href='food.dmnd.html'>food.dmnd</a></code>.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The parameters in the vector are:
- [A_s, A_n, xi_ss, xi_cross, xi_nn, nu1_n, lambda_s, k_s, Pm ]
-xi_cross is used for both xi_sn and xi_ns, forcing them to be equal.</p>
-<p>If there are only 8 parameters, then the first 6 are as above,
+    <p>The documentation provides an explanation of the parameters along with acceptable ranges for the parameters.
+The default parameters are the parameter values that yielded the maximum log likelihood values duing the statistical fitting procedure.
+The range of the parameters is derived by filtering the range of parameters in the MCMC for the 95th percentile confidence interval.
+The parameters are not independent of each other.
+Note that xi_cross is used for both xi_sn and xi_ns, forcing them to be equal.</p>
+<p>If there are only 10 parameters, then the first 8 are as above,
 and the next to last is eta_s.</p>
+<p>The parameters in the vector are:
+A_s, A_n, xi_ss, xi_cross, xi_nn, nu1_n, lambda_s, k_s, Pm, psscl, pnscl
+They are described in the table below:</p><table class='table'>
+<tr><td>Parameter name</td><td>Description</td><td>Units</td><td>Value</td><td>Range of parameter values (Based on 95th percentile confidence interval)</td></tr>
+<tr><td><code>A_s</code></td><td>A scale term used to derive expenditure share for staple demand</td><td>Unitless</td><td>1.28</td><td>1.25 -1.40</td></tr>
+<tr><td><code>A_n</code></td><td>A scale term used to derive expenditure share for non-staple demand.</td><td>Unitless</td><td>1.14</td><td>0.9 - 1.16</td></tr>
+<tr><td><code>xi_ss</code></td><td>Price elasticity of staple goods. Unit change in per capita demand for staples as a result of unit increase in price <code>Ps</code> (in $ per person per day).</td><td>Elasticity</td><td>-0.19</td><td>-0.27 - -0.07</td></tr>
+<tr><td><code>xi_cross</code></td><td>Cross price elasticity between staples and non-staples which in combination with the other price elasticities is used to derive substitution elasticity.</td><td>Elasticity</td><td>0.21</td><td>0.09 - 0.27</td></tr>
+<tr><td><code>xi_nn</code></td><td>Price elasticity of non-staple goods. Unit change in per capita demand for non-staples as a result of unit increase in price <code>Pn</code> (in $ per person per day).</td><td>Elasticity</td><td>-0.3</td><td>-0.46 - -0.10</td></tr>
+<tr><td><code>nu1_n</code></td><td>Income elasticity for non-staple goods. Unit change in per capita demand for non-staples for unit change in income <code>Y</code> (in thousand USD).</td><td>Elasticity</td><td>0.5</td><td>0.46 - 0.61</td></tr>
+<tr><td><code>lambda_s</code></td><td>Income elasticity for staple goods. Unit change in per capita demand for staples for unit change in income <code>Y</code> (in thousand USD)</td><td>Elasticity</td><td>0.1</td><td>0.075 - 0.16</td></tr>
+<tr><td><code>k_s</code></td><td>Exponent of Income level at which staple demand is anticipated to be at its highest</td><td>Thousand USD</td><td>16</td><td>10 -17</td></tr>
+<tr><td><code>psscl</code></td><td>Additional scaling term used to derive the expenditure shares for staples. This is applied to price of staples (<code>Ps</code>/<code>Pm</code> * <code>psscl</code>), where Ps is the price of staples and Pm is the price of materials and to the expenditure shares of staples (<code>alpha_s</code>).</td><td>Unitless</td><td>100</td><td>80 - 120</td></tr>
+<tr><td><code>pnscl</code></td><td>Additional scaling term used to derive the expenditure shares for non-staples. This is applied to price of non-staples (<code>Pn</code>/<code>Pm</code> * <code>pnscl</code>), where Pn is the price of non-staples and Pm is the price of materials and to the expenditure shares of non-staples (<code>alpha_n</code>).</td><td>Unitless</td><td>20</td><td>18 - 25</td></tr>
+</table>
+
+
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
