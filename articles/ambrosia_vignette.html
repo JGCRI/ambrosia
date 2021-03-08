@@ -219,9 +219,9 @@
 <p><img src="example_6.png" style="width:50.0%;height:50.0%"></p>
 </div>
 </div>
-<div id="part-2-calculating-calibration-parameters-from-raw-data" class="section level1">
+<div id="part-2-understanding-calibration-parameters" class="section level1">
 <h1 class="hasAnchor">
-<a href="#part-2-calculating-calibration-parameters-from-raw-data" class="anchor"></a>Part 2: Calculating calibration parameters from raw data</h1>
+<a href="#part-2-understanding-calibration-parameters" class="anchor"></a>Part 2: Understanding calibration parameters</h1>
 <div id="example-2-1-get-parameters" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-2-1-get-parameters" class="anchor"></a>Example 2.1: Get parameters</h2>
@@ -229,8 +229,11 @@
 <p>In addition to the price and income parameters, <code>ambrosia</code> requires 11 additional calibration parameters for the model. These parameters can be set using the function <code><a href="../reference/vec2param.html">vec2param()</a></code>. In order to understand the 11 parameters, their units, ranges and how they can be calculated, the user can call,</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="op">?</span><span class="fu"><a href="../reference/vec2param.html">vec2param</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>The user can set the parameters by passing a 11 parameter vector directly to <code><a href="../reference/vec2param.html">vec2param()</a></code> or by setting the 11 parameters individually. The user can also directly call <code><a href="../reference/vec2param.html">vec2param()</a></code> to get the default parameter structure with default values.</p>
+<p>To use <code><a href="../reference/vec2param.html">vec2param()</a></code> to introduce new calibration parameters in the food demand function, the user would have to call,</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">Food_Demand</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/food.dmnd.html">food.dmnd</a></span><span class="op">(</span><span class="va">Test_Data</span><span class="op">$</span><span class="va">Ps</span>,<span class="va">Test_Data</span><span class="op">$</span><span class="va">Pn</span>,<span class="va">Test_Data</span><span class="op">$</span><span class="va">Y</span>, params<span class="op">=</span> <span class="fu"><a href="../reference/vec2param.html">vec2param</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
+<p>The user can set the parameters by passing a 11 parameter vector directly to <code><a href="../reference/vec2param.html">vec2param()</a></code> or by setting the 11 parameters individually. The user can also directly call <code><a href="../reference/vec2param.html">vec2param()</a></code> to get the default parameter structure with default values.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Use a sample vector of parameters. </span>
 <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1.28</span>,<span class="fl">1.14</span>,<span class="op">-</span><span class="fl">0.19</span>,<span class="fl">0.21</span>,<span class="op">-</span><span class="fl">0.33</span>,<span class="fl">0.5</span>,<span class="fl">0.1</span>,<span class="fl">16</span>,<span class="fl">5.06</span>,<span class="fl">100</span>,<span class="fl">20</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">original_param_vector</span>
 
@@ -248,9 +251,24 @@
 <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">parameter_data</span> ,col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"parameter_name"</span>,<span class="st">"value"</span><span class="op">)</span>,format <span class="op">=</span> <span class="st">"pandoc"</span><span class="op">)</span></code></pre></div>
 <p>This section now explains how a user can calculate model parameters from raw data. This way, <code>ambrosia</code> can be calibrated to custom data sets.</p>
 </div>
-<div id="example-2-2-get-a-dataset-for-parameter-fitting-from-a-sample-training-dataset" class="section level2">
+</div>
+<div id="part-3-running-the-interactive-version-of-the-model" class="section level1">
+<h1 class="hasAnchor">
+<a href="#part-3-running-the-interactive-version-of-the-model" class="anchor"></a>Part 3: Running the interactive version of the model</h1>
+<p>The user can also launch an interactive version of ambrosia to visually understand how the parameters are used to calculate the outputs and also to test new parameter values. Note that using the interactive version requires the <code>shiny</code> library to be installed.</p>
+<div id="example-3-1-run-the-interactive-version-of-the-model" class="section level2">
 <h2 class="hasAnchor">
-<a href="#example-2-2-get-a-dataset-for-parameter-fitting-from-a-sample-training-dataset" class="anchor"></a>Example 2.2: Get a dataset for parameter fitting from a sample training dataset</h2>
+<a href="#example-3-1-run-the-interactive-version-of-the-model" class="anchor"></a>Example 3.1: Run the interactive version of the model</h2>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/runapp.html">runapp</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+</div>
+</div>
+<div id="part-4-recalculating-calibration-parameters-on-the-basis-of-new-input-data" class="section level1">
+<h1 class="hasAnchor">
+<a href="#part-4-recalculating-calibration-parameters-on-the-basis-of-new-input-data" class="anchor"></a>Part 4: Recalculating calibration parameters on the basis of new input data</h1>
+<div id="example-4-1-get-a-dataset-for-parameter-fitting-from-a-sample-training-dataset" class="section level2">
+<h2 class="hasAnchor">
+<a href="#example-4-1-get-a-dataset-for-parameter-fitting-from-a-sample-training-dataset" class="anchor"></a>Example 4.1: Get a dataset for parameter fitting from a sample training dataset</h2>
 <p>One of the benefits of using <code>ambrosia</code> is that a user can estimate their own parameters with a custom data set using the log-likelihood maximization approach. To enable this, <code>ambrosia</code> is equipped with a function <code><a href="../reference/create_dataset_for_parameter_fit.html">create_dataset_for_parameter_fit()</a></code> that will help a user generate a dataset that is appropriate for parameter estimation. Note: The user can re-create the training data used to calculate the parameters for GCAM using the <code>Process_Demand_Data.R</code> under the scripts folder.</p>
 <p>There are a few steps that the function will perform on a sample dataset.</p>
 <ol style="list-style-type: decimal">
@@ -261,7 +279,7 @@
 </ol>
 <p>In addition to a data frame, the function will return a CSV file output called “Processed_Data_for_MC.csv” that is stored in the outputs folder that will be used for the parameter estimation. The example below illustrates how to use the function on a raw dataset.</p>
 <p>The example below illustrates how to use the function on a sample dataset</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Load the training data</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"training_data"</span><span class="op">)</span> 
 
@@ -272,12 +290,12 @@
 <span class="co">#Create a dataset for parameter fit</span>
 <span class="va">temp_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dataset_for_parameter_fit.html">create_dataset_for_parameter_fit</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">sample_data</span>,min_clusters <span class="op">=</span> <span class="fl">20</span>,min_price_pd <span class="op">=</span> <span class="fl">20</span>,min_cal_fd <span class="op">=</span> <span class="fl">1700</span>,outdir<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 </div>
-<div id="example-2-3-analyze-distribution-of-observational-error-for-non-staples" class="section level2">
+<div id="example-4-2-analyze-distribution-of-observational-error-for-non-staples" class="section level2">
 <h2 class="hasAnchor">
-<a href="#example-2-3-analyze-distribution-of-observational-error-for-non-staples" class="anchor"></a>Example 2.3: Analyze distribution of observational error for non-staples</h2>
+<a href="#example-4-2-analyze-distribution-of-observational-error-for-non-staples" class="anchor"></a>Example 4.2: Analyze distribution of observational error for non-staples</h2>
 <p>The dataset returned by this function can now be used for parameter estimation. The user can also plot the observational errors for staples and non-staples to ensure there is a valid distribution and the data is not skewed.</p>
 <p>The below plots show the observational error for pre-generated data.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Load example processed_data </span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"processed_data_example"</span><span class="op">)</span>
 
@@ -291,10 +309,10 @@
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span>   </code></pre></div>
 <p><img src="example_7.png" style="width:50.0%;height:50.0%"></p>
 </div>
-<div id="example-2-4-analyze-distribution-of-observational-error-for-staples" class="section level2">
+<div id="example-4-3-analyze-distribution-of-observational-error-for-staples" class="section level2">
 <h2 class="hasAnchor">
-<a href="#example-2-4-analyze-distribution-of-observational-error-for-staples" class="anchor"></a>Example 2.4: Analyze distribution of observational error for staples</h2>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<a href="#example-4-3-analyze-distribution-of-observational-error-for-staples" class="anchor"></a>Example 4.3: Analyze distribution of observational error for staples</h2>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Load example processed_data </span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"processed_data_example"</span><span class="op">)</span>
 
@@ -308,9 +326,9 @@
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span>   </code></pre></div>
 <p><img src="example_8.png" style="width:50.0%;height:50.0%"></p>
 </div>
-<div id="example-2-5-calculate-actual-parameters" class="section level2">
+<div id="example-4-4-calculate-actual-parameters" class="section level2">
 <h2 class="hasAnchor">
-<a href="#example-2-5-calculate-actual-parameters" class="anchor"></a>Example 2.5: Calculate actual parameters</h2>
+<a href="#example-4-4-calculate-actual-parameters" class="anchor"></a>Example 4.4: Calculate actual parameters</h2>
 <p>Finally, the user can complete the parameter estimation on the dataset returned by <code><a href="../reference/create_dataset_for_parameter_fit.html">create_dataset_for_parameter_fit()</a></code> with a call to the calculate_ambrosia_params() function. ambrosia builds on the Edmonds et al.(2017) approach by maximizing the log-likelihood score using the optim() function. Note that the user can also choose to use a different method (for example, the original MCMC) to maximize the log-likelihood function by first setting up the log likelihood function using the <code><a href="../reference/mc.setup.html">mc.setup()</a></code> function.</p>
 <p>The following steps are involved in the parameter estimation function,</p>
 <ol style="list-style-type: decimal">
@@ -321,7 +339,7 @@
 <div id="warning-calculating-parameters-takes-a-long-time-around-25-minutes" class="section level3">
 <h3 class="hasAnchor">
 <a href="#warning-calculating-parameters-takes-a-long-time-around-25-minutes" class="anchor"></a>Warning: Calculating parameters takes a long time (around 25 minutes)</h3>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#load sample data</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"processed_data_example"</span><span class="op">)</span>
 
@@ -335,10 +353,10 @@
                                             ,outdir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
-<div id="example-2-6-set-up-a-log-likelihood-function-based-on-observational-data" class="section level2">
+<div id="example-4-5-set-up-a-log-likelihood-function-based-on-observational-data" class="section level2">
 <h2 class="hasAnchor">
-<a href="#example-2-6-set-up-a-log-likelihood-function-based-on-observational-data" class="anchor"></a>Example 2.6: Set up a log likelihood function based on observational data</h2>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<a href="#example-4-5-set-up-a-log-likelihood-function-based-on-observational-data" class="anchor"></a>Example 4.5: Set up a log likelihood function based on observational data</h2>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="co">#The log likelihood function set up below can be used to fit parameters either using the maximization function or any #other approach like a Markov Chain Monte Carlo</span>
 
@@ -354,7 +372,7 @@
 <div id="example-2-7-calculate-the-log-likelihood-score-based-on-the-parameters-vector-calculated-in-example-2-4-and-the-log-likelihood-function-calculated-in-example-2-5" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-2-7-calculate-the-log-likelihood-score-based-on-the-parameters-vector-calculated-in-example-2-4-and-the-log-likelihood-function-calculated-in-example-2-5" class="anchor"></a>Example 2.7: Calculate the log likelihood score based on the parameters (vector) calculated in Example 2.4 and the log likelihood function calculated in Example 2.5</h2>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/exists.html">exists</a></span><span class="op">(</span><span class="st">"new_parameters"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">{</span>
 
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">"New parameters not calculated as shown in example 2.4. Loading pre-saved parameters"</span><span class="op">)</span>
@@ -367,29 +385,18 @@
 <span class="va">likelihood_score</span> <span class="op">&lt;-</span> <span class="fu">func_MC</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">new_parameters</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
-<div id="part-3-running-the-interactive-version-of-the-model" class="section level1">
+<div id="part-5-exploring-data-from-a-parameter-fitting-process-mcmc-or-maximization-or-any-other-process" class="section level1">
 <h1 class="hasAnchor">
-<a href="#part-3-running-the-interactive-version-of-the-model" class="anchor"></a>Part 3: Running the interactive version of the model</h1>
-<p>The user can also launch an interactive version of ambrosia to visually understand how the parameters are used to calculate the outputs and also to test new parameter values. Note that using the interactive version requires the <code>shiny</code> library to be installed.</p>
-<div id="example-3-1-run-the-interactive-version-of-the-model" class="section level2">
-<h2 class="hasAnchor">
-<a href="#example-3-1-run-the-interactive-version-of-the-model" class="anchor"></a>Example 3.1: Run the interactive version of the model</h2>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/runapp.html">runapp</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-</div>
-</div>
-<div id="part-4-exploring-data-from-a-parameter-fitting-process-mcmc-or-maximization-or-any-other-process" class="section level1">
-<h1 class="hasAnchor">
-<a href="#part-4-exploring-data-from-a-parameter-fitting-process-mcmc-or-maximization-or-any-other-process" class="anchor"></a>Part 4: Exploring data from a parameter fitting process (MCMC or maximization or any other process)</h1>
+<a href="#part-5-exploring-data-from-a-parameter-fitting-process-mcmc-or-maximization-or-any-other-process" class="anchor"></a>Part 5: Exploring data from a parameter fitting process (MCMC or maximization or any other process)</h1>
 <p>Now if a user calculated new parameters (either using <code><a href="../reference/calculate_ambrosia_params.html">calculate_ambrosia_params()</a></code> or by setting up the log likelihood function using <code><a href="../reference/mc.setup.html">mc.setup()</a></code> and maximizing the log likelihood using another method), <code>ambrosia</code> also allows the user to explore the results of a parameter fit.</p>
-<div id="example-4-1-generating-parameter-data" class="section level2">
+<div id="example-5-1-generating-parameter-data" class="section level2">
 <h2 class="hasAnchor">
-<a href="#example-4-1-generating-parameter-data" class="anchor"></a>Example 4.1: Generating parameter data</h2>
+<a href="#example-5-1-generating-parameter-data" class="anchor"></a>Example 5.1: Generating parameter data</h2>
 <p>Parameter data can be generated in two ways,</p>
 <ol style="list-style-type: decimal">
 <li>If <code><a href="../reference/calculate_ambrosia_params.html">calculate_ambrosia_params()</a></code> is used to calculate parameter values, the user would have to set the <code>trace_param</code> to TRUE to generate the data (.dat) file</li>
 </ol>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">new_parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate_ambrosia_params.html">calculate_ambrosia_params</a></span><span class="op">(</span>datadir<span class="op">=</span><span class="st">"Processed_Data_for_MC.csv"</span>,
                                             optim_method <span class="op">=</span> <span class="st">"BFGS"</span>,
@@ -399,16 +406,16 @@
 <ol start="2" style="list-style-type: decimal">
 <li>If the log-likelihood function was set up using <code><a href="../reference/mc.setup.html">mc.setup()</a></code> directly and this was maximized using some other method, then the same <code>trace_param</code> parameter needs to be set to TRUE before the fitting process to ensure the .dat file is generated.</li>
 </ol>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">likelihood_function</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mc.setup.html">mc.setup</a></span><span class="op">(</span><span class="st">"Processed_Data_for_MC.csv"</span>, trace_param <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </code></pre></div>
 <p>Using the above code, the user can generate a .dat file which will track parameter samples during the fitting process along with the likelihood value itself.</p>
 <p>The user can now read in the file, assign parameter names and generate density plots for the same.</p>
 </div>
-<div id="example-4-2-read-in-mc-data-and-create-density-plots" class="section level2">
+<div id="example-5-2-read-in-mc-data-and-create-density-plots" class="section level2">
 <h2 class="hasAnchor">
-<a href="#example-4-2-read-in-mc-data-and-create-density-plots" class="anchor"></a>Example 4.2: Read in mc.data and create density plots</h2>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<a href="#example-5-2-read-in-mc-data-and-create-density-plots" class="anchor"></a>Example 5.2: Read in mc.data and create density plots</h2>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Load example data</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"mc_data_example"</span><span class="op">)</span>
 
@@ -423,11 +430,11 @@
 <span class="fu"><a href="../reference/mcparam.density.html">mcparam.density</a></span><span class="op">(</span><span class="va">mc_example</span><span class="op">)</span></code></pre></div>
 <p><img src="example_9.png" style="width:50.0%;height:50.0%"></p>
 </div>
-<div id="example-4-3-re-create-maximum-probability-density" class="section level2">
+<div id="example-5-3-re-create-maximum-probability-density" class="section level2">
 <h2 class="hasAnchor">
-<a href="#example-4-3-re-create-maximum-probability-density" class="anchor"></a>Example 4.3: Re-create maximum probability density</h2>
+<a href="#example-5-3-re-create-maximum-probability-density" class="anchor"></a>Example 5.3: Re-create maximum probability density</h2>
 <p>The user can also extract the parameters that yield the highest log likehood score from amongst the samples.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Load example data</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"mc_data_example"</span><span class="op">)</span>
 
