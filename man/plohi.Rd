@@ -5,7 +5,7 @@
 \alias{plohi}
 \title{Recommended parameter limits for the model.}
 \format{
-An object of class \code{matrix} with 2 rows and 11 columns.
+An object of class \code{matrix} (inherits from \code{array}) with 2 rows and 11 columns.
 }
 \usage{
 plohi

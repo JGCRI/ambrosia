@@ -1,6 +1,6 @@
 Package: ambrosia
-Title: An R package for calculating and analyzing food demand and in accordance with the Edmonds et al. food demand model
-Version: 1.3.1
+Title: An R package for calculating and analyzing food demand that is responsive to changing incomes and prices.
+Version: 1.3.2
 Authors@R: c(person(given='Kanishka', family='Narayan', email='kanishka.narayan@pnnl.gov', role=c('aut','cre')),
     person(given='Chris', family='Vernon', email='chris.vernon@pnnl.gov', role=c('aut')),
     person(given='Stephanie', family='Waldhoff', email='stephanie.waldhoff@pnnl.gov', role=c('aut')),

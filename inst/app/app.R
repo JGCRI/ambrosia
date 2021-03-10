@@ -18,54 +18,62 @@ ui <- fluidPage(
     sidebarLayout(
         sidebarPanel(
             fluidRow(h2("Model Parameters")),
-            fluidRow(column(8,em("These are the parameters required by ambrosia as described in vec2param() along with the main price and income variables. In addition to the explanations of the parameter use, the names of the parameters as they appear in vec2param() are included in the parantheses."))),
-            fluidRow(
-                column(width=12, withMathJax(h3("Price elasticities")))
-                ),
-            fluidRow(
-                column(width = 12, withMathJax(em("(Epsilon values for staples (ss), non-staples (nn) and cross price elasticities (cross)")))
-            ),
-            xi.matrix.input(),
-            fluidRow(h3("Income elasticities")),
-            fluidRow(column(8,h4("Staple demand"))),
-            fluidRow(column(8,em("Income elasticity parameters that keep elasticity constant or use kappa (maximum income at which staple demand starts falling) and lamda (income elasticity) parameters to get elasticity values that change with incomes and prices."))),
-            fluidRow(column(8,eta.selector('eta.s.select','\\(\\eta = f_s(Y)\\)',2))),
-            fluidRow(
-                column(3,
-                       numericInput(inputId='etas', value=etasdefault[1], label='Income elasticity (lambda_s)',
-                                    min=elasmin, max=elasmax, step=etastep)),
-                column(4,
-                       conditionalPanel('input["eta.s.select"] == 2',
-                                        numericInput(inputId='y0val', label='Maximum Income level in Thousand USD (k_s)',
-                                                     value=etasdefault[2], min=0.1, max=10, step=0.1)))),
-            fluidRow(column(8,h4('Non-staple demand'))),
-            fluidRow(column(8,em("Income elasticity parameters for non-staples that keep elasticity constant or that change with incomes and prices."))),
-            fluidRow(column(8,eta.selector('eta.n.select', '\\(\\eta = f_n(Y)\\)' ,2))),
-            fluidRow(column(4,
-                            numericInput(inputId='etan', value=etandefault, label='elasticity value (nu1_n)',
-                                         min=elasmin, max=elasmax, step=etastep))),
+            tabsetPanel(id="tab2",
+                        tabPanel(title="Price and Income parameters", value=1,
+                                 fluidRow(column(8,em('These are the price and income values that users can specify to derive demand. '))),
+                                 fluidRow(column(8,em("Ps is the staple price per thousand calories per day and Pn is the non-staple price per thousand calories per day. Y is the GDP per capita in thousand USD."))),
+                                 fluidRow(
+                                   column(width=12, withMathJax(h3("Main parameters")))
+                                 ),
+                                 conditionalPanel(condition='input.tab != 1',
+                                                  sliderInput(inputId='y.val.slider', min=0, max=50.0, step=0.25, label='\\(Y\\) (Income in thousand USD)',
+                                                              value=1)),
+                                 conditionalPanel(condition='input.tab != 2 && input.tab != 4',
+                                                  sliderInput(inputId='ps.val.slider', min=0, max=5.0, step=0.02, label='\\(P_s\\) ($ per calorie per day)',
+                                                              value=Psdefault)),
+                                 conditionalPanel(condition='input.tab != 3',
+                                                  sliderInput(inputId='pn.val.slider', min=0, max=5.0, step=0.02, label='\\(P_n\\) ($ per calorie per day)',
+                                                              value=Pndefault))
+                        ),
+                        tabPanel(title="Calibration parameters", value=2,
+                               fluidRow(column(8,em("These are the parameters required by ambrosia as described in vec2param() along with the main price and income variables. In addition to the explanations of the parameter use, the names of the parameters as they appear in vec2param() are included in the parantheses."))),
+                               fluidRow(
+                                 column(width=12, withMathJax(h3("Price elasticities")))
+                               ),
 
-            fluidRow(h3('Scaling parameters')),
-            fluidRow(column(8,em("Scaling parameters for staples (A_s) and non-staples (A_n) that scale demand. psscl and pnscl are additional scaling parameters applied to the prices. See the documentation of `vec2param()` for more details."))),
-            fluidRow(
-                column(1,
-                       column.input.table(c('As','An'), Adefault, 0, 1, 0.05))
-                ),
-            numericInput(inputId='psscl.val', value=psscldefault, label='\\(psscl\\)', min=1, max=100, step=1),
-            numericInput(inputId='pnscl.val', value=pnscldefault, label='\\(pnscl\\)', min=1, max=100, step=1),
-            fluidRow(h3('Other Price and Income Variables')),
-            fluidRow(column(8,em("Ps is the staple price per capita per day and Pn is the non-staple price per capita per day. Pm is the price of 'materials' which represents everything else in the economy other than food. Basically all other demands."))),
-            conditionalPanel(condition='input.tab != 1',
-                             sliderInput(inputId='y.val.slider', min=0, max=50.0, step=0.25, label='\\(Y\\) (Income in thousand USD)',
-                                         value=1)),
-            conditionalPanel(condition='input.tab != 2 && input.tab != 4',
-                             sliderInput(inputId='ps.val.slider', min=0, max=5.0, step=0.02, label='\\(P_s\\) ($ per capita per day)',
-                                         value=Psdefault)),
-            conditionalPanel(condition='input.tab != 3',
-                             sliderInput(inputId='pn.val.slider', min=0, max=5.0, step=0.02, label='\\(P_n\\) ($ per capita per day)',
-                                         value=Pndefault)),
-            numericInput(inputId='pm.val', value=Pmdefault, label='\\(P_m\\) ($ per capita per day)', min=0.1, max=10.0, step=0.1),
-            ),
+                               fluidRow(
+                                 column(width = 12, withMathJax(em("(Epsilon values for staples (ss), non-staples (nn) and cross price elasticities (cross)")))
+                               ),
+                               xi.matrix.input(),
+                               fluidRow(h3("Income elasticities")),
+                               fluidRow(column(8,h4("Staple demand"))),
+                               fluidRow(column(8,em("Income elasticity parameters that keep elasticity constant or use kappa (maximum income at which staple demand starts falling) and lamda (income elasticity) parameters to get elasticity values that change with incomes and prices."))),
+                               fluidRow(column(8,eta.selector('eta.s.select','\\(\\eta = f_s(Y)\\)',2))),
+                               fluidRow(
+                                 column(3,
+                                        numericInput(inputId='etas', value=etasdefault[1], label='Income elasticity (lambda_s)',
+                                                     min=elasmin, max=elasmax, step=etastep)),
+                                 column(4,
+                                        conditionalPanel('input["eta.s.select"] == 2',
+                                                         numericInput(inputId='y0val', label='Maximum Income level in Thousand USD (k_s)',
+                                                                      value=etasdefault[2], min=0.1, max=10, step=0.1)))),
+                               fluidRow(column(8,h4('Non-staple demand'))),
+                               fluidRow(column(8,em("Income elasticity parameters for non-staples that keep elasticity constant or that change with incomes and prices."))),
+                               fluidRow(column(8,eta.selector('eta.n.select', '\\(\\eta = f_n(Y)\\)' ,2))),
+                               fluidRow(column(4,
+                                               numericInput(inputId='etan', value=etandefault, label='elasticity value (nu1_n)',
+                                                            min=elasmin, max=elasmax, step=etastep))),
+
+                               fluidRow(h3('Scaling parameters')),
+                               fluidRow(column(8,em("Scaling parameters for staples (A_s) and non-staples (A_n) that scale demand. psscl and pnscl are additional scaling parameters applied to the prices. See the documentation of `vec2param()` for more details."))),
+                               fluidRow(
+                                 column(1,
+                                        column.input.table(c('As','An'), Adefault, 0, 1, 0.05))
+                               ),
+                               numericInput(inputId='psscl.val', value=psscldefault, label='\\(psscl\\)', min=1, max=100, step=1),
+                               numericInput(inputId='pnscl.val', value=pnscldefault, label='\\(pnscl\\)', min=1, max=100, step=1),
+                               numericInput(inputId='pm.val', value=Pmdefault, label='\\(P_m\\) ($ per per day)', min=0.1, max=10.0, step=0.1))
+            )),
 
   ## Main Panel
         mainPanel(
