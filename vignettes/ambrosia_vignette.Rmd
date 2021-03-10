@@ -1,7 +1,7 @@
 ---
 title: "`ambrosia`: User Tutorial"
 author: "Kanishka Narayan"
-date: "2020-10-08"
+date: "2021-03-09"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{`ambrosia`: User Tutorial}
@@ -25,35 +25,8 @@ library(knitr)
 
 This section explains how a user can set up the parameter structure for the `ambrosia` and explore the basic demand side variables.
 
-## Example 1.1: Get parameters
 
-As mentioned in the documentation, `ambrosia` can generate estimates of food demand for staples and non-staples in thousand calories for given set of prices and income levels.
-
-In addition to the price and income parameters, `ambrosia` requires 11 additional parameters for the model. These parameters can be set using the function `vec2param()`. In order to understand the 11 parameters, their units, ranges and how they can be calculated, the user can call,
-
-```r
-?vec2param()
-```
-The user can set the parameters by passing a 11 parameter vector directly to `vec2param()` or by setting the 11 parameters individually. The user can also directly call `vec2param()` to get the default parameter structure with default values.
-
-```r
-#Use a sample vector of parameters. 
-c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20) -> original_param_vector
-
-#These are the names of the parameters
-parameter_names <- c('A_s', 'A_n', 'xi_ss', 'xi_cross', 'xi_nn', 'nu1_n',
-                     'lambda_s', 'k_s', 'Pm', 'psscl','pnscl')
-
-#Create a dataframe of parameters
-parameter_data <- data.frame(parameter_names,original_param_vector)
-
-#Return a parameter structure
-tmp_param <- vec2param(original_param_vector)
-
-#Return a table of parameters
-kable(parameter_data ,col.names = c("parameter_name","value"),format = "pandoc")
-```
-## Example 1.2: Calculate food demand
+## Example 1.1: Calculate food demand
 
 Demand in thousand calories can be calculated for different levels of income (`Y`) in thousand USD per capita for different prices of staples (`Ps`) and non-staples (`Pn`) both in $ per capita per day using the parameters calculated in example 1.1. 
 
@@ -65,10 +38,10 @@ Test_Data <- data.frame(Y=seq(0.1,30, by=0.1))
 Test_Data %>% mutate(Ps=0.1,Pn=0.2)->Test_Data
 
 #Calculate food demand
-Food_Demand <- food.dmnd(Test_Data$Ps,Test_Data$Pn,Test_Data$Y,params= tmp_param)
+Food_Demand <- food.dmnd(Test_Data$Ps,Test_Data$Pn,Test_Data$Y)
 
 ```
-## Example 1.3: Visualize food demand
+## Example 1.2: Visualize food demand
 
 The demand along with the price and income elasticities calculated using the `food.dmnd()` function  can be visualized easily.   
 
@@ -89,7 +62,7 @@ plot(g)
 ```
 ![](example_3.png){width=50% height=50%} 
 
-## Example 1.4: Visualize budget shares
+## Example 1.3: Visualize budget shares
 
 Using the function above will create a dataframe with estimates of demand for each level of price and incomes and also the budget shares (shares of incomes spent) for staples and non-staples.
 
@@ -115,7 +88,7 @@ plot(g)
 ```
 ![](example_4.png){width=50% height=50%} 
 
-## Example 1.5: Calculate income elasticities
+## Example 1.4: Calculate income elasticities
 
 The demand code iteratively solves for the budget shares using a Broyden solver with changing incomes and re-calculates income and price elasticities for changes in budget shares.The user can separately analyze the income elasticities by using two functions (one for staples and other for non-staples) from within the parameter structure generated above in example 1.1.
 
@@ -123,6 +96,10 @@ For income elasticities, the functions generated within the parameter structure 
 
 ```r
 #Note that setting the second argument to "TRUE" in the functions below would return the Y term (Y^elas) as opposed to the elasticity.
+
+#Get the parameter structure
+
+tmp_param <- vec2param()
 
 # Income elasticity for staples
 Food_Demand$eta.s <- tmp_param$yfunc[[1]](Y=Food_Demand$Y,FALSE)
@@ -142,7 +119,7 @@ plot(g)
 ```
 ![](example_5.png){width=50% height=50%} 
 
-## Example 1.6: Calculate price elasticities
+## Example 1.5: Calculate price elasticities
 
 Similar to the income elasticities, the user can also calculate and analyze price elasticities. These elasticities. The function `calc1eps()` can be used to recalculate price elasticities by passing the following parameters:
 
@@ -176,11 +153,60 @@ plot(g)
 ```
 ![](example_6.png){width=50% height=50%} 
 
-# Part 2: Calculating model parameters from raw data
+# Part 2: Understanding calibration parameters
+
+## Example 2.1: Get parameters
+
+As mentioned in the documentation, `ambrosia` can generate estimates of food demand for staples and non-staples in thousand calories for given set of prices and income levels.
+
+In addition to the price and income parameters, `ambrosia` requires 11 calibration parameters for the model. These parameters can be set using the function `vec2param()`. In order to understand the 11 parameters, their units, ranges and how they can be calculated, the user can call,
+
+```r
+?vec2param()
+```
+To use `vec2param()` to introduce new calibration parameters in the food demand function, the user would have to call,
+
+```r
+Food_Demand <- food.dmnd(Test_Data$Ps,Test_Data$Pn,Test_Data$Y, params= vec2param()) 
+```
+The user can set the parameters by passing a 11 parameter vector directly to `vec2param()` or by setting the 11 parameters individually. The user can also directly call `vec2param()` to get the default parameter structure with default values.
+
+Note that the current calibration parameters are calculated on the basis of national level data on food consumption and prices. These can effectively be calculated using new inputs thus allowing the user to calibrate the model to custom data.  
+
+```r
+#Use a sample vector of parameters. 
+c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20) -> original_param_vector
+
+#These are the names of the parameters
+parameter_names <- c('A_s', 'A_n', 'xi_ss', 'xi_cross', 'xi_nn', 'nu1_n',
+                     'lambda_s', 'k_s', 'Pm', 'psscl','pnscl')
+
+#Create a dataframe of parameters
+parameter_data <- data.frame(parameter_names,original_param_vector)
+
+#Return a parameter structure
+tmp_param <- vec2param(original_param_vector)
+
+#Return a table of parameters
+kable(parameter_data ,col.names = c("parameter_name","value"),format = "pandoc")
+```
 
 This section now explains how a user can calculate model parameters from raw data. This way, `ambrosia` can be calibrated to custom data sets.  
 
-## Example 2.1: Get a dataset for parameter fitting from a sample training dataset
+# Part 3: Running the interactive version of the model
+
+The user can also launch an interactive version of ambrosia to visually understand how the parameters are used to calculate the outputs and also to test new parameter values. Note that using the interactive version requires the `shiny` library to be installed.
+
+The user can explore results by changing the main income and price parameters or test the impact of new values for the calibration parameters on the results.
+
+## Example 3.1: Run the interactive version of the model
+```r
+runapp()
+```
+
+# Part 4: Recalculating calibration parameters on the basis of new input data  
+
+## Example 4.1: Get a dataset for parameter fitting from a sample training dataset
 
 One of the benefits of using `ambrosia` is that a user can estimate their own parameters with a custom data set using the log-likelihood maximization approach. To enable this, `ambrosia` is equipped with a function `create_dataset_for_parameter_fit()` that will help a user generate a dataset that is appropriate for parameter estimation. Note: The user can re-create the training data used to calculate the parameters for GCAM using the `Process_Demand_Data.R` under the scripts folder.
 
@@ -210,9 +236,9 @@ training_data %>%
 temp_data <- create_dataset_for_parameter_fit(data=sample_data,min_clusters = 20,min_price_pd = 20,min_cal_fd = 1700,outdir=tempdir()) 
 
 ```
-## Example 2.2: Analyze distribution of observational error for non-staples
+## Example 4.2: Analyze distribution of observational error for non-staples
 
-The dataset returned by this function can now be used for parameter estimation. The user can also plot the observational errors for staples and non-staples to ensure there is a valid distribution and the data is not skewed. 
+The dataset returned by this function can now be used for parameter estimation. The user can also plot the variances for staples and non-staples to ensure there is a valid distribution and the data is not skewed. 
 
 The below plots show the observational error for pre-generated data. 
 
@@ -223,15 +249,15 @@ data("processed_data_example")
 #Create a plot using example loaded above or data generated in example 2.1
 g<-ggplot()+
    geom_histogram(data=processed_data_example,aes(x=sig2Qn),bins = 40)+
-   xlab("Observational error within clusters for non-staples")+
-   ggtitle("Distribution of observational error for non-staples for selected sample dataset")
+   xlab("Variance within clusters for non-staples")+
+   ggtitle("Distribution of variance for non-staples for selected sample dataset")
 
 #Plot
 plot(g)   
 ```
 ![](example_7.png){width=50% height=50%} 
 
-## Example 2.3: Analyze distribution of observational error for staples
+## Example 4.3: Analyze distribution of observational error for staples
 ```r
 #Load example processed_data 
 data("processed_data_example")
@@ -239,15 +265,15 @@ data("processed_data_example")
 #Create a plot using example loaded above or data generated in example 2.1
 g<-ggplot()+
    geom_histogram(data=processed_data_example,aes(x=sig2Qs),bins = 40)+
-   xlab("Observational error within clusters for staples")+
-   ggtitle("Distribution of observational error for staples for selected sample dataset")
+   xlab("Variance within clusters for staples")+
+   ggtitle("Distribution of variances for staples for selected sample dataset")
 
 #Plot   
 plot(g)   
 ```
 ![](example_8.png){width=50% height=50%} 
 
-## Example 2.4: Calculate actual parameters
+## Example 4.4: Calculate actual parameters (option 1- Optimization)
 
 
 Finally, the user can complete the parameter estimation on the dataset returned by `create_dataset_for_parameter_fit()` with a call to the calculate_ambrosia_params() function. ambrosia builds on the Edmonds et al.(2017) approach by maximizing the log-likelihood score using the optim() function. Note that the user can also choose to use a different method (for example, the original MCMC) to maximize the log-likelihood function by first setting up the log likelihood function using the `mc.setup()` function.  
@@ -276,7 +302,11 @@ new_parameters <- calculate_ambrosia_params(datadir="Processed_Data_for_MC.csv",
                                             original_param_vector= c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20),
                                             ,outdir = tempdir())
 ```
-## Example 2.5: Set up a log likelihood function based on observational data
+
+## Example 4.5: Calculate actual parameters (option 2- Set up a likelihood function and use any other method)
+
+While `calculate_ambrosia_params()` is useful to quickly calculate a sample of parameters, the user can also use their own approaches to calculate parameter samples. For example, if a user wanted to create samples for the parameters using a MCMC as opposed to an optimization approach, `ambrosia` has inbuilt functions that allow a user to set up a likelihood function which can be maximized using any other method chosen by the user. The example below shows how the user can set up a likelihood function
+
 ```r
 
 #The log likelihood function set up below can be used to fit parameters either using the maximization function or any #other approach like a Markov Chain Monte Carlo
@@ -287,10 +317,14 @@ data("processed_data_example")
 #write it to a temporary csv
 write.csv(processed_data_example,"Processed_Data_for_MC.csv")
 
-#Now, set up a log likelihood function using the saved data. Note that the trace_param parameter is used #to trace parameter values during a fitting process like a MCMC calculation. See Part 4 below for more #details.
-func_MC <- mc.setup("Processed_Data_for_MC.csv", trace_param= FALSE)
+#Now, set up a log likelihood function using the saved data. Note that the trace_param parameter is used 
+#to trace parameter values during a fitting process like a MCMC calculation. See Part 4 below for more #details.
+
+likelihood_function <- mc.setup("Processed_Data_for_MC.csv", trace_param= FALSE)
+
+
 ```
-## Example 2.6: Calculate the log likelihood score based on the parameters (vector) calculated in Example 2.4 and the log likelihood function calculated in Example 2.5
+## Example 4.6: Calculate the log likelihood score based on the parameters (vector) calculated in Example 4.4 and the log likelihood function calculated in Example 4.5
 
 ```r
 if(!(exists("new_parameters"))){
@@ -302,21 +336,15 @@ new_parameters <- c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20)
 }
 
 #calculate the likelihood score using the function calculated in example 2.5
-likelihood_score <- func_MC(c(new_parameters))
-```
-# Part 3: Running the interactive version of the model
+likelihood_score <- likelihood_function(c(new_parameters))
 
-The user can also launch an interactive version of ambrosia to visually understand how the parameters are used to calculate the outputs and also to test new parameter values. Note that using the interactive version requires the `shiny` library to be installed.   
-
-## Example 3.1: Run the interactive version of the model
-```r
-runapp()
 ```
-# Part 4: Exploring data from a parameter fitting process (MCMC or maximization or any other process) 
+
+# Part 5: Exploring data from a parameter fitting process (MCMC or maximization or any other process) 
 
 Now if a user calculated new parameters (either using `calculate_ambrosia_params()` or by setting up the log likelihood function using `mc.setup()` and maximizing the log likelihood using another method), `ambrosia` also allows the user to explore the results of a parameter fit.
 
-## Example 4.1: Generating parameter data
+## Example 5.1: Generating parameter data
 
 Parameter data can be generated in two ways,
 
@@ -345,7 +373,7 @@ Using the above code, the user can generate a .dat file which will track paramet
 
 The user can now read in the file, assign parameter names and generate density plots for the same.  
 
-## Example 4.2: Read in mc.data and create density plots
+## Example 5.2: Read in mc.data and create density plots
 ```r
 #Load example data
 data("mc_data_example")
@@ -363,7 +391,7 @@ mcparam.density(mc_example)
 ```
 ![](example_9.png){width=50% height=50%}
 
-## Example 4.3: Re-create maximum probability density
+## Example 5.3: Re-create maximum probability density
 
 The user can also extract the parameters that yield the highest log likehood score from amongst the samples.
 

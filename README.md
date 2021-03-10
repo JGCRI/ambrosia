@@ -3,12 +3,12 @@
 
 
 
-# `ambrosia`: An R package for calculating and analyzing food demand and in accordance with the Edmonds et al. food demand model
+# `ambrosia`: An R package for calculating and analyzing food demand that is responsive to changing incomes and prices
 
 ## Summary
-The `ambrosia` R package was developed to calculate food demand for staples and non-staple commodities that is responsive to changing levels of incomes and prices. Ambrosia implements the framework to quantify food demand as established by Edmonds et al. (2017) and allows the user to explore and estimate different variables related to the food demand system. Currently `ambrosia` provides three main functions:
+The `ambrosia` R package was developed to calculate food demand for staples and non-staple commodities that is responsive to changing levels of incomes and prices. `ambrosia` implements the framework to quantify food demand as established by Edmonds et al. (2017) and allows the user to explore and estimate different variables related to the food demand system. Currently `ambrosia` provides three main functions:
 1. calculation of food demand for any given set of parameters including income levels and prices,
-2. estimation of parameters within a given a dataset.  Note:  `ambrosia` is used to calculate parameters for the food demand model implemented in the [Global Change Analysis Model](http://www.globalchange.umd.edu/gcam/). 
+2. estimation of calibration parameters within a given a dataset.  Note:  `ambrosia` is used to calculate parameters for the food demand model implemented in the [Global Change Analysis Model](http://www.globalchange.umd.edu/gcam/). 
 3. exploration and preparation of raw data before starting a parameter estimation.
 
 
@@ -36,20 +36,17 @@ Test_Data <- data.frame(Y=seq(0.1,30, by=0.1))
 #Add sample values of Ps and Pn
 Test_Data %>% mutate(Ps=0.1,Pn=0.2) -> Test_Data
 
-#Add some sample parameters
-sample_parameters <- c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20)
-
 #Now calculate food demand
-Food_Demand <- food.dmnd(Test_Data$Ps,Test_Data$Pn,Test_Data$Y,params=vec2param(sample_parameters))
+Food_Demand <- food.dmnd(Test_Data$Ps, Test_Data$Pn, Test_Data$Y)
 
 ```
 The code from the example can be used to visualize the food demand for staples and non-staples as follows,
 
 ![A simple plot of food demand for staples and non-staples for changing incomes and constant prices.](vignettes/example_3.png)
 
-#### Description of parameters 
+#### Description of calibration parameters 
 
-The 11 parameters are described in table below with values from the latest version of ambrosia. The table also contains an acceptable range for each of the parameters. The original parameters were calculated using a Markov Chain Monte Carlo (MCMC) approach. The range is calculated as the 95% Joint Confidence Interval of the range of the parameters apperaing in all Monte Carlo samples with likelihood values above the 5th percentile.
+The 11 calibration parameters are described in table below with values from the latest version of ambrosia. The table also contains an acceptable range for each of the parameters. The original parameters were calculated using a Markov Chain Monte Carlo (MCMC) approach. The range is calculated as the 95% Joint Confidence Interval of the range of the parameters apperaing in all Monte Carlo samples with likelihood values above the 5th percentile.Parameters in the table below are calibrated on the basis of national level data on food consumption and food consumption prices for staples and non-staple products.
 
 | Parameter name | Description                                                                                                                                                                                                                                                           | Units        | Value | Range of parameter values |
 |----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|-------|---------------------------|
@@ -64,9 +61,9 @@ The 11 parameters are described in table below with values from the latest versi
 | `psscl`          | Additional scaling term used to derive the expenditure shares for staples. This is applied to price of staples (`Ps`/`Pm` * `psscl`), where Ps is the price of staples and Pm is the price of materials and to the expenditure shares of staples (`alpha_s`).                 | Unitless     | 100   | 80 - 120                  |
 | `pnscl`          | Additional scaling term used to derive the expenditure shares for non-staples. This is applied to price of non-staples (`Pn`/`Pm` * `pnscl`), where Pn is the price of non-staples and Pm is the price of materials and to the expenditure shares of non-staples (`alpha_n`). | Unitless     | 20    | 18 - 25                   |
 
-#### Simple example of equations to derive demand using parameters described above.
+#### Simple example of equations to derive demand using calibration parameters described above.
 
-Below is a simple example of how quantities of demand for staples (`Q_s`) and non-staples (`Q_n`) in thousand calories are calculated using the above 11 parameters above for an income level of `Y` in thousand USD for a staple price of `Ps` in $ per capita per day and non-staple price of `Pn` in $ per capita per day.  
+Below is a simple example of how quantities of demand for staples (`Q_s`) and non-staples (`Q_n`) in thousand calories are calculated using the above 11 calibration parameters above for an income level of `Y` in thousand USD for a staple price of `Ps` in $ per calorie per day and non-staple price of `Pn` in $ per calorie per day.  
 
 ```r
 # 1) Staple demand
@@ -119,6 +116,6 @@ tidyr  (>= 0.7.1)
 
 Name- GitHub; `JGCRI/ambrosia`
 
-Identifier- https://github.com/JGCRI/ambrosia/tree/v1.3.0
+Identifier- https://github.com/JGCRI/ambrosia/tree/v1.3.2
 
 License- BSD 2-Clause

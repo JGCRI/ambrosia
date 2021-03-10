@@ -60,7 +60,7 @@
 #' @param rgn Optional name for this calculation. If provided, the region will
 #' be included as an extra column in the output data frame.
 #' @export
-food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL)
+food.dmnd <- function(Ps, Pn, Y, params = vec2param(), rgn=NULL)
 {
   Pm <- params$Pm
   psscl <- params$psscl
