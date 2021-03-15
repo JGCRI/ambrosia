@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        r: ['3.5', '3.6', 'release']
+        r: ['3.6', 'release']
 
 
     env:
