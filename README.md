@@ -1,4 +1,4 @@
-![R-CMD](https://github.com/JGCRI/ambrosia/workflows/R-CMD/badge.svg) ![build](https://github.com/JGCRI/ambrosia/workflows/build/badge.svg) [![codecov](https://codecov.io/gh/JGCRI/ambrosia/branch/master/graph/badge.svg)](https://codecov.io/gh/JGCRI/ambrosia)
+[![linux](https://github.com/JGCRI/ambrosia/actions/workflows/build_linux.yml/badge.svg)](https://github.com/JGCRI/ambrosia/actions/workflows/build_linux.yml) [![osx](https://github.com/JGCRI/ambrosia/actions/workflows/build_osx.yml/badge.svg)](https://github.com/JGCRI/ambrosia/actions/workflows/build_osx.yml) [![windows](https://github.com/JGCRI/ambrosia/actions/workflows/build_windows.yml/badge.svg)](https://github.com/JGCRI/ambrosia/actions/workflows/build_windows.yml) [![codecov](https://codecov.io/gh/JGCRI/ambrosia/branch/master/graph/badge.svg)](https://codecov.io/gh/JGCRI/ambrosia)
 [![DOI](https://zenodo.org/badge/69679416.svg)](https://zenodo.org/badge/latestdoi/69679416)
 
 
@@ -8,7 +8,7 @@
 ## Summary
 The `ambrosia` R package was developed to calculate food demand for staples and non-staple commodities that is responsive to changing levels of incomes and prices. `ambrosia` implements the framework to quantify food demand as established by Edmonds et al. (2017) and allows the user to explore and estimate different variables related to the food demand system. Currently `ambrosia` provides three main functions:
 1. calculation of food demand for any given set of parameters including income levels and prices,
-2. estimation of calibration parameters within a given a dataset.  Note:  `ambrosia` is used to calculate parameters for the food demand model implemented in the [Global Change Analysis Model](http://www.globalchange.umd.edu/gcam/). 
+2. estimation of calibration parameters within a given a dataset.  Note:  `ambrosia` is used to calculate parameters for the food demand model implemented in the [Global Change Analysis Model](http://www.globalchange.umd.edu/gcam/).
 3. exploration and preparation of raw data before starting a parameter estimation.
 
 
@@ -27,7 +27,7 @@ A list of examples along with a user tutorial describing the different features 
 ```r
 vignette("ambrosia_vignette")
 ```
-The example below shows how a user can get an estimate of demand using some sample parameters (See the table below for description of parameters). 
+The example below shows how a user can get an estimate of demand using some sample parameters (See the table below for description of parameters).
 
 ```r
 #Get a sample data set
@@ -44,7 +44,7 @@ The code from the example can be used to visualize the food demand for staples a
 
 ![A simple plot of food demand for staples and non-staples for changing incomes and constant prices.](vignettes/example_3.png)
 
-#### Description of calibration parameters 
+#### Description of calibration parameters
 
 The 11 calibration parameters are described in table below with values from the latest version of ambrosia. The table also contains an acceptable range for each of the parameters. The original parameters were calculated using a Markov Chain Monte Carlo (MCMC) approach. The range is calculated as the 95% Joint Confidence Interval of the range of the parameters apperaing in all Monte Carlo samples with likelihood values above the 5th percentile.Parameters in the table below are calibrated on the basis of national level data on food consumption and food consumption prices for staples and non-staple products.
 
@@ -86,7 +86,7 @@ Income_Term_Non_staples <- Y ^ (2 * nu1_n)
 
 
 ## Contributing to `ambrosia`
-We welcome contributions to `ambrosia` from the development community. Please contact us at the email IDs below if you want to collaborate! The `ambrosia` GitHub repository is accessible here: [GitHub Repository](https://github.com/JGCRI/ambrosia). In order to report issues with `ambrosia`, please open an issue in the above mentioned Github Repository. 
+We welcome contributions to `ambrosia` from the development community. Please contact us at the email IDs below if you want to collaborate! The `ambrosia` GitHub repository is accessible here: [GitHub Repository](https://github.com/JGCRI/ambrosia). In order to report issues with `ambrosia`, please open an issue in the above mentioned Github Repository.
 
 For more information about contributing, please contact Kanishka Narayan at kanishka.narayan@pnnl.gov or Chris Vernon at chris.vernon@pnnl.gov
 
