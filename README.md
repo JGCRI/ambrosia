@@ -37,7 +37,7 @@ remotes::install_github('JGCRI/ambrosia', build_vignettes = TRUE)
 
 ## User tutorial and examples
 
-A list of examples along with a user tutorial describing the different features in `ambrosia` are available in the [`ambrosia_vignette.rmd`](https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html). To load the vignette with examples for the major functions within ambrosia, run the following command
+A list of examples along with a user tutorial describing the different features in `ambrosia` are available in the [`ambrosia_vignette`](https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html). To load the vignette with examples for the major functions within ambrosia, run the following command
 
 ```r
 vignette("ambrosia_vignette")
