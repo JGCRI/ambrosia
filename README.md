@@ -11,6 +11,15 @@ The `ambrosia` R package was developed to calculate food demand for staples and 
 2. estimation of calibration parameters within a given a dataset.  Note:  `ambrosia` is used to calculate parameters for the food demand model implemented in the [Global Change Analysis Model](http://www.globalchange.umd.edu/gcam/).
 3. exploration and preparation of raw data before starting a parameter estimation.
 
+# Statement of need and audience
+An important motivation to develop `ambrosia` is functionalizing and separating out the different components of the sophisticated food demand framework into usable R functions that can be easily parameterized and customized by the user.Thus, the tool not only enables easy use and future development, but also enables easy modularization of the code within other systems. 
+
+`ambrosia` has been developed to help researchers explore questions related to trends in food demand empirically. Since the equations of the model are grounded in peer reviewed research while the code itself is written in R (which increases usability), the tool is useful to researchers interested in,
+
+1)	analyzing and exploring trends in food demand with a computational model that is responsive to changes in incomes and prices that can easily be implemented on any time series (dataset);
+2)  re-estimating calibration parameters of the food demand model using custom data, thus effectively allowing the user to calibrate the model to custom data;
+3)	incorporating a detailed food demand model in their own earth system and economic models.
+
 
 ## Getting Started with `ambrosia`
 
@@ -19,6 +28,12 @@ The `ambrosia` R package was developed to calculate food demand for staples and 
 ```r
 devtools::install_github('JGCRI/ambrosia', build_vignettes = TRUE)
 ```
+Alternatively, `ambrosia` can also be installed using the `remotes` package by running the following command in an R prompt,
+
+```r
+remotes::install_github('JGCRI/ambrosia', build_vignettes = TRUE)
+```
+
 
 ## User tutorial and examples
 
@@ -60,6 +75,7 @@ The 11 calibration parameters are described in table below with values from the 
 | `k_s`            | Log of Income level at which staple demand is anticipated to be at its highest                                                                                                                                                                                   | Thousand USD | 16    | 10 -17                    |
 | `psscl`          | Additional scaling term used to derive the expenditure shares for staples. This is applied to price of staples (`Ps`/`Pm` * `psscl`), where Ps is the price of staples and Pm is the price of materials and to the expenditure shares of staples (`alpha_s`).                 | Unitless     | 100   | 80 - 120                  |
 | `pnscl`          | Additional scaling term used to derive the expenditure shares for non-staples. This is applied to price of non-staples (`Pn`/`Pm` * `pnscl`), where Pn is the price of non-staples and Pm is the price of materials and to the expenditure shares of non-staples (`alpha_n`). | Unitless     | 20    | 18 - 25                   |
+| `Pm`            | Price of materials (everything else in the economy other than food products)                                                                                                                                                                                   | $ per day | 5    | 2 -6                    |
 
 #### Simple example of equations to derive demand using calibration parameters described above.
 
@@ -116,6 +132,6 @@ tidyr  (>= 0.7.1)
 
 Name- GitHub; `JGCRI/ambrosia`
 
-Identifier- https://github.com/JGCRI/ambrosia/tree/v1.3.2
+Identifier- https://github.com/JGCRI/ambrosia/tree/v1.3.3
 
 License- BSD 2-Clause

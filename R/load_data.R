@@ -1,6 +1,6 @@
 ## Sample datasets for ambrosia
 
-#' Sample dataset of training data for ambrosia
+#' training_data
 #'
 #' Sample data used within examples for ambrosia
 #'
@@ -15,10 +15,12 @@
 #'
 #' @examples
 #' data(training_data)
+#' @export
 
-#' Sample dataset of processed data
+
+#' processed_data_example
 #'
-#' Data processed using create_dataset_for_parameter_fit()
+#' Data processed using create.dataset.for.parameter_fit()
 #'
 #' @docType data
 #'
@@ -31,15 +33,19 @@
 #'
 #' @examples
 #' data(processed_data_example)
+#' @export
 
+#' training_data
+#'
 #' @keywords dataset
 #'
 #' @references Created using the Process_Demand_Data.R script in the scripts folder
 #'
 #' @examples
 #' data(training_data)
+#' @export
 
-#' Sample dataset of mc data
+#' mc_data_example
 #'
 #' Data created using an MCMC approach
 #'
@@ -54,8 +60,9 @@
 #'
 #' @examples
 #' data(mc_data_example)
+#' @export
 
-#' Dataset used for original parameter estimation
+#' data_used_for_original_param
 #'
 #' Data used for original parameters estimated (output in mc_example)
 #'
@@ -70,3 +77,4 @@
 #'
 #' @examples
 #' data(data_used_for_original_param)
+#' @export

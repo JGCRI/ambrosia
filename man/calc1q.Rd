@@ -20,6 +20,10 @@ calc1q(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef, psscl, pnscl)
 \item{Ynterm}{Income term in the demand equation for nonstaples}
 
 \item{Acoef}{Leading multiplier parameter.}
+
+\item{psscl}{Price scaling parameter for Staple food products}
+
+\item{pnscl}{Price scaling parameter for non-staple food products}
 }
 \value{
 Quantities of staples and non-staples (Qs and Qn)

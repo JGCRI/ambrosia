@@ -72,7 +72,7 @@ ui <- fluidPage(
                                ),
                                numericInput(inputId='psscl.val', value=psscldefault, label='\\(psscl\\)', min=1, max=100, step=1),
                                numericInput(inputId='pnscl.val', value=pnscldefault, label='\\(pnscl\\)', min=1, max=100, step=1),
-                               numericInput(inputId='pm.val', value=Pmdefault, label='\\(P_m\\) ($ per per day)', min=0.1, max=10.0, step=0.1))
+                               numericInput(inputId='pm.val', value=Pmdefault, label='\\(P_m\\) ($ per day)', min=0.1, max=10.0, step=0.1))
             )),
 
   ## Main Panel
