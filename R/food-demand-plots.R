@@ -80,7 +80,7 @@ make.byyear.plot <- function(byyear.data, pltrgn=NULL)
       ggplot2::geom_line(ggplot2::aes(y=value, colour=variable), size=1.5) +
       ggplot2::geom_ribbon(data=Qs.err, ggplot2::aes(x=year, ymin=Qlo, ymax=Qhi), alpha=0.2) +
       ggplot2::geom_ribbon(data=Qn.err, ggplot2::aes(x=year, ymin=Qlo, ymax=Qhi), alpha=0.2) +
-      ggplot2::theme(panel.margin=ggplot2::unit(1,'lines'))
+      ggplot2::theme(panel.spacing=ggplot2::unit(1,'lines'))
 
     ## Add the points for the observed data
     if(is.null(obsdata$obstype)) {

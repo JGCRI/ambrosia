@@ -161,6 +161,8 @@ calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
 #' @param Ysterm Income term in the demand equation for staples
 #' @param Ynterm Income term in the demand equation for nonstaples
 #' @param Acoef Leading multiplier parameter.
+#' @param psscl Price scaling parameter for Staple food products
+#' @param pnscl Price scaling parameter for non-staple food products
 #' @return Quantities of staples and non-staples (Qs and Qn)
 calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef,psscl,pnscl) {
   ## not vectorized:  use mapply
@@ -468,7 +470,7 @@ food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
   obsdata %>%
     dplyr::mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal, Y=gdp_pcap_thous/1000,
                   Qs.Obs=s_cal_pcap_day_thous, Qn.Obs=ns_cal_pcap_day_thous) %>%
-    dplyr::select_(.dots=selcols) -> indata
+    dplyr::select(selcols) -> indata
   rslt <- as.data.frame(food.dmnd(indata$Ps, indata$Pn, indata$Y, params))
   if(!is.null(bc)){
     apply.bias.corrections(rslt, bc)}
@@ -560,8 +562,7 @@ lamks2nu1y0 <- function(df)
 #' @param obs.trn Data frame of observations in the training set.
 #' @param obs.tst Data frame of observations in the testing set.
 #' @return merged dataframe
-#' @export
-merge_trn_tst <- function(obs.trn, obs.tst)
+merge.trn.tst <- function(obs.trn, obs.tst)
 {
   obs.trn$obstype <- 'Training'
   obs.tst$obstype <- 'Testing'
@@ -621,7 +622,7 @@ compute.bc.rgn <- function(obs, params)
 #' @param obs.trn Data frame of training observations.
 #' @return calculated bias corrected values
 #' @export
- compute_bias_corrections <- function(params, obs.trn)
+ compute.bias.corrections <- function(params, obs.trn)
 {
   . <- NULL
 

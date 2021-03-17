@@ -25,6 +25,7 @@
 #' @param min.members Desired minimum number of members per cluster.
 #' @return List of data frames, one data frame for each cluster.
 #' @importFrom dplyr %>%
+#' @export
 recursive.partition <- function(input.data, cluster.vars, min.members=5)
 {
     . <- NULL

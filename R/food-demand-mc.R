@@ -168,9 +168,7 @@ mc.setup <- function(obsdata_filename, logprior=NULL, logfile=NULL, chunksize=10
 #' and the next to last is eta_s.
 #'
 #'
-#' The parameters in the vector are:
-#'  [A_s, A_n, xi_ss, xi_cross, xi_nn, nu1_n, lambda_s, k_s, Pm, psscl, pnscl]
-#'  They are described in the table below:
+#' The parameters in the vector are described in the table below:
 #'
 #'
 #'@details
@@ -185,6 +183,7 @@ mc.setup <- function(obsdata_filename, logprior=NULL, logfile=NULL, chunksize=10
 #'  | `nu1_n`          | Income elasticity for non-staple goods. Unit change in per capita demand for non-staples for unit change in income `Y` (in thousand USD).                                                                                                                                 | Elasticity   | 0.5   | 0.46 - 0.61               |
 #'  | `lambda_s`       | Income elasticity for staple goods. Unit change in per capita demand for staples for unit change in income `Y` (in thousand USD)                                                                                                                                          | Elasticity   | 0.1   | 0.075 - 0.16                |
 #'  | `k_s`            | Exponent of Income level at which staple demand is anticipated to be at its highest                                                                                                                                                                                   | Thousand USD | 16    | 10 -17                    |
+#'  | `Pm`            | Price of materials (everything else in the economy other than food products)                                                                                                                                                                                   | $ per day | 5    | 2 -6                    |
 #'  | `psscl`          | Additional scaling term used to derive the expenditure shares for staples. This is applied to price of staples (`Ps`/`Pm` * `psscl`), where Ps is the price of staples and Pm is the price of materials and to the expenditure shares of staples (`alpha_s`).                 | Unitless     | 100   | 80 - 120                  |
 #'  | `pnscl`          | Additional scaling term used to derive the expenditure shares for non-staples. This is applied to price of non-staples (`Pn`/`Pm` * `pnscl`), where Pn is the price of non-staples and Pm is the price of materials and to the expenditure shares of non-staples (`alpha_n`). | Unitless     | 20    | 18 - 25                   |
 #'

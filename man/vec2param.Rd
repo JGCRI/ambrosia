@@ -65,9 +65,7 @@ Note that xi_cross is used for both xi_sn and xi_ns, forcing them to be equal.
 If there are only 10 parameters, then the first 8 are as above,
 and the next to last is eta_s.
 
-The parameters in the vector are:
-\link{A_s, A_n, xi_ss, xi_cross, xi_nn, nu1_n, lambda_s, k_s, Pm, psscl, pnscl}
-They are described in the table below:\tabular{lllll}{
+The parameters in the vector are described in the table below:\tabular{lllll}{
    Parameter name \tab Description \tab Units \tab Value \tab Range of parameter values (Based on 95th percentile confidence interval) \cr
    \code{A_s} \tab A scale term used to derive expenditure share for staple demand \tab Unitless \tab 1.28 \tab 1.25 -1.40 \cr
    \code{A_n} \tab A scale term used to derive expenditure share for non-staple demand. \tab Unitless \tab 1.14 \tab 0.9 - 1.16 \cr
@@ -77,6 +75,7 @@ They are described in the table below:\tabular{lllll}{
    \code{nu1_n} \tab Income elasticity for non-staple goods. Unit change in per capita demand for non-staples for unit change in income \code{Y} (in thousand USD). \tab Elasticity \tab 0.5 \tab 0.46 - 0.61 \cr
    \code{lambda_s} \tab Income elasticity for staple goods. Unit change in per capita demand for staples for unit change in income \code{Y} (in thousand USD) \tab Elasticity \tab 0.1 \tab 0.075 - 0.16 \cr
    \code{k_s} \tab Exponent of Income level at which staple demand is anticipated to be at its highest \tab Thousand USD \tab 16 \tab 10 -17 \cr
+   \code{Pm} \tab Price of materials (everything else in the economy other than food products) \tab $ per day \tab 5 \tab 2 -6 \cr
    \code{psscl} \tab Additional scaling term used to derive the expenditure shares for staples. This is applied to price of staples (\code{Ps}/\code{Pm} * \code{psscl}), where Ps is the price of staples and Pm is the price of materials and to the expenditure shares of staples (\code{alpha_s}). \tab Unitless \tab 100 \tab 80 - 120 \cr
    \code{pnscl} \tab Additional scaling term used to derive the expenditure shares for non-staples. This is applied to price of non-staples (\code{Pn}/\code{Pm} * \code{pnscl}), where Pn is the price of non-staples and Pm is the price of materials and to the expenditure shares of non-staples (\code{alpha_n}). \tab Unitless \tab 20 \tab 18 - 25 \cr
 }
