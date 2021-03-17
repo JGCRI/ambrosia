@@ -303,7 +303,7 @@ write.csv(processed_data_example,"Processed_Data_for_MC.csv")
 new_parameters <- calculate.ambrosia.params(datadir="Processed_Data_for_MC.csv",
                                             optim_method = "BFGS",
                                             original_param_vector= c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20),
-                                            ,outdir = tempdir(),
+                                            outdir = tempdir(),
                                             max_iterations = 2)
 ```
 
@@ -361,7 +361,7 @@ Parameter data can be generated in two ways,
 new_parameters <- calculate.ambrosia.params(datadir="Processed_Data_for_MC.csv",
                                             optim_method = "BFGS",
                                             original_param_vector= c(1.28,1.14,-0.19,0.21,-0.33,0.5,0.1,16,5.06,100,20),
-                                            ,outdir = tempdir(),
+                                            outdir = tempdir(),
                                             trace_param = TRUE,
                                             max_iterations =2)
 
