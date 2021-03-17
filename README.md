@@ -28,12 +28,6 @@ An important motivation to develop `ambrosia` is functionalizing and separating 
 ```r
 devtools::install_github('JGCRI/ambrosia', build_vignettes = TRUE)
 ```
-Alternatively, `ambrosia` can also be installed using the `remotes` package by running the following command in an R prompt,
-
-```r
-remotes::install_github('JGCRI/ambrosia', build_vignettes = TRUE)
-```
-
 
 ## User tutorial and examples
 
@@ -90,14 +84,23 @@ where,
 
 Income_term_staples <- (k_s * Y) ^ (lambda_s / Y)
 
+Pn <- Pn/Pm
+
+Ps <- Ps/Pm
+
 # 2) Non-staple demand
 
-Q_n <- A_s * Ps ^ xi_cross * Pn ^ xi_nn * Income_Term_Non_staples
+Q_n <- A_n * Ps ^ xi_cross * Pn ^ xi_nn * Income_Term_Non_staples
 
 where,
 
 Income_Term_Non_staples <- Y ^ (2 * nu1_n)
 
+Pn <- Pn/Pm
+
+Ps <- Ps/Pm
+
+ 
 ```
 
 
