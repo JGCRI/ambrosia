@@ -86,6 +86,13 @@
 <li>exploration and preparation of raw data before starting a parameter estimation.</li>
 </ol>
 </div>
+</div>
+<div id="statement-of-need-and-audience" class="section level1">
+<h1 class="hasAnchor">
+<a href="#statement-of-need-and-audience" class="anchor"></a>Statement of need and audience</h1>
+<p>An important motivation to develop <code>ambrosia</code> is functionalizing and separating out the different components of the sophisticated food demand framework into usable R functions that can be easily parameterized and customized by the user.Thus, the tool not only enables easy use and future development, but also enables easy modularization of the code within other systems.</p>
+<p><code>ambrosia</code> has been developed to help researchers explore questions related to trends in food demand empirically. Since the equations of the model are grounded in peer reviewed research while the code itself is written in R (which increases usability), the tool is useful to researchers interested in,</p>
+<p>1) analyzing and exploring trends in food demand with a computational model that is responsive to changes in incomes and prices that can easily be implemented on any time series (dataset); 2) re-estimating calibration parameters of the food demand model using custom data, thus effectively allowing the user to calibrate the model to custom data; 3) incorporating a detailed food demand model in their own earth system and economic models.</p>
 <div id="getting-started-with-ambrosia" class="section level2">
 <h2 class="hasAnchor">
 <a href="#getting-started-with-ambrosia" class="anchor"></a>Getting Started with <code>ambrosia</code>
@@ -93,15 +100,18 @@
 <p><code>ambrosia</code> can be directly installed from its GitHub repository using the R <code>devtools</code> package. From an R prompt, run the command,</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">'JGCRI/ambrosia'</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<p>Alternatively, <code>ambrosia</code> can also be installed using the <code>remotes</code> package by running the following command in an R promp,</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'JGCRI/ambrosia'</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="user-tutorial-and-examples" class="section level2">
 <h2 class="hasAnchor">
 <a href="#user-tutorial-and-examples" class="anchor"></a>User tutorial and examples</h2>
 <p>A list of examples along with a user tutorial describing the different features in <code>ambrosia</code> are available in the <a href="https://jgcri.github.io/ambrosia/articles/ambrosia_vignette.html"><code>ambrosia_vignette.rmd</code></a>. To load the vignette with examples for the major functions within ambrosia, run the following command</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span><span class="op">(</span><span class="st">"ambrosia_vignette"</span><span class="op">)</span></code></pre></div>
 <p>The example below shows how a user can get an estimate of demand using some sample parameters (See the table below for description of parameters).</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Get a sample data set</span>
 <span class="va">Test_Data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">30</span>, by<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span><span class="op">)</span>
 
@@ -202,6 +212,13 @@
 <td>20</td>
 <td>18 - 25</td>
 </tr>
+<tr class="odd">
+<td><code>Pm</code></td>
+<td>Price of materials (everything else in the economy other than food products)</td>
+<td>$ per day</td>
+<td>5</td>
+<td>2 -6</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -209,21 +226,21 @@
 <h4 class="hasAnchor">
 <a href="#simple-example-of-equations-to-derive-demand-using-calibration-parameters-described-above" class="anchor"></a>Simple example of equations to derive demand using calibration parameters described above.</h4>
 <p>Below is a simple example of how quantities of demand for staples (<code>Q_s</code>) and non-staples (<code>Q_n</code>) in thousand calories are calculated using the above 11 calibration parameters above for an income level of <code>Y</code> in thousand USD for a staple price of <code>Ps</code> in $ per calorie per day and non-staple price of <code>Pn</code> in $ per calorie per day.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># 1) Staple demand</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a></span>
-<span id="cb4-3"><a href="#cb4-3"></a>Q_s &lt;-<span class="st"> </span>A_s <span class="op">*</span><span class="st"> </span>Ps <span class="op">^</span><span class="st"> </span>xi_ss <span class="op">*</span><span class="st"> </span>Pn <span class="op">^</span><span class="st"> </span>xi_cross <span class="op">*</span><span class="st"> </span>Income_Term_staples   </span>
-<span id="cb4-4"><a href="#cb4-4"></a></span>
-<span id="cb4-5"><a href="#cb4-5"></a>where,</span>
-<span id="cb4-6"><a href="#cb4-6"></a></span>
-<span id="cb4-7"><a href="#cb4-7"></a>Income_term_staples &lt;-<span class="st"> </span>(k_s <span class="op">*</span><span class="st"> </span>Y) <span class="op">^</span><span class="st"> </span>(lambda_s <span class="op">/</span><span class="st"> </span>Y)</span>
-<span id="cb4-8"><a href="#cb4-8"></a></span>
-<span id="cb4-9"><a href="#cb4-9"></a><span class="co"># 2) Non-staple demand</span></span>
-<span id="cb4-10"><a href="#cb4-10"></a></span>
-<span id="cb4-11"><a href="#cb4-11"></a>Q_n &lt;-<span class="st"> </span>A_s <span class="op">*</span><span class="st"> </span>Ps <span class="op">^</span><span class="st"> </span>xi_cross <span class="op">*</span><span class="st"> </span>Pn <span class="op">^</span><span class="st"> </span>xi_nn <span class="op">*</span><span class="st"> </span>Income_Term_Non_staples</span>
-<span id="cb4-12"><a href="#cb4-12"></a></span>
-<span id="cb4-13"><a href="#cb4-13"></a>where,</span>
-<span id="cb4-14"><a href="#cb4-14"></a></span>
-<span id="cb4-15"><a href="#cb4-15"></a>Income_Term_Non_staples &lt;-<span class="st"> </span>Y <span class="op">^</span><span class="st"> </span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>nu1_n)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># 1) Staple demand</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a></span>
+<span id="cb5-3"><a href="#cb5-3"></a>Q_s &lt;-<span class="st"> </span>A_s <span class="op">*</span><span class="st"> </span>Ps <span class="op">^</span><span class="st"> </span>xi_ss <span class="op">*</span><span class="st"> </span>Pn <span class="op">^</span><span class="st"> </span>xi_cross <span class="op">*</span><span class="st"> </span>Income_Term_staples   </span>
+<span id="cb5-4"><a href="#cb5-4"></a></span>
+<span id="cb5-5"><a href="#cb5-5"></a>where,</span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a>Income_term_staples &lt;-<span class="st"> </span>(k_s <span class="op">*</span><span class="st"> </span>Y) <span class="op">^</span><span class="st"> </span>(lambda_s <span class="op">/</span><span class="st"> </span>Y)</span>
+<span id="cb5-8"><a href="#cb5-8"></a></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="co"># 2) Non-staple demand</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a></span>
+<span id="cb5-11"><a href="#cb5-11"></a>Q_n &lt;-<span class="st"> </span>A_s <span class="op">*</span><span class="st"> </span>Ps <span class="op">^</span><span class="st"> </span>xi_cross <span class="op">*</span><span class="st"> </span>Pn <span class="op">^</span><span class="st"> </span>xi_nn <span class="op">*</span><span class="st"> </span>Income_Term_Non_staples</span>
+<span id="cb5-12"><a href="#cb5-12"></a></span>
+<span id="cb5-13"><a href="#cb5-13"></a>where,</span>
+<span id="cb5-14"><a href="#cb5-14"></a></span>
+<span id="cb5-15"><a href="#cb5-15"></a>Income_Term_Non_staples &lt;-<span class="st"> </span>Y <span class="op">^</span><span class="st"> </span>(<span class="dv">2</span> <span class="op">*</span><span class="st"> </span>nu1_n)</span></code></pre></div>
 </div>
 </div>
 <div id="contributing-to-ambrosia" class="section level2">
@@ -261,7 +278,7 @@
 <h2 class="hasAnchor">
 <a href="#code-repository" class="anchor"></a>Code repository</h2>
 <p>Name- GitHub; <code>JGCRI/ambrosia</code></p>
-<p>Identifier- <a href="https://github.com/JGCRI/ambrosia/tree/v1.3.2" class="uri">https://github.com/JGCRI/ambrosia/tree/v1.3.2</a></p>
+<p>Identifier- <a href="https://github.com/JGCRI/ambrosia/tree/v1.3.3" class="uri">https://github.com/JGCRI/ambrosia/tree/v1.3.3</a></p>
 <p>License- BSD 2-Clause</p>
 </div>
 </div>
@@ -295,6 +312,9 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
+<li><a href="https://github.com/JGCRI/ambrosia/actions/workflows/build_linux.yml"><img src="https://github.com/JGCRI/ambrosia/actions/workflows/build_linux.yml/badge.svg" alt="linux"></a></li>
+<li><a href="https://github.com/JGCRI/ambrosia/actions/workflows/build_osx.yml"><img src="https://github.com/JGCRI/ambrosia/actions/workflows/build_osx.yml/badge.svg" alt="osx"></a></li>
+<li><a href="https://github.com/JGCRI/ambrosia/actions/workflows/build_windows.yml"><img src="https://github.com/JGCRI/ambrosia/actions/workflows/build_windows.yml/badge.svg" alt="windows"></a></li>
 <li><a href="https://codecov.io/gh/JGCRI/ambrosia"><img src="https://codecov.io/gh/JGCRI/ambrosia/branch/master/graph/badge.svg" alt="codecov"></a></li>
 <li><a href="https://zenodo.org/badge/latestdoi/69679416"><img src="https://zenodo.org/badge/69679416.svg" alt="DOI"></a></li>
 </ul>

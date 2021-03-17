@@ -108,7 +108,7 @@
 <span class="va">Test_Data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>Y<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">30</span>, by<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co">#Add sample values of Ps and Pn</span>
-<span class="va">Test_Data</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>Ps<span class="op">=</span><span class="fl">0.1</span>,Pn<span class="op">=</span><span class="fl">0.2</span><span class="op">)</span><span class="op">-&gt;</span><span class="va">Test_Data</span>
+<span class="va">Test_Data</span> <span class="op">&lt;-</span> <span class="va">Test_Data</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>Ps<span class="op">=</span><span class="fl">0.1</span>,Pn<span class="op">=</span><span class="fl">0.2</span><span class="op">)</span>
 
 <span class="co">#Calculate food demand</span>
 <span class="va">Food_Demand</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/food.dmnd.html">food.dmnd</a></span><span class="op">(</span><span class="va">Test_Data</span><span class="op">$</span><span class="va">Ps</span>,<span class="va">Test_Data</span><span class="op">$</span><span class="va">Pn</span>,<span class="va">Test_Data</span><span class="op">$</span><span class="va">Y</span><span class="op">)</span></code></pre></div>
@@ -118,12 +118,12 @@
 <a href="#example-1-2-visualize-food-demand" class="anchor"></a>Example 1.2: Visualize food demand</h2>
 <p>The demand along with the price and income elasticities calculated using the <code><a href="../reference/food.dmnd.html">food.dmnd()</a></code> function can be visualized easily.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#Add income and total demand to the data frame created in example 1.2 and create a plot.  </span>
+<code class="sourceCode R"><span class="co">#Add income and total demand to the data frame created in example 1.1 and create a plot.  </span>
 <span class="va">Food_Demand</span><span class="op">$</span><span class="va">Total_Demand</span> <span class="op">&lt;-</span> <span class="va">Food_Demand</span><span class="op">$</span><span class="va">Qs</span><span class="op">+</span><span class="va">Food_Demand</span><span class="op">$</span><span class="va">Qn</span>
 <span class="va">Food_Demand</span><span class="op">$</span><span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">30</span>, by<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span>
 
 <span class="co">#Create the plot</span>
-<span class="va">g</span><span class="op">&lt;-</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span>
+<span class="va">g</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">Food_Demand</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span> <span class="va">Y</span>,y<span class="op">=</span> <span class="va">Qs</span>,color<span class="op">=</span> <span class="st">"Staple Demand"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">Food_Demand</span>,<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span> <span class="va">Y</span>,y<span class="op">=</span> <span class="va">Qn</span>,color<span class="op">=</span> <span class="st">"Non Staple Demand"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span>
     <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="st">"GDP per capita in thousand USD"</span> <span class="op">)</span><span class="op">+</span>
@@ -161,7 +161,7 @@
 <div id="example-1-4-calculate-income-elasticities" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-1-4-calculate-income-elasticities" class="anchor"></a>Example 1.4: Calculate income elasticities</h2>
-<p>The demand code iteratively solves for the budget shares using a Broyden solver with changing incomes and re-calculates income and price elasticities for changes in budget shares.The user can separately analyze the income elasticities by using two functions (one for staples and other for non-staples) from within the parameter structure generated above in example 1.1.</p>
+<p>The demand code iteratively solves for the budget shares using a Broyden solver with changing incomes and re-calculates income and price elasticities for changes in budget shares.The user can separately analyze the income elasticities by using two functions (one for staples and other for non-staples) from within the parameter structure (a temporary parameter structure is generated in the example below)</p>
 <p>For income elasticities, the functions generated within the parameter structure stored within the object <code>yfunc</code> return the elasticities themselves for a given level of income. Setting the optional parameter within these functions to TRUE would return the income term itself (i.e. <code>Y</code>^ <code>elas</code>).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Note that setting the second argument to "TRUE" in the functions below would return the Y term (Y^elas) as opposed to the elasticity.</span>
@@ -193,8 +193,8 @@
 <p>Similar to the income elasticities, the user can also calculate and analyze price elasticities. These elasticities. The function <code><a href="../reference/calc1eps.html">calc1eps()</a></code> can be used to recalculate price elasticities by passing the following parameters:</p>
 <ol style="list-style-type: decimal">
 <li><p>different budget shares (alphas)</p></li>
-<li><p>income elasticities (calculated in example 1.5)</p></li>
-<li><p>A matrix of values for elasticities (this is a part of the parameter structure set up in example 1.1)</p></li>
+<li><p>income elasticities (calculated in example 1.4)</p></li>
+<li><p>A matrix of values for elasticities (this is a part of the parameter structure set up in example 1.4)</p></li>
 </ol>
 <p>The price elasticities are calculated as an epsilion matrix with price elasticities for staples, non-staples and cross price elasticities.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -236,7 +236,7 @@
 <p>Note that the current calibration parameters are calculated on the basis of national level data on food consumption and prices. These can effectively be calculated using new inputs thus allowing the user to calibrate the model to custom data.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Use a sample vector of parameters. </span>
-<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1.28</span>,<span class="fl">1.14</span>,<span class="op">-</span><span class="fl">0.19</span>,<span class="fl">0.21</span>,<span class="op">-</span><span class="fl">0.33</span>,<span class="fl">0.5</span>,<span class="fl">0.1</span>,<span class="fl">16</span>,<span class="fl">5.06</span>,<span class="fl">100</span>,<span class="fl">20</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">original_param_vector</span>
+<span class="va">original_param_vector</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1.28</span>,<span class="fl">1.14</span>,<span class="op">-</span><span class="fl">0.19</span>,<span class="fl">0.21</span>,<span class="op">-</span><span class="fl">0.33</span>,<span class="fl">0.5</span>,<span class="fl">0.1</span>,<span class="fl">16</span>,<span class="fl">5.06</span>,<span class="fl">100</span>,<span class="fl">20</span><span class="op">)</span> 
 
 <span class="co">#These are the names of the parameters</span>
 <span class="va">parameter_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'A_s'</span>, <span class="st">'A_n'</span>, <span class="st">'xi_ss'</span>, <span class="st">'xi_cross'</span>, <span class="st">'xi_nn'</span>, <span class="st">'nu1_n'</span>,
@@ -261,8 +261,12 @@
 <div id="example-3-1-run-the-interactive-version-of-the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-3-1-run-the-interactive-version-of-the-model" class="anchor"></a>Example 3.1: Run the interactive version of the model</h2>
+<div id="note-shinyis-required-to-be-installed-before-running-the-app-using-the-function-below-" class="section level3">
+<h3 class="hasAnchor">
+<a href="#note-shinyis-required-to-be-installed-before-running-the-app-using-the-function-below-" class="anchor"></a>Note: <code>shiny</code>is required to be installed before running the app using the function below.</h3>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/runapp.html">runapp</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+</div>
 </div>
 </div>
 <div id="part-4-recalculating-calibration-parameters-on-the-basis-of-new-input-data" class="section level1">
@@ -271,13 +275,13 @@
 <div id="example-4-1-get-a-dataset-for-parameter-fitting-from-a-sample-training-dataset" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-4-1-get-a-dataset-for-parameter-fitting-from-a-sample-training-dataset" class="anchor"></a>Example 4.1: Get a dataset for parameter fitting from a sample training dataset</h2>
-<p>One of the benefits of using <code>ambrosia</code> is that a user can estimate their own parameters with a custom data set using the log-likelihood maximization approach. To enable this, <code>ambrosia</code> is equipped with a function <code><a href="../reference/create_dataset_for_parameter_fit.html">create_dataset_for_parameter_fit()</a></code> that will help a user generate a dataset that is appropriate for parameter estimation. Note: The user can re-create the training data used to calculate the parameters for GCAM using the <code>Process_Demand_Data.R</code> under the scripts folder.</p>
+<p>One of the benefits of using <code>ambrosia</code> is that a user can estimate their own parameters with a custom data set using the log-likelihood maximization approach. To enable this, <code>ambrosia</code> is equipped with a function <code><a href="../reference/create.dataset.for.parameter.fit.html">create.dataset.for.parameter.fit()</a></code> that will help a user generate a dataset that is appropriate for parameter estimation. Note: The user can re-create the training data used to calculate the parameters for GCAM using the <code>Process_Demand_Data.R</code> under the scripts folder.</p>
 <p>There are a few steps that the function will perform on a sample dataset.</p>
 <ol style="list-style-type: decimal">
 <li><p>It will ensure that the user’s dataset contains all columns required for parameter estimation</p></li>
 <li><p>It will filter out anomalies and outliers using parameterized cutoff values selected by the user. This step is necessary since data on food consumption and prices are often incomplete which may lead to unrealistically high or low values of consumption or prices in the dataset.</p></li>
-<li><p>After this, the function will create clusters of observations from the dataset based on income levels, and prices of staples and non-staples. This step is necessary because this being economic data, the observational error can only be calculated within different clusters. The code will also check for a user specified minimum number of clusters(If there are anomalies within the dataset, the clustering can be incorrect leading in a small number of clusters). The clustering is implemented using the Divisive Analysis Clustering Algorithm (DIANA)</p></li>
-<li><p>Once the clustering is completed, the code will calculate the observational error which is the variance in food demand for staples (<span class="math inline">\({\sigma^{2}}Q_{s}\)</span>) and non-staples <span class="math inline">\({\sigma^{2}}Q_{n}\)</span> .Note that the user can chose a lower limit on the observational error calculated. The default value of the lower limit is 0.01</p></li>
+<li><p>After this, the function will create clusters of observations from the dataset based on income levels, and prices of staples and non-staples. This step is necessary because this being economic data, the variance (required for the likelihood function) can only be calculated within different clusters. The code will also check for a user specified minimum number of clusters(If there are anomalies within the dataset, the clustering can be incorrect leading in a small number of clusters). The clustering is implemented using the Divisive Analysis Clustering Algorithm (DIANA)</p></li>
+<li><p>Once the clustering is completed, the code will calculate the variance which is the variance in food demand for staples (<span class="math inline">\({\sigma^{2}}Q_{s}\)</span>) and non-staples <span class="math inline">\({\sigma^{2}}Q_{n}\)</span> .Note that the user can chose a lower limit on the variance calculated. The default value of the lower limit is 0.01.</p></li>
 </ol>
 <p>In addition to a data frame, the function will return a CSV file output called “Processed_Data_for_MC.csv” that is stored in the outputs folder that will be used for the parameter estimation. The example below illustrates how to use the function on a raw dataset.</p>
 <p>The example below illustrates how to use the function on a sample dataset</p>
@@ -286,11 +290,11 @@
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"training_data"</span><span class="op">)</span> 
 
 <span class="co">#Create a sample dataset</span>
-<span class="va">training_data</span> <span class="op">%&gt;%</span> 
-   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2010</span><span class="op">:</span><span class="fl">2015</span><span class="op">)</span><span class="op">)</span><span class="op">-&gt;</span> <span class="va">sample_data</span>
+<span class="va">sample_data</span><span class="op">&lt;-</span> <span class="va">training_data</span> <span class="op">%&gt;%</span> 
+   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">year</span> <span class="op">%in%</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2010</span><span class="op">:</span><span class="fl">2015</span><span class="op">)</span><span class="op">)</span> 
 
 <span class="co">#Create a dataset for parameter fit</span>
-<span class="va">temp_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_dataset_for_parameter_fit.html">create_dataset_for_parameter_fit</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">sample_data</span>,min_clusters <span class="op">=</span> <span class="fl">20</span>,min_price_pd <span class="op">=</span> <span class="fl">20</span>,min_cal_fd <span class="op">=</span> <span class="fl">1700</span>,outdir<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
+<span class="va">temp_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create.dataset.for.parameter.fit.html">create.dataset.for.parameter.fit</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">sample_data</span>,min_clusters <span class="op">=</span> <span class="fl">20</span>,min_price_pd <span class="op">=</span> <span class="fl">20</span>,min_cal_fd <span class="op">=</span> <span class="fl">1700</span>,outdir<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 </div>
 <div id="example-4-2-analyze-distribution-of-observational-error-for-non-staples" class="section level2">
 <h2 class="hasAnchor">
@@ -331,16 +335,16 @@
 <div id="example-4-4-calculate-actual-parameters-option-1--optimization" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-4-4-calculate-actual-parameters-option-1--optimization" class="anchor"></a>Example 4.4: Calculate actual parameters (option 1- Optimization)</h2>
-<p>Finally, the user can complete the parameter estimation on the dataset returned by <code><a href="../reference/create_dataset_for_parameter_fit.html">create_dataset_for_parameter_fit()</a></code> with a call to the calculate_ambrosia_params() function. ambrosia builds on the Edmonds et al.(2017) approach by maximizing the log-likelihood score using the optim() function. Note that the user can also choose to use a different method (for example, the original MCMC) to maximize the log-likelihood function by first setting up the log likelihood function using the <code><a href="../reference/mc.setup.html">mc.setup()</a></code> function.</p>
+<p>Finally, the user can complete the parameter estimation on the dataset returned by <code><a href="../reference/create.dataset.for.parameter.fit.html">create.dataset.for.parameter.fit()</a></code> with a call to the <code><a href="../reference/calculate.ambrosia.params.html">calculate.ambrosia.params()</a></code> function. ambrosia builds on the Edmonds et al.(2017) approach by maximizing the log-likelihood score using the <code><a href="https://rdrr.io/r/stats/optim.html">optim()</a></code> function. Note that the user can also choose to use a different method (for example, the original MCMC) to maximize the log-likelihood function by first setting up the log likelihood function using the <code><a href="../reference/mc.setup.html">mc.setup()</a></code> function.</p>
 <p>The following steps are involved in the parameter estimation function,</p>
 <ol style="list-style-type: decimal">
 <li><p>First a log-likelihood function is set up with the data returned by the function above. This function calculates a log likelihood score using a weighted least squares approach (where the population of the region is the weight)</p></li>
 <li><p>Now, the value returned by this function will be maximized using <code><a href="https://rdrr.io/r/stats/optim.html">optim()</a></code>. The user can provide a seed of initial parameters to begin the optimization process (the lowest possible seed would be the lowest values of all 11 parameters). The default seed is set to the original parameters from Edmonds et al. The user can now specify the optimization method to be used. The default is set to the “BFGS” method, but the user can also run the optimization using methods such as “Neldor-Mead” etc.</p></li>
 <li><p>The function will now return a vector of parameters that can be used to derive estimates of food demand (Similar to Example 1 above). The function also prints out the maximized value of the log-likelihood function, so that the user can verify the efficiency and effectiveness of the parameter estimation.</p></li>
 </ol>
-<div id="warning-calculating-parameters-takes-a-long-time-around-25-minutes" class="section level3">
+<div id="warning-calculating-parameters-takes-a-long-time-around-30-minutes-depending-upon-machine--max-iterations-in-the-below-example-are-set-to-2-just-for-speed-" class="section level3">
 <h3 class="hasAnchor">
-<a href="#warning-calculating-parameters-takes-a-long-time-around-25-minutes" class="anchor"></a>Warning: Calculating parameters takes a long time (around 25 minutes)</h3>
+<a href="#warning-calculating-parameters-takes-a-long-time-around-30-minutes-depending-upon-machine--max-iterations-in-the-below-example-are-set-to-2-just-for-speed-" class="anchor"></a>Warning: Calculating parameters takes a long time (around 30 minutes depending upon machine). Max iterations in the below example are set to 2 just for speed.</h3>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#load sample data</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"processed_data_example"</span><span class="op">)</span>
@@ -349,16 +353,17 @@
 <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html">write.csv</a></span><span class="op">(</span><span class="va">processed_data_example</span>,<span class="st">"Processed_Data_for_MC.csv"</span><span class="op">)</span>
 
 <span class="co">#calculate new parameters using this saved dataset</span>
-<span class="va">new_parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate_ambrosia_params.html">calculate_ambrosia_params</a></span><span class="op">(</span>datadir<span class="op">=</span><span class="st">"Processed_Data_for_MC.csv"</span>,
+<span class="va">new_parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.ambrosia.params.html">calculate.ambrosia.params</a></span><span class="op">(</span>datadir<span class="op">=</span><span class="st">"Processed_Data_for_MC.csv"</span>,
                                             optim_method <span class="op">=</span> <span class="st">"BFGS"</span>,
                                             original_param_vector<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1.28</span>,<span class="fl">1.14</span>,<span class="op">-</span><span class="fl">0.19</span>,<span class="fl">0.21</span>,<span class="op">-</span><span class="fl">0.33</span>,<span class="fl">0.5</span>,<span class="fl">0.1</span>,<span class="fl">16</span>,<span class="fl">5.06</span>,<span class="fl">100</span>,<span class="fl">20</span><span class="op">)</span>,
-                                            ,outdir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+                                            ,outdir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>,
+                                            max_iterations <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="example-4-5-calculate-actual-parameters-option-2--set-up-a-likelihood-function-and-use-any-other-method" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-4-5-calculate-actual-parameters-option-2--set-up-a-likelihood-function-and-use-any-other-method" class="anchor"></a>Example 4.5: Calculate actual parameters (option 2- Set up a likelihood function and use any other method)</h2>
-<p>While <code><a href="../reference/calculate_ambrosia_params.html">calculate_ambrosia_params()</a></code> is useful to quickly calculate a sample of parameters, the user can also use their own approaches to calculate parameter samples. For example, if a user wanted to create samples for the parameters using a MCMC as opposed to an optimization approach, <code>ambrosia</code> has inbuilt functions that allow a user to set up a likelihood function which can be maximized using any other method chosen by the user. The example below shows how the user can set up a likelihood function</p>
+<p>While <code><a href="../reference/calculate.ambrosia.params.html">calculate.ambrosia.params()</a></code> is useful to quickly calculate a sample of parameters, the user can also use their own approaches to calculate parameter samples. For example, if a user wanted to create samples for the parameters using a MCMC as opposed to an optimization approach, <code>ambrosia</code> has inbuilt functions that allow a user to set up a likelihood function which can be maximized using any other method chosen by the user. The example below shows how the user can set up a likelihood function</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="co">#The log likelihood function set up below can be used to fit parameters either using the maximization function or any #other approach like a Markov Chain Monte Carlo</span>
@@ -381,7 +386,7 @@
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/exists.html">exists</a></span><span class="op">(</span><span class="st">"new_parameters"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">{</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">"New parameters not calculated as shown in example 2.4. Loading pre-saved parameters"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">"New parameters not calculated as shown in example 4.4. Loading pre-saved parameters"</span><span class="op">)</span>
 
 <span class="va">new_parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1.28</span>,<span class="fl">1.14</span>,<span class="op">-</span><span class="fl">0.19</span>,<span class="fl">0.21</span>,<span class="op">-</span><span class="fl">0.33</span>,<span class="fl">0.5</span>,<span class="fl">0.1</span>,<span class="fl">16</span>,<span class="fl">5.06</span>,<span class="fl">100</span>,<span class="fl">20</span><span class="op">)</span>
 
@@ -394,21 +399,25 @@
 <div id="part-5-exploring-data-from-a-parameter-fitting-process-mcmc-or-maximization-or-any-other-process" class="section level1">
 <h1 class="hasAnchor">
 <a href="#part-5-exploring-data-from-a-parameter-fitting-process-mcmc-or-maximization-or-any-other-process" class="anchor"></a>Part 5: Exploring data from a parameter fitting process (MCMC or maximization or any other process)</h1>
-<p>Now if a user calculated new parameters (either using <code><a href="../reference/calculate_ambrosia_params.html">calculate_ambrosia_params()</a></code> or by setting up the log likelihood function using <code><a href="../reference/mc.setup.html">mc.setup()</a></code> and maximizing the log likelihood using another method), <code>ambrosia</code> also allows the user to explore the results of a parameter fit.</p>
+<p>Now if a user calculated new parameters (either using <code><a href="../reference/calculate.ambrosia.params.html">calculate.ambrosia.params()</a></code> or by setting up the log likelihood function using <code><a href="../reference/mc.setup.html">mc.setup()</a></code> and maximizing the log likelihood using another method), <code>ambrosia</code> also allows the user to explore the results of a parameter fit.</p>
 <div id="example-5-1-generating-parameter-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example-5-1-generating-parameter-data" class="anchor"></a>Example 5.1: Generating parameter data</h2>
 <p>Parameter data can be generated in two ways,</p>
 <ol style="list-style-type: decimal">
-<li>If <code><a href="../reference/calculate_ambrosia_params.html">calculate_ambrosia_params()</a></code> is used to calculate parameter values, the user would have to set the <code>trace_param</code> to TRUE to generate the data (.dat) file</li>
+<li>If <code><a href="../reference/calculate.ambrosia.params.html">calculate.ambrosia.params()</a></code> is used to calculate parameter values, the user would have to set the <code>trace_param</code> to TRUE to generate the data (.dat) file</li>
 </ol>
+<div id="warning-calculating-parameters-takes-a-long-time-around-30-minutes-depending-upon-machine--max-iterations-in-the-below-example-are-set-to-2-just-for-speed--1" class="section level3">
+<h3 class="hasAnchor">
+<a href="#warning-calculating-parameters-takes-a-long-time-around-30-minutes-depending-upon-machine--max-iterations-in-the-below-example-are-set-to-2-just-for-speed--1" class="anchor"></a>Warning: Calculating parameters takes a long time (around 30 minutes depending upon machine). Max iterations in the below example are set to 2 just for speed.</h3>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">new_parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate_ambrosia_params.html">calculate_ambrosia_params</a></span><span class="op">(</span>datadir<span class="op">=</span><span class="st">"Processed_Data_for_MC.csv"</span>,
+<span class="va">new_parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calculate.ambrosia.params.html">calculate.ambrosia.params</a></span><span class="op">(</span>datadir<span class="op">=</span><span class="st">"Processed_Data_for_MC.csv"</span>,
                                             optim_method <span class="op">=</span> <span class="st">"BFGS"</span>,
                                             original_param_vector<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1.28</span>,<span class="fl">1.14</span>,<span class="op">-</span><span class="fl">0.19</span>,<span class="fl">0.21</span>,<span class="op">-</span><span class="fl">0.33</span>,<span class="fl">0.5</span>,<span class="fl">0.1</span>,<span class="fl">16</span>,<span class="fl">5.06</span>,<span class="fl">100</span>,<span class="fl">20</span><span class="op">)</span>,
                                             ,outdir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span>,
-                                            trace_param <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+                                            trace_param <span class="op">=</span> <span class="cn">TRUE</span>,
+                                            max_iterations <span class="op">=</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>If the log-likelihood function was set up using <code><a href="../reference/mc.setup.html">mc.setup()</a></code> directly and this was maximized using some other method, then the same <code>trace_param</code> parameter needs to be set to TRUE before the fitting process to ensure the .dat file is generated.</li>
 </ol>
@@ -417,6 +426,7 @@
 <span class="va">likelihood_function</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mc.setup.html">mc.setup</a></span><span class="op">(</span><span class="st">"Processed_Data_for_MC.csv"</span>, trace_param <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </code></pre></div>
 <p>Using the above code, the user can generate a .dat file which will track parameter samples during the fitting process along with the likelihood value itself.</p>
 <p>The user can now read in the file, assign parameter names and generate density plots for the same.</p>
+</div>
 </div>
 <div id="example-5-2-read-in-mc-data-and-create-density-plots" class="section level2">
 <h2 class="hasAnchor">
@@ -451,7 +461,7 @@
 <span class="va">mc_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.mc.data.html">read.mc.data</a></span><span class="op">(</span><span class="st">"mc_data_example.dat"</span>,varnames <span class="op">=</span> <span class="fu"><a href="../reference/namemc.html">namemc</a></span><span class="op">(</span>nparam <span class="op">=</span> <span class="fl">11</span><span class="op">)</span><span class="op">)</span>
 
 <span class="co">#The function  below will return a vector of parameters which yield the highest log likelihood score</span>
-<span class="fu"><a href="../reference/mcparam.ML.html">mcparam.ML</a></span><span class="op">(</span><span class="va">mc_example</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">ml_parameters</span>
+<span class="va">ml_parameters</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mcparam.ML.html">mcparam.ML</a></span><span class="op">(</span><span class="va">mc_example</span><span class="op">)</span>
 
 <span class="co">#Set up the log-likelihood function</span>
 <span class="va">func_MC</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mc.setup.html">mc.setup</a></span><span class="op">(</span><span class="st">"Processed_Data_for_MC.csv"</span><span class="op">)</span>

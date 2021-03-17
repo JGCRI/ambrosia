@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Calculate demand quantities for a single set of inputs — calc1q • ambrosia</title>
+<title>Calculates the 11 parameters for ambrosia using data calculated by create.dataset.for.parameter.fit by maximizing log likelihood — calculate.ambrosia.params • ambrosia</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,8 @@
 
 
 
-<meta property="og:title" content="Calculate demand quantities for a single set of inputs — calc1q" />
-<meta property="og:description" content="This is a helper function for the mapply calls in
-food.dmnd" />
+<meta property="og:title" content="Calculates the 11 parameters for ambrosia using data calculated by create.dataset.for.parameter.fit by maximizing log likelihood — calculate.ambrosia.params" />
+<meta property="og:description" content="Calculates the 11 parameters for ambrosia using data calculated by create.dataset.for.parameter.fit by maximizing log likelihood" />
 
 
 
@@ -116,62 +115,86 @@ food.dmnd" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculate demand quantities for a single set of inputs</h1>
+    <h1>Calculates the 11 parameters for ambrosia using data calculated by <code><a href='create.dataset.for.parameter.fit.html'>create.dataset.for.parameter.fit</a></code> by maximizing log likelihood</h1>
     
-    <div class="hidden name"><code>calc1q.Rd</code></div>
+    <div class="hidden name"><code>calculate.ambrosia.params.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This is a helper function for the <code>mapply</code> calls in
-<code><a href='food.dmnd.html'>food.dmnd</a></code></p>
+    <p>Calculates the 11 parameters for ambrosia using data calculated by <code><a href='create.dataset.for.parameter.fit.html'>create.dataset.for.parameter.fit</a></code> by maximizing log likelihood</p>
     </div>
 
-    <pre class="usage"><span class='fu'>calc1q</span><span class='op'>(</span><span class='va'>Ps</span>, <span class='va'>Pn</span>, <span class='va'>Y</span>, <span class='va'>eps</span>, <span class='va'>Ysterm</span>, <span class='va'>Ynterm</span>, <span class='va'>Acoef</span>, <span class='va'>psscl</span>, <span class='va'>pnscl</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>calculate.ambrosia.params</span><span class='op'>(</span>
+  optim_method <span class='op'>=</span> <span class='st'>"BFGS"</span>,
+  original_param_vector <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1.28</span>, <span class='fl'>1.14</span>, <span class='op'>-</span><span class='fl'>0.19</span>, <span class='fl'>0.21</span>, <span class='op'>-</span><span class='fl'>0.33</span>, <span class='fl'>0.5</span>, <span class='fl'>0.1</span>, <span class='fl'>16</span>, <span class='fl'>5.06</span>, <span class='fl'>100</span>,
+    <span class='fl'>20</span><span class='op'>)</span>,
+  datadir <span class='op'>=</span> <span class='st'>"outputs/Processed_Data_for_MC.csv"</span>,
+  outdir <span class='op'>=</span> <span class='st'>"tests/testthat/test_outputs/"</span>,
+  max_iterations <span class='op'>=</span> <span class='fl'>100</span>,
+  print_progress <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  trace_param <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>Ps</th>
-      <td><p>Price of staple foods</p></td>
+      <th>optim_method</th>
+      <td><p>The optimization method to be used for maximization of the log likelihood. The default is set to BFGS</p></td>
     </tr>
     <tr>
-      <th>Pn</th>
-      <td><p>Price of nonstaple foods</p></td>
+      <th>original_param_vector</th>
+      <td><p>Original parameter vector to be used as the starting point for the optimization.These parameters are taken from Edmonds et al 2017</p></td>
     </tr>
     <tr>
-      <th>Y</th>
-      <td><p>Per-capita income</p></td>
+      <th>datadir</th>
+      <td><p>Directory to the data calculated by <code><a href='create.dataset.for.parameter.fit.html'>create.dataset.for.parameter.fit</a></code></p></td>
     </tr>
     <tr>
-      <th>eps</th>
-      <td><p>Matrix of Marshall elasticities</p></td>
+      <th>outdir</th>
+      <td><p>Directory to store output csv. Default is set to test_output folder.</p></td>
     </tr>
     <tr>
-      <th>Ysterm</th>
-      <td><p>Income term in the demand equation for staples</p></td>
+      <th>max_iterations</th>
+      <td><p>A maximum number of iterations that can be passed to optim. This is largely meant for testing purposes.Default is set to 100 for BFGS.</p></td>
     </tr>
     <tr>
-      <th>Ynterm</th>
-      <td><p>Income term in the demand equation for nonstaples</p></td>
+      <th>print_progress</th>
+      <td><p>A parameter that allows the user to track progress of function.</p></td>
     </tr>
     <tr>
-      <th>Acoef</th>
-      <td><p>Leading multiplier parameter.</p></td>
-    </tr>
-    <tr>
-      <th>psscl</th>
-      <td><p>Price scaling parameter for Staple food products</p></td>
-    </tr>
-    <tr>
-      <th>pnscl</th>
-      <td><p>Price scaling parameter for non-staple food products</p></td>
+      <th>trace_param</th>
+      <td><p>Setting this to TRUE will generate a .dat file with all parameter samples and log likelihhod value during a parameter fitting exercise (eg. MCMC)</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Quantities of staples and non-staples (Qs and Qn)</p>
+    <p>A vector with the 11 parameters which are as follows,</p>
+<p>A_s : A scaling term for staple commodities</p>
+<p>A_n : A scaling perm for nonstaples commodities</p>
+<p>xi_ss : Price elasticity for staples</p>
+<p>xi_cross : Cross price elasticity</p>
+<p>xi_nn : Price elasticity for non-staples</p>
+<p>nu_1n : Income elasticity for non-staples</p>
+<p>lambda_s : Income elasticity for staples</p>
+<p>k_s : Income level at which total demand begins saturating</p>
+<p>Pm : Scaling parameter for price of materials (everything other than staples and non-staples)</p>
+<p>psscl : Price scaling parameter for staples that is applied to the Price of staples (Ps) and the alpha of staples</p>
+<p>pnscl : Price scaling parameter for staples that is applied to the Price of non-staples (Pn) and the alpha of non-staples</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The following steps are involved in the parameter estimation function.</p>
+<p>1) First a log-likelihood function is set up with the data.</p>
+<p>2) Next, the value returned by the log-likelihood function will be maximized using optim(). The user can provide
+ a seed of initial parameters to begin the optimization process (the lowest possible seed would be the lowest
+ values of all 11 parameters). The default seed is set to the original parameters from Edmonds et al (2017). The user
+ can now specify the optimization method to be used. The default is set to the "BFGS" method, but the user can
+ also run the optimization using methods such as "Neldor-Mead".</p>
+<p>3) Finally, the function will now return a vector of parameters that can be used to derive estimates of food demand (using the <code><a href='food.dmnd.html'>food.dmnd</a></code> function). The function also prints out the maximized value of the log-likelihood function, so that the user can verify the efficiency and effectiveness of the parameter estimation.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>KBN 2020</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

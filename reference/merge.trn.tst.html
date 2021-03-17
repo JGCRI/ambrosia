@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Compute regional bias corrections. — compute.bias.corrections • ambrosia</title>
+<title>Create a merged dataset with training and test data, each labeled accordingly — merge.trn.tst • ambrosia</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,8 @@
 
 
 
-<meta property="og:title" content="Compute regional bias corrections. — compute.bias.corrections" />
-<meta property="og:description" content="Compute regional bias correction for a set of parameters and a training set of observations.
-Bias correction factors are multiplied by model data to get bias
-corrected model output." />
+<meta property="og:title" content="Create a merged dataset with training and test data, each labeled accordingly — merge.trn.tst" />
+<meta property="og:description" content="Create a merged dataset with training and test data, each labeled accordingly" />
 
 
 
@@ -117,36 +115,34 @@ corrected model output." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Compute regional bias corrections.</h1>
+    <h1>Create a merged dataset with training and test data, each labeled accordingly</h1>
     
-    <div class="hidden name"><code>compute.bias.corrections.Rd</code></div>
+    <div class="hidden name"><code>merge.trn.tst.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Compute regional bias correction for a set of parameters and a training set of observations.
-Bias correction factors are <em>multiplied</em> by model data to get bias
-corrected model output.</p>
+    <p>Create a merged dataset with training and test data, each labeled accordingly</p>
     </div>
 
-    <pre class="usage"><span class='fu'>compute.bias.corrections</span><span class='op'>(</span><span class='va'>params</span>, <span class='va'>obs.trn</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='co'># S3 method for trn.tst</span>
+<span class='fu'><a href='https://rdrr.io/r/base/merge.html'>merge</a></span><span class='op'>(</span><span class='va'>obs.trn</span>, <span class='va'>obs.tst</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>params</th>
-      <td><p>Model parameter structure (described in
-<code><a href='food.dmnd.html'>food.dmnd</a></code>)</p></td>
+      <th>obs.trn</th>
+      <td><p>Data frame of observations in the training set.</p></td>
     </tr>
     <tr>
-      <th>obs.trn</th>
-      <td><p>Data frame of training observations.</p></td>
+      <th>obs.tst</th>
+      <td><p>Data frame of observations in the testing set.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>calculated bias corrected values</p>
+    <p>merged dataframe</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
