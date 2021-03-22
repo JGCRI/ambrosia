@@ -1,5 +1,5 @@
 ---
-title: 'ambrosia: An R package for calculating and analyzing food demand that is responsive to changing incomes and prices.'
+title: 'ambrosia: An R package for calculating and analyzing food demand that is responsive to changing incomes and prices'
 authors:
 - affiliation: 1
   name: Kanishka Narayan
