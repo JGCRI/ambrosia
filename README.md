@@ -1,6 +1,6 @@
 [![linux](https://github.com/JGCRI/ambrosia/actions/workflows/build_linux.yml/badge.svg)](https://github.com/JGCRI/ambrosia/actions/workflows/build_linux.yml) [![osx](https://github.com/JGCRI/ambrosia/actions/workflows/build_osx.yml/badge.svg)](https://github.com/JGCRI/ambrosia/actions/workflows/build_osx.yml) [![windows](https://github.com/JGCRI/ambrosia/actions/workflows/build_windows.yml/badge.svg)](https://github.com/JGCRI/ambrosia/actions/workflows/build_windows.yml) [![codecov](https://codecov.io/gh/JGCRI/ambrosia/branch/master/graph/badge.svg)](https://codecov.io/gh/JGCRI/ambrosia)
 [![DOI](https://zenodo.org/badge/69679416.svg)](https://zenodo.org/badge/latestdoi/69679416)
-
+[![status](https://joss.theoj.org/papers/b1af4bb026f674b31d1175075607deef/status.svg)](https://joss.theoj.org/papers/b1af4bb026f674b31d1175075607deef)
 
 
 # `ambrosia`: An R package for calculating and analyzing food demand that is responsive to changing incomes and prices
@@ -135,6 +135,6 @@ tidyr  (>= 0.7.1)
 
 Name- GitHub; `JGCRI/ambrosia`
 
-Identifier- https://github.com/JGCRI/ambrosia/tree/v1.3.3
+Identifier- https://github.com/JGCRI/ambrosia/tree/v1.3.4
 
 License- BSD 2-Clause
