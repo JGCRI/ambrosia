@@ -239,11 +239,11 @@ sample_data<- training_data %>%
 temp_data <- create.dataset.for.parameter.fit(data=sample_data,min_clusters = 20,min_price_pd = 20,min_cal_fd = 1700,outdir=tempdir()) 
 
 ```
-## Example 4.2: Analyze distribution of observational error for non-staples
+## Example 4.2: Analyze distribution of variance for non-staples
 
 The dataset returned by this function can now be used for parameter estimation. The user can also plot the variances for staples and non-staples to ensure there is a valid distribution and the data is not skewed. 
 
-The below plots show the observational error for pre-generated data. 
+The below plots show the variance for pre-generated data. 
 
 ```r
 #Load example processed_data 
@@ -260,7 +260,7 @@ plot(g)
 ```
 ![](example_7.png){width=50% height=50%} 
 
-## Example 4.3: Analyze distribution of observational error for staples
+## Example 4.3: Analyze distribution of variance for staples
 ```r
 #Load example processed_data 
 data("processed_data_example")
