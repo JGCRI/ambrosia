@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ambrosia</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3.5</span>
       </span>
     </div>
 
@@ -296,11 +296,11 @@
 <span class="co">#Create a dataset for parameter fit</span>
 <span class="va">temp_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create.dataset.for.parameter.fit.html">create.dataset.for.parameter.fit</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">sample_data</span>,min_clusters <span class="op">=</span> <span class="fl">20</span>,min_price_pd <span class="op">=</span> <span class="fl">20</span>,min_cal_fd <span class="op">=</span> <span class="fl">1700</span>,outdir<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> </code></pre></div>
 </div>
-<div id="example-4-2-analyze-distribution-of-observational-error-for-non-staples" class="section level2">
+<div id="example-4-2-analyze-distribution-of-variance-for-non-staples" class="section level2">
 <h2 class="hasAnchor">
-<a href="#example-4-2-analyze-distribution-of-observational-error-for-non-staples" class="anchor"></a>Example 4.2: Analyze distribution of observational error for non-staples</h2>
+<a href="#example-4-2-analyze-distribution-of-variance-for-non-staples" class="anchor"></a>Example 4.2: Analyze distribution of variance for non-staples</h2>
 <p>The dataset returned by this function can now be used for parameter estimation. The user can also plot the variances for staples and non-staples to ensure there is a valid distribution and the data is not skewed.</p>
-<p>The below plots show the observational error for pre-generated data.</p>
+<p>The below plots show the variance for pre-generated data.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Load example processed_data </span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"processed_data_example"</span><span class="op">)</span>
@@ -315,9 +315,9 @@
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span>   </code></pre></div>
 <p><img src="example_7.png" style="width:50.0%;height:50.0%"></p>
 </div>
-<div id="example-4-3-analyze-distribution-of-observational-error-for-staples" class="section level2">
+<div id="example-4-3-analyze-distribution-of-variance-for-staples" class="section level2">
 <h2 class="hasAnchor">
-<a href="#example-4-3-analyze-distribution-of-observational-error-for-staples" class="anchor"></a>Example 4.3: Analyze distribution of observational error for staples</h2>
+<a href="#example-4-3-analyze-distribution-of-variance-for-staples" class="anchor"></a>Example 4.3: Analyze distribution of variance for staples</h2>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Load example processed_data </span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"processed_data_example"</span><span class="op">)</span>
