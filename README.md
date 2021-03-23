@@ -135,6 +135,6 @@ tidyr  (>= 0.7.1)
 
 Name- GitHub; `JGCRI/ambrosia`
 
-Identifier- https://github.com/JGCRI/ambrosia/tree/v1.3.4
+Identifier- https://github.com/JGCRI/ambrosia/tree/v1.3.5
 
 License- BSD 2-Clause
