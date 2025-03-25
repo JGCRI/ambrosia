@@ -4,7 +4,20 @@
 \alias{calc1q}
 \title{Calculate demand quantities for a single set of inputs}
 \usage{
-calc1q(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef, psscl, pnscl)
+calc1q(
+  Ps,
+  Pn,
+  Y,
+  eps,
+  Ysterm,
+  Ynterm,
+  Acoef,
+  psscl,
+  pnscl,
+  staples_FE,
+  bias_adder_s,
+  bias_adder_ns
+)
 }
 \arguments{
 \item{Ps}{Price of staple foods}
@@ -20,10 +33,6 @@ calc1q(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef, psscl, pnscl)
 \item{Ynterm}{Income term in the demand equation for nonstaples}
 
 \item{Acoef}{Leading multiplier parameter.}
-
-\item{psscl}{Price scaling parameter for Staple food products}
-
-\item{pnscl}{Price scaling parameter for non-staple food products}
 }
 \value{
 Quantities of staples and non-staples (Qs and Qn)
