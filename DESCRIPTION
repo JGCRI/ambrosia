@@ -1,6 +1,6 @@
 Package: ambrosia
 Title: An R package for calculating and analyzing food demand that is responsive to changing incomes and prices
-Version: 2
+Version: 2.0.0
 Authors@R: c(person(given='Kanishka', family='Narayan', email='kanishka.narayan@pnnl.gov', role=c('aut','cre')),
     person(given='Chris', family='Vernon', email='chris.vernon@pnnl.gov', role=c('aut')),
     person(given='Stephanie', family='Waldhoff', email='stephanie.waldhoff@pnnl.gov', role=c('aut')),
