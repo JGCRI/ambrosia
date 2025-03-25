@@ -4,7 +4,16 @@
 \alias{food.dmnd}
 \title{Calculate food demand using the Edmonds, et al. model.}
 \usage{
-food.dmnd(Ps, Pn, Y, params = vec2param(), rgn = NULL)
+food.dmnd(
+  Ps,
+  Pn,
+  Y,
+  params,
+  rgn = NULL,
+  staples_FE = 0,
+  bias_adder_s = 0,
+  bias_adder_ns = 0
+)
 }
 \arguments{
 \item{Ps}{Vector of staple food prices.}

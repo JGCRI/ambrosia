@@ -60,7 +60,7 @@
 #' @param rgn Optional name for this calculation. If provided, the region will
 #' be included as an extra column in the output data frame.
 #' @export
-food.dmnd <- function(Ps, Pn, Y, params = vec2param(), rgn=NULL)
+food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL,staples_FE=0,bias_adder_s=0,bias_adder_ns=0)
 {
   Pm <- params$Pm
   psscl <- params$psscl
@@ -87,7 +87,7 @@ food.dmnd <- function(Ps, Pn, Y, params = vec2param(), rgn=NULL)
     eps <- mapply(calc1eps, alpha[1,], alpha[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi),
                   SIMPLIFY=FALSE)
     ## Calculate quantities Q[1,] is Qs and Q[2,] is Qn
-    Q <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A),psscl,pnscl)
+    Q <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A),psscl,pnscl,staples_FE,bias_adder_s,bias_adder_ns)
     ## alpha.out = P*Q/Y
     alpha.out <- alpha
     alpha.out[1,] <- Ps*Q[1,]/Y / psscl
@@ -106,7 +106,7 @@ food.dmnd <- function(Ps, Pn, Y, params = vec2param(), rgn=NULL)
   alpharslt <- matrix(rslt$x, nrow=2)
   eps <- mapply(calc1eps, alpharslt[1,], alpharslt[2,], eta.s, eta.n, MoreArgs=list(xi=params$xi),
                 SIMPLIFY=FALSE)
-  qvals <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A),psscl,pnscl)
+  qvals <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A),psscl,pnscl,staples_FE,bias_adder_s,bias_adder_ns)
   qs <- qvals[1,]
   qn <- qvals[2,]
   ## calculate Qm as the budget residual.
@@ -161,13 +161,14 @@ calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
 #' @param Ysterm Income term in the demand equation for staples
 #' @param Ynterm Income term in the demand equation for nonstaples
 #' @param Acoef Leading multiplier parameter.
-#' @param psscl Price scaling parameter for Staple food products
-#' @param pnscl Price scaling parameter for non-staple food products
 #' @return Quantities of staples and non-staples (Qs and Qn)
-calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef,psscl,pnscl) {
+calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef,psscl,pnscl,staples_FE,bias_adder_s,bias_adder_ns) {
   ## not vectorized:  use mapply
-  Qs <- Acoef[1] * Ps^eps[1] * Pn^eps[3] * Ysterm
-  Qn <- Acoef[2] * Ps^eps[2] * Pn^eps[4] * Ynterm
+  Qs <- (Acoef[1] * Ps^eps[1] * Pn^eps[3] * Ysterm)+staples_FE+bias_adder_s
+  Qn <- (Acoef[2] * Ps^eps[2] * Pn^eps[4] * Ynterm)+bias_adder_ns
+
+  Qs <- max(Qs,0)
+  Qn <- max(Qn,0)
 
   ## Check the budget constraint
   alpha.s <- Ps*Qs/Y / psscl
@@ -175,6 +176,7 @@ calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef,psscl,pnscl) {
   alpha.t <- alpha.s + alpha.n
   food.budget <- 1                      # maximum budget fraction for total food.
   if(alpha.t > 1 && !(is.na(alpha.t))) {
+   # print("Budget higher than 1!")
     ## Food consumption exceeds the budget constraint; reduce
     ## consumption to stay within budget.  Reduce nonstaples first,
     ## since they will normally be a less efficient source of
@@ -470,7 +472,7 @@ food.dmnd.byyear <- function(obsdata, params, bc=NULL, region=NULL)
   obsdata %>%
     dplyr::mutate(Ps=0.365*s_usd_p1000cal, Pn=0.365*ns_usd_p1000cal, Y=gdp_pcap_thous/1000,
                   Qs.Obs=s_cal_pcap_day_thous, Qn.Obs=ns_cal_pcap_day_thous) %>%
-    dplyr::select(selcols) -> indata
+    dplyr::select_(.dots=selcols) -> indata
   rslt <- as.data.frame(food.dmnd(indata$Ps, indata$Pn, indata$Y, params))
   if(!is.null(bc)){
     apply.bias.corrections(rslt, bc)}
@@ -562,7 +564,8 @@ lamks2nu1y0 <- function(df)
 #' @param obs.trn Data frame of observations in the training set.
 #' @param obs.tst Data frame of observations in the testing set.
 #' @return merged dataframe
-merge.trn.tst <- function(obs.trn, obs.tst)
+#' @export
+merge_trn_tst <- function(obs.trn, obs.tst)
 {
   obs.trn$obstype <- 'Training'
   obs.tst$obstype <- 'Testing'
@@ -622,7 +625,7 @@ compute.bc.rgn <- function(obs, params)
 #' @param obs.trn Data frame of training observations.
 #' @return calculated bias corrected values
 #' @export
- compute.bias.corrections <- function(params, obs.trn)
+ compute_bias_corrections <- function(params, obs.trn)
 {
   . <- NULL
 
