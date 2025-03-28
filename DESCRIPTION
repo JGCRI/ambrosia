@@ -8,7 +8,7 @@ Authors@R: c(person(given='Kanishka', family='Narayan', email='kanishka.narayan@
     person(given='Ryna', family='Cui', email='yiyun.cui@pnnl.gov', role=c('aut')))
 Description: The `ambrosia` R package was developed to calculate food demand for staples and non-staple commodities that is responsive to changing levels of incomes and prices. Ambrosia implements the framework to quantify food demand as established by Edmonds et al. (2017) and allows the user to explore and estimate different variables related to the food demand system.
 Depends: R (>= 3.6.0)
-License: BSD2
+License: BSD_2_clause
 Encoding: UTF-8
 LazyData: true
 Imports:

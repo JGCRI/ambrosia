@@ -25,15 +25,15 @@ create_dataset_for_parameter_fit(
 
 \item{data}{A data.frame or data.table with the raw data. Data should contain following names,
 
-{s_cal_pcap_day_thous} (Containing 1000 calories per capita per day for staples)
+ {{s_cal_pcap_day_thous}} (Containing 1000 calories per capita per day for staples)
 
-{ns_cal_pcap_day_thous} (Containing 1000 calories per capita per day for non-staples)
+{{ns_cal_pcap_day_thous}} (Containing 1000 calories per capita per day for non-staples)
 
-{gdp_pcap_thous} (Containing GDP per capita)
+{{gdp_pcap_thous}} (Containing GDP per capita)
 
-{s_usd_p1000cal} (Price of 1000 calories for staples per person per day)
+{{s_usd_p1000cal}} (Price of 1000 calories for staples per person per day)
 
-{ns_usd_p1000cal} (Price of 1000 calories for non-staples per person per day)}
+{{ns_usd_p1000cal}} (Price of 1000 calories for non-staples per person per day)}
 
 \item{outdir}{Directory to store output csv. Default is set to test_output folder.}
 
