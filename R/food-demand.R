@@ -56,6 +56,9 @@
 #' @param Ps Vector of staple food prices.
 #' @param Pn Vector of nonstaple food prices.
 #' @param Y Vector of per capita income.
+#' @param staples_FE Fixed effects term for staples. set to 0 by default
+#' @param bias_adder_s Bias term for staples. Set to 0 by default
+#' @param bias_adder_ns Bias term for non-staples. Set to 0 by default
 #' @param params Model parameters structure (see details)
 #' @param rgn Optional name for this calculation. If provided, the region will
 #' be included as an extra column in the output data frame.
@@ -161,6 +164,11 @@ calc1eps <- function(alpha.s, alpha.n, eta.s, eta.n, xi) {
 #' @param Ysterm Income term in the demand equation for staples
 #' @param Ynterm Income term in the demand equation for nonstaples
 #' @param Acoef Leading multiplier parameter.
+#' @param psscl Scale parameter for staples prices.
+#' @param pnscl Scale parameter for non-staple prices.
+#' @param staples_FE Fixed effects term for staples. set to 0 by default
+#' @param bias_adder_s Bias term for staples. Set to 0 by default
+#' @param bias_adder_ns Bias term for non-staples. Set to 0 by default
 #' @return Quantities of staples and non-staples (Qs and Qn)
 calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef,psscl,pnscl,staples_FE,bias_adder_s,bias_adder_ns) {
   ## not vectorized:  use mapply

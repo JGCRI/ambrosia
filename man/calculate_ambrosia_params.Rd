@@ -2,7 +2,7 @@
 % Please edit documentation in R/calculate_parameters.R
 \name{calculate_ambrosia_params}
 \alias{calculate_ambrosia_params}
-\title{Calculates the 11 parameters for ambrosia using data calculated by \code{\link{create_dataset_for_parameter_fit()}} by maximizing log likelihood}
+\title{Calculates the 11 parameters for ambrosia using data calculated by `create_dataset_for_parameter_fit` by maximizing log likelihood}
 \usage{
 calculate_ambrosia_params(
   optim_method = "BFGS",
@@ -20,7 +20,7 @@ calculate_ambrosia_params(
 
 \item{original_param_vector}{Original parameter vector to be used as the starting point for the optimization.These parameters are taken from Edmonds et al 2017}
 
-\item{datadir}{Directory to the data calculated by \code{\link{create_dataset_for_parameter_fit()}}}
+\item{datadir}{Directory to the data calculated by `create_dataset_for_parameter_fit`.}
 
 \item{outdir}{Directory to store output csv. Default is set to test_output folder.}
 
@@ -56,7 +56,7 @@ psscl : Price scaling parameter for staples that is applied to the Price of stap
 pnscl : Price scaling parameter for staples that is applied to the Price of non-staples (Pn) and the alpha of non-staples
 }
 \description{
-Calculates the 11 parameters for ambrosia using data calculated by \code{\link{create_dataset_for_parameter_fit()}} by maximizing log likelihood
+Calculates the 11 parameters for ambrosia using data calculated by `create_dataset_for_parameter_fit` by maximizing log likelihood
 }
 \details{
 The following steps are involved in the parameter estimation function.

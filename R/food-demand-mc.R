@@ -169,9 +169,8 @@ mc.setup <- function(obsdata_filename, logprior=NULL, logfile=NULL, chunksize=10
 #' and the next to last is eta_s.
 #'
 #'
-#' The parameters in the vector are:
-#'  [A_s, A_n, xi_ss, xi_cross, xi_nn, nu1_n, lambda_s, k_s, Pm, psscl, pnscl]
-#'  They are described in the table below:
+#' The parameters in the vector are described in the table below:
+#'
 #'
 #'
 #'@details

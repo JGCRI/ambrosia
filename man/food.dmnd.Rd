@@ -26,6 +26,12 @@ food.dmnd(
 
 \item{rgn}{Optional name for this calculation. If provided, the region will
 be included as an extra column in the output data frame.}
+
+\item{staples_FE}{Fixed effects term for staples. set to 0 by default}
+
+\item{bias_adder_s}{Bias term for staples. Set to 0 by default}
+
+\item{bias_adder_ns}{Bias term for non-staples. Set to 0 by default}
 }
 \description{
 The Edmonds model divides food consumption into two categories,

@@ -33,6 +33,16 @@ calc1q(
 \item{Ynterm}{Income term in the demand equation for nonstaples}
 
 \item{Acoef}{Leading multiplier parameter.}
+
+\item{psscl}{Scale parameter for staples prices.}
+
+\item{pnscl}{Scale parameter for non-staple prices.}
+
+\item{staples_FE}{Fixed effects term for staples. set to 0 by default}
+
+\item{bias_adder_s}{Bias term for staples. Set to 0 by default}
+
+\item{bias_adder_ns}{Bias term for non-staples. Set to 0 by default}
 }
 \value{
 Quantities of staples and non-staples (Qs and Qn)

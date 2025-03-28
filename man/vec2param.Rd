@@ -65,9 +65,7 @@ Note that xi_cross is used for both xi_sn and xi_ns, forcing them to be equal.
 If there are only 10 parameters, then the first 8 are as above,
 and the next to last is eta_s.
 
-The parameters in the vector are:
-\link{A_s, A_n, xi_ss, xi_cross, xi_nn, nu1_n, lambda_s, k_s, Pm, psscl, pnscl}
-They are described in the table below:\tabular{lllll}{
+The parameters in the vector are described in the table below:\tabular{lllll}{
    Parameter name \tab Description \tab Units \tab Value \tab Range of parameter values (Based on 95th percentile confidence interval) \cr
    \code{A_s} \tab A scale term used to derive expenditure share for staple demand \tab Unitless \tab 1.28 \tab 1.25 -1.40 \cr
    \code{A_n} \tab A scale term used to derive expenditure share for non-staple demand. \tab Unitless \tab 1.14 \tab 0.9 - 1.16 \cr

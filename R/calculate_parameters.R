@@ -1,7 +1,7 @@
 ##Functions to estimate parameters
 
 
-#' Calculates the 11 parameters for ambrosia using data calculated by \code{\link{create_dataset_for_parameter_fit()}} by maximizing log likelihood
+#' Calculates the 11 parameters for ambrosia using data calculated by `create_dataset_for_parameter_fit` by maximizing log likelihood
 #'
 #'@details The following steps are involved in the parameter estimation function.
 #'
@@ -40,7 +40,7 @@
 #' pnscl : Price scaling parameter for staples that is applied to the Price of non-staples (Pn) and the alpha of non-staples
 #' @param original_param_vector Original parameter vector to be used as the starting point for the optimization.These parameters are taken from Edmonds et al 2017
 #' @param optim_method The optimization method to be used for maximization of the log likelihood. The default is set to BFGS
-#' @param datadir Directory to the data calculated by \code{\link{create_dataset_for_parameter_fit()}}
+#' @param datadir Directory to the data calculated by `create_dataset_for_parameter_fit`.
 #' @param outdir Directory to store output csv. Default is set to test_output folder.
 #' @param max_iterations A maximum number of iterations that can be passed to optim. This is largely meant for testing purposes.Default is set to 100 for BFGS.
 #' @param print_progress A parameter that allows the user to track progress of function.
@@ -133,15 +133,15 @@ calculate_ambrosia_params <- function(optim_method = "BFGS",
 #' @param lower_limit_sigma Lower limit for sigma values calculated
 #' @param data A data.frame or data.table with the raw data. Data should contain following names,
 #'
-#' {s_cal_pcap_day_thous} (Containing 1000 calories per capita per day for staples)
+#'  {{s_cal_pcap_day_thous}} (Containing 1000 calories per capita per day for staples)
 #'
-#' {ns_cal_pcap_day_thous} (Containing 1000 calories per capita per day for non-staples)
+#' {{ns_cal_pcap_day_thous}} (Containing 1000 calories per capita per day for non-staples)
 #'
-#' {gdp_pcap_thous} (Containing GDP per capita)
+#' {{gdp_pcap_thous}} (Containing GDP per capita)
 #'
-#' {s_usd_p1000cal} (Price of 1000 calories for staples per person per day)
+#' {{s_usd_p1000cal}} (Price of 1000 calories for staples per person per day)
 #'
-#' {ns_usd_p1000cal} (Price of 1000 calories for non-staples per person per day)
+#' {{ns_usd_p1000cal}} (Price of 1000 calories for non-staples per person per day)
 #'
 #' @param outdir Directory to store output csv. Default is set to test_output folder.
 #' @param print_progress A parameter that allows the user to track progress of function.

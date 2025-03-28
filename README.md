@@ -3,12 +3,12 @@
 [![status](https://joss.theoj.org/papers/b1af4bb026f674b31d1175075607deef/status.svg)](https://joss.theoj.org/papers/b1af4bb026f674b31d1175075607deef)
 
 
-# `ambrosia`: An R package for calculating and analyzing food demand that is responsive to changing incomes and prices
+# `ambrosia`: An R Package for Calculating and Analyzing Food Demand that is Responsive to Changing Incomes and Prices
 
 ## Summary
 The `ambrosia` R package was developed to calculate food demand for staples and non-staple commodities that is responsive to changing levels of incomes and prices. `ambrosia` implements the framework to quantify food demand as established by Edmonds et al. (2017) and allows the user to explore and estimate different variables related to the food demand system. Currently `ambrosia` provides three main functions:
 1. calculation of food demand for any given set of parameters including income levels and prices,
-2. estimation of calibration parameters within a given a dataset.  Note:  `ambrosia` is used to calculate parameters for the food demand model implemented in the [Global Change Analysis Model](http://www.globalchange.umd.edu/gcam/).
+2. estimation of calibration parameters within a given a dataset.  Note:  `ambrosia` is used to calculate parameters for the food demand model implemented in the [Global Change Analysis Model](http://www.pnnl.gov/projects/jgcri/gcam/).
 3. exploration and preparation of raw data before starting a parameter estimation.
 
 # Statement of need and audience
