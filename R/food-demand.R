@@ -111,6 +111,7 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL,staples_FE=0,bias_adder_s=0,bi
                 SIMPLIFY=FALSE)
   qvals <- mapply(calc1q, Ps, Pn, Y, eps, yterm.s, yterm.n, MoreArgs=list(Acoef=params$A),psscl,pnscl,staples_FE,bias_adder_s,bias_adder_ns)
   qs <- qvals[1,]
+  qs <- max(qs,0.6)
   qn <- qvals[2,]
   ## calculate Qm as the budget residual.
   resid <- Y - (Ps*qs/psscl + Pn*qn/pnscl)
@@ -175,7 +176,7 @@ calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef,psscl,pnscl,staples_FE,
   Qs <- (Acoef[1] * Ps^eps[1] * Pn^eps[3] * Ysterm)+staples_FE+bias_adder_s
   Qn <- (Acoef[2] * Ps^eps[2] * Pn^eps[4] * Ynterm)+bias_adder_ns
 
-  Qs <- max(Qs,0.6)
+  Qs <- max(Qs,0)
   Qn <- max(Qn,0)
 
   ## Check the budget constraint
