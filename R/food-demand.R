@@ -117,11 +117,11 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL,staples_FE=0,bias_adder_s=0,bi
   resid <- Y - (Ps*qs/psscl + Pn*qn/pnscl)
   qm <-  resid / Pm
   alpha.m <- resid / Y
-  qs <- max(qs,0.6)
+
   if(is.null(rgn))
-    data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m)
+    data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m) %>% mutate(Qs=ifelse(Qs<0.6,0.6,Qs))
   else
-    data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m, rgn=rgn)
+    data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m, rgn=rgn)%>% mutate(Qs=ifelse(Qs<0.6,0.6,Qs))
 }
 
 #' Calculate the exponents in the demand equation.
