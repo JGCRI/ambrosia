@@ -119,7 +119,7 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL,staples_FE=0,bias_adder_s=0,bi
   alpha.m <- resid / Y
 
   if(is.null(rgn))
-    data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m)
+    data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m) %>% mutate(Qs=ifelse(Qs<0.6,0.6,Qs))
   else
     data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m, rgn=rgn)
 }
@@ -176,8 +176,6 @@ calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef,psscl,pnscl,staples_FE,
   Qs <- (Acoef[1] * Ps^eps[1] * Pn^eps[3] * Ysterm)+staples_FE+bias_adder_s
   Qn <- (Acoef[2] * Ps^eps[2] * Pn^eps[4] * Ynterm)+bias_adder_ns
 
-  Qs <- max(Qs,0)
-  Qn <- max(Qn,0)
 
   ## Check the budget constraint
   alpha.s <- Ps*Qs/Y / psscl
@@ -197,10 +195,11 @@ calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef,psscl,pnscl,staples_FE,
       alpha.n <- 0
       alpha.s <- food.budget
     }
-    Qs <- alpha.s * Y/Ps
-    Qn <- alpha.n * Y/Pn
-    Qs <- max(Qs,0.6)
-    Qn <- max(Qn,0)
+      Qs <- psscl * alpha.s * Y/Ps
+      Qn <- pnscl * alpha.n * Y/Pn
+      Qs <- max(Qs, 0.6)
+      Qn <- max(Qn, 0)
+
   }
   c(Qs, Qn)
 }
