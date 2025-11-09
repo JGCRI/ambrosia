@@ -118,8 +118,10 @@ food.dmnd <- function(Ps, Pn, Y, params, rgn=NULL,staples_FE=0,bias_adder_s=0,bi
   qm <-  resid / Pm
   alpha.m <- resid / Y
 
+
+
   if(is.null(rgn))
-    data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m) %>% mutate(Qs=ifelse(Qs<0.6,0.6,Qs))
+    data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m)
   else
     data.frame(Qs=qs, Qn=qn, Qm=qm, alpha.s=alpharslt[1,], alpha.n=alpharslt[2,], alpha.m=alpha.m, rgn=rgn)
 }
@@ -197,10 +199,11 @@ calc1q <- function(Ps, Pn, Y, eps, Ysterm, Ynterm, Acoef,psscl,pnscl,staples_FE,
     }
       Qs <- psscl * alpha.s * Y/Ps
       Qn <- pnscl * alpha.n * Y/Pn
-      Qs <- max(Qs, 0.6)
-      Qn <- max(Qn, 0)
+
 
   }
+  Qs <- max(Qs, 0.6)
+  Qn <- max(Qn, 0)
   c(Qs, Qn)
 }
 
